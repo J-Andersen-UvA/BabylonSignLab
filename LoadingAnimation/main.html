@@ -17,21 +17,45 @@
     <canvas id="renderCanvas"></canvas>
     <script src="SceneAndMeshLoader.js"></script>
     <script src="AnimationLoader.js"></script>
+    <script src="playAnims.js"></script>
     <script>
-        var engine = fetchBabEngine(document.getElementById("renderCanvas"));
-        var [scene, mesh] = createScene(document.getElementById("renderCanvas"), engine);
-        
-        // Run the render loop
-        engine.runRenderLoop(function () {
-            scene.render();
+        async function initialize() {
+            [scene, engine, loaded] = await createScene(document.getElementById("renderCanvas"));
+            
+            // Run the render loop
+            engine.runRenderLoop(function () {
+                scene.render();
+            });
+
+            // Resize the canvas when the window is resized
+            window.addEventListener("resize", function () {
+                engine.resize();
+            });
+        }
+
+        initialize().catch(error => {
+            console.error('Failed to initialize:', error);
         });
 
-        // Resize the canvas when the window is resized
-        window.addEventListener("resize", function () {
-            engine.resize();
-        });
+        function loadAnims() {
+            if (scene && loaded) {
+                getAnims(scene, loaded);
+            } else {
+                console.error('Scene or loaded variables are not set.');
+            }
+        }
+
+        function playLoadedAnims() {
+            if (scene && loaded) {
+                playAnims(scene, loaded);
+            } else {
+                console.error('Scene or loaded variables are not set.');
+            }
+        }
     </script>
-    <button onclick="getAnims(scene, mesh)">Load Anims</button>
+    <!-- <button onclick="(async function() { await getAnims(scene, loaded)});">Load Anims</button> -->
+    <button onclick="loadAnims()">Load Anims</button>
+    <button onclick="playLoadedAnims()">Play Anims</button>
     <!-- <button onclick="getAnims(scene, mesh)">Load Anims</button> -->
 </body>
 </html>
