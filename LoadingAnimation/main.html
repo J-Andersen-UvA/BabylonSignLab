@@ -21,7 +21,7 @@
     <script>
         async function initialize() {
             [scene, engine, loaded] = await createScene(document.getElementById("renderCanvas"));
-            
+
             // Run the render loop
             engine.runRenderLoop(function () {
                 scene.render();
@@ -52,10 +52,26 @@
                 console.error('Scene or loaded variables are not set.');
             }
         }
+        function logMeshForward() {
+            // Log the forward vector of the mesh every second
+            setInterval(() => {
+                if(loaded.meshes[1]) {
+                    // Get the forward vector of the mesh
+                    const forward = loaded.meshes[1].forward;
+
+                    // Log the forward vector
+                    console.log("Forward Vector:", forward);
+                } else {
+                    console.log("Mesh is not loaded.");
+                }
+            }, 1000); // Log every 1 second
+        }
+
     </script>
     <!-- <button onclick="(async function() { await getAnims(scene, loaded)});">Load Anims</button> -->
     <button onclick="loadAnims()">Load Anims</button>
     <button onclick="playLoadedAnims()">Play Anims</button>
+    <button onclick="logMeshForward()">Log Forward</button>
     <!-- <button onclick="getAnims(scene, mesh)">Load Anims</button> -->
 </body>
 </html>

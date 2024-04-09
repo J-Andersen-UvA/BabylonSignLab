@@ -1,5 +1,5 @@
 // Import animations for BabylonJS
-var getAnims = async function (scene, mesh) {
+var getAnims = async function (scene, loadedResults) {
     if (!scene) {
         console.error("Scene is undefined. Unable to import animations.");
         return;
@@ -12,10 +12,7 @@ var getAnims = async function (scene, mesh) {
         }
     });
 
-    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "3NoMesh.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
-
-    console.log("ImportAnimationsAsync results:");
-    console.log(result);
+    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "a.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Check if animations are loaded
     if (!result || !result.animationGroups || result.animationGroups.length === 0) {
@@ -23,10 +20,6 @@ var getAnims = async function (scene, mesh) {
         return;
     }
 
-    // Add animations to the mesh's animation group
-    mesh.animationGroups = result.animationGroups;
-
-    // Output message to console
-    console.log("Animations added to animation group:");
-    console.log(mesh.animationGroups);
+    // Add animations to the loadedResults's animation group
+    loadedResults.animationGroups = result.animationGroups;
 }
