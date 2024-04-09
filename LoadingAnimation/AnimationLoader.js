@@ -12,7 +12,8 @@ var getAnims = async function (scene, loadedResults) {
         }
     });
 
-    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "a.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "a.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "TestBonzinverhaal.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Check if animations are loaded
     if (!result || !result.animationGroups || result.animationGroups.length === 0) {
