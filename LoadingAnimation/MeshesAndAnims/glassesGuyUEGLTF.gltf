@@ -810,40 +810,40 @@
 	],
 	"images": [
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Eye_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Eye_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Skin_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Skin_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Teeth1_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Teeth1_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Hair_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Hair_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Body_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Body_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Bottom_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Bottom_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Bottom_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Bottom_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Footwear_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Footwear_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Footwear_EDA39C474340F7CB74280C96B57ADA0E_MetallicRoughness.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Footwear_EDA39C474340F7CB74280C96B57ADA0E_MetallicRoughness.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Footwear_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Footwear_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Top_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Top_EDA39C474340F7CB74280C96B57ADA0E_BaseColor.png"
 		},
 		{
-			"uri": "M_M_glassesGuy_Wolf3D_Outfit_Top_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
+			"uri": "mats/M_M_glassesGuy_Wolf3D_Outfit_Top_EDA39C474340F7CB74280C96B57ADA0E_Normal.png"
 		}
 	],
 	"materials": [
