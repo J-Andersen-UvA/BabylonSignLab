@@ -1,5 +1,5 @@
 // Import animations for BabylonJS
-var getAnims = async function (scene, loadedResults) {
+var getAnims = async function (scene, loadedResults, glos) {
     if (!scene) {
         console.error("Scene is undefined. Unable to import animations.");
         return;
@@ -12,15 +12,22 @@ var getAnims = async function (scene, loadedResults) {
         }
     });
 
-    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "a.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
-    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "TestBonzinverhaal.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("/gebarenoverleg_media/fbx/", glos+".glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+
+
+    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("/gebarenoverleg_media/fbx/", "AAP.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Check if animations are loaded
     if (!result || !result.animationGroups || result.animationGroups.length === 0) {
         console.error("No animations found or unable to load animations.");
         return;
     }
-
+    else{
+        console.log("Animations loaded");
+        
     // Add animations to the loadedResults's animation group
     loadedResults.animationGroups = result.animationGroups;
+        return true;
+    }
+
 }
