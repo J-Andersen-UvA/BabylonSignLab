@@ -5,16 +5,10 @@ var getAnims = async function (scene, loadedResults) {
         return;
     }
 
-    // TODO: When clicking the button twice, the animation first frame loads
-    BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
-        if (loader.name == "gltf" || loader.name == "glb") {
-            loader.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
-        }
-    });
-
     // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "a.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
     // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "fbxOnzin.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
     const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "AAP.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "BACARDI-A.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Check if animations are loaded
     if (!result || !result.animationGroups || result.animationGroups.length === 0) {
