@@ -46,14 +46,14 @@ var createScene = async function (canvas) {
     // Create a sphere that we attach to the bone
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
 	sphere.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
-    sphere.attachToBone(scene.skeletons[0].bones[4], scene.meshes[1]);
+    sphere.attachToBone(scene.skeletons[0].bones[0], scene.meshes[1]);
 
     // Comment this code to visualise the sphere:
     // sphere.setEnabled(false);
 
-    var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, 3, new BABYLON.Vector3(0, 0, -1), scene);
-    camera.attachControl(canvas, true);
+    var camera = new BABYLON.ArcRotateCamera("camera1", 0, Math.PI/2, 3, new BABYLON.Vector3(0, 0, 0), scene);
     camera.target = sphere;
+    camera.attachControl(canvas, true);
 
     // Display axis of the sphere
     localAxes(5, sphere, scene);
