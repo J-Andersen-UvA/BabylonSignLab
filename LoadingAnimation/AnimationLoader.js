@@ -5,17 +5,29 @@ var getAnims = async function (scene, loadedResults) {
         return;
     }
 
-    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "a.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
-    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "fbxOnzin.gltf", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
-    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "AAP.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
-    const result = await BABYLON.SceneLoader.ImportAnimationsAsync("http://localhost:8080/MeshesAndAnims/", "BACARDI-A.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+    // const baseUrl = "https://thomlucc.github.io/Assets/AvatarDemo/";
+    // const sillyDance = BABYLON.SceneLoader.ImportAnimations(baseUrl, "SillyDance.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, null,
+    //     onSuccess=function (skeletons) {
+    //         console.log("Animations loaded");
+    //     },
+    //     onProgress=function () {
+    //         console.log("Loading animations...");
+    //     }
+    // );
 
-    // Check if animations are loaded
-    if (!result || !result.animationGroups || result.animationGroups.length === 0) {
-        console.error("No animations found or unable to load animations.");
-        return;
-    }
+    // TODO: When clicking the button twice, the animation loads, otherwise it doesnt load
+    BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
+        if (loader.name == "gltf" || loader.name == "glb") {
+            loader.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
+        }
+    });
 
-    // Add animations to the loadedResults's animation group
-    loadedResults.animationGroups = result.animationGroups;
+    BABYLON.SceneLoader.ImportAnimations("http://localhost:8080/MeshesAndAnims/", "3.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null,
+        onSuccess=function (skeletons) {
+            console.log("Animations loaded");
+        },
+        onProgress=function () {
+            console.log("Loading animations...");
+        }
+    );
 }
