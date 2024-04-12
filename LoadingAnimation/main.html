@@ -66,7 +66,7 @@
 
                 await loadAnim(animations[i]); // Load the current animation
                 
-                await startRecording('renderCanvas'); // Start recording
+                await startRecording('renderCanvas', animations[i]); // Start recording
                 console.log("Playing animation:", animations[i]); 
                 await playLoadedAnims(); 
                 await stopRecording(); // Stop recording after the animation plays

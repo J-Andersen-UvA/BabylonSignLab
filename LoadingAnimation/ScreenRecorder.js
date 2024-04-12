@@ -1,8 +1,7 @@
 let mediaRecorder;
 let recordedChunks = [];
 
-async function startRecording(canvasId) {
-    // Get canvas ID 
+async function startRecording(canvasId, animFilename) {
     const canvas = document.getElementById(canvasId);
     const stream = canvas.captureStream(30); // Capture at 30 frames per second
 
@@ -15,7 +14,9 @@ async function startRecording(canvasId) {
         }
     };
 
-    mediaRecorder.onstop = onSaveRecording;
+    mediaRecorder.onstop = function() {
+        onSaveRecording(animFilename); // Pass the animFilename to the onSaveRecording function
+    };
 
     mediaRecorder.start();
     console.log('Recording started');
@@ -28,12 +29,16 @@ async function stopRecording() {
     }
 }
 
-function onSaveRecording() {
+function onSaveRecording(animFilename) {
     const blob = new Blob(recordedChunks, { type: "video/webm" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
+    const filenameWithoutExtension = animFilename.replace(/\.glb$/, ''); 
+
+    a.download = filenameWithoutExtension + ".webm"; 
+
     a.href = url;
-    a.download = "animation.webm"; // Specify the filename for the download
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
