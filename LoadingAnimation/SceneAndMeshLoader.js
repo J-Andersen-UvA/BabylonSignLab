@@ -1,4 +1,4 @@
-var createScene = async function (canvas, basePath) {
+var createScene = async function (canvas, basePathMesh) {
     var engine = new BABYLON.Engine(canvas, true);
     BABYLON.Animation.AllowMatricesInterpolation = true;
 
@@ -30,7 +30,7 @@ var createScene = async function (canvas, basePath) {
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyFBXConverted.gltf", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "UEfbxCOCOSgltfBABYLONglb.glb", scene);
 
-    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./MeshesAndAnims/", "GlassesGuyBabylon.glb", scene);
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
 
 
 
