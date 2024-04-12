@@ -1,31 +1,71 @@
-var playAnims = async function(scene, loadedResults) {
-    if (!scene) {
-        console.error("Scene is undefined. Unable to play animations.");
-        return;
-    }
-    else if (!loadedResults) {
-        console.error("loadedResults is undefined. Unable to play animations.");
-        return;
-    }
-    else if (!loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
-        console.error("No animations found. Unable to play animations.");
-        return;
-    }
+// Import the BABYLON module
+// Get a list of loaded animations
+function getLoadedAnimations(loadedResults) {
+    const loadedAnimations = [];
 
-    // const rotationQuaternion = new BABYLON.Quaternion.RotationYawPitchRoll(0, 180, 0);
-
-    // // for mesh in result.meshes rotate
-    // for (mesh in loadedResults.meshes) { // Rotate all meshes
-    //     console.log(loadedResults.meshes[mesh].rotation);
-    //     loadedResults.meshes[mesh].rotation = new BABYLON.Vector3(0, 180, 0);
-    //     // loadedResults.meshes[mesh].rotate(BABYLON.Axis.X, 180, BABYLON.Space.LOCAL);
-    //     // loadedResults.meshes[mesh].rotation = new BABYLON.Vector3(Math.PI, 0, 0);
-    //     console.log(loadedResults.meshes[mesh].rotation);
-    // }
-
-    // Play each animation group
+    // Store each animation group
     loadedResults.animationGroups.forEach(animationGroup => {
-        // Start playing the animation
-        animationGroup.start(true);
+        loadedAnimations.push(animationGroup);
     });
+
+    return loadedAnimations;
+}
+
+// Get a list of loaded meshes
+function getLoadedMeshes(loadedResults) {
+    const loadedMeshes = [];
+
+    // Store each mesh
+    for (let mesh in loadedResults.meshes) {
+        loadedMeshes.push(loadedResults.meshes[mesh]);
+    }
+
+    return loadedMeshes;
+}
+
+async function playAnims(scene, loadedResults, animationIndex) {
+
+    // Check if animationIndex is not null
+    if (animationIndex === null) {
+        animationIndex = 0;    }
+
+
+    if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
+        console.error("Invalid input. Unable to play animations.");
+        return;
+    }
+
+    // Play the animation at the specified index
+    if (animationIndex >= 0 && animationIndex < loadedResults.animationGroups.length) {
+        const animationGroup = loadedResults.animationGroups[animationIndex];
+        if (!animationGroup.targetedAnimations || animationGroup.targetedAnimations.some(ta => ta.target === null)) {
+            console.error("Animation target missing for some animations in the group:", animationGroup.name);
+            return;
+        }
+
+
+        // //get number of frames from this animation
+        // const frameStart = animationGroup.from;
+        // const frameEnd = animationGroup.to;
+        // const totalFrames = frameEnd - frameStart;
+
+
+        // Set the start frame of the animation group
+        animationGroup.from = animationGroup.from+30;
+        animationGroup.to = animationGroup.to-30;
+
+        await new Promise((resolve) => {
+            animationGroup.onAnimationEndObservable.addOnce(resolve);
+            //first stop any animation
+            scene.stopAnimation(scene.meshes[0]);
+            //then play the animation
+            animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+        });
+        console.log("Animation played:", animationGroup.name);
+        return true;
+    } else {
+        console.error("Invalid animation index:", animationIndex);
+        return false;
+    }
+
 }

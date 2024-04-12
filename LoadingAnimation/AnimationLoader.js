@@ -1,33 +1,42 @@
 // Import animations for BabylonJS
-var getAnims = async function (scene, loadedResults) {
+async function getAnims(basePath, scene, loadedResults, glos) {
     if (!scene) {
         console.error("Scene is undefined. Unable to import animations.");
-        return;
+        return false;
     }
 
-    // const baseUrl = "https://thomlucc.github.io/Assets/AvatarDemo/";
-    // const sillyDance = BABYLON.SceneLoader.ImportAnimations(baseUrl, "SillyDance.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, null,
-    //     onSuccess=function (skeletons) {
-    //         console.log("Animations loaded");
-    //     },
-    //     onProgress=function () {
-    //         console.log("Loading animations...");
-    //     }
-    // );
-
-    // TODO: When clicking the button twice, the animation loads, otherwise it doesnt load
+    // Only allow glTF and glB loaders to not play animations automatically
     BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
-        if (loader.name == "gltf" || loader.name == "glb") {
+        if (loader.name === "gltf" || loader.name === "glb") {
             loader.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
         }
     });
 
-    BABYLON.SceneLoader.ImportAnimations("http://localhost:8080/MeshesAndAnims/", "3.glb", scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null,
-        onSuccess=function (skeletons) {
-            console.log("Animations loaded");
-        },
-        onProgress=function () {
-            console.log("Loading animations...");
+    // Import animations asynchronously without auto-starting them
+    try {
+        const result = await BABYLON.SceneLoader.ImportAnimationsAsync(
+            basePath,
+            glos + ".glb",
+            scene,
+            false,
+            BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync,
+            null
+        );
+
+        if (!result || !result.animationGroups || result.animationGroups.length === 0) {
+            console.error("No animations found or unable to load animations.");
+            return false;
         }
-    );
+
+        // Empty the animationGroups array in loadedResults
+        loadedResults.animationGroups = [];
+
+        // Add animations to the loadedResults's animation group
+        loadedResults.animationGroups = result.animationGroups;
+        console.log("Animations loaded for " + glos);
+        return true;
+    } catch (error) {
+        console.error("Failed to load animations:", error);
+        return false;
+    }
 }

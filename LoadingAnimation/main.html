@@ -1,78 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Babylon.js Animation Example</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+  
+
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"
+    />
+
     <style>
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Bootstrap Modal -->
+    <div
+      class="modal fade"
+      id="errorModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="errorModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="errorModalLabel">Error</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="errorModalBody">
+            <!-- Error message goes here -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <canvas id="renderCanvas"></canvas>
-    <script src="SceneAndMeshLoader.js"></script>
-    <script src="AnimationLoader.js"></script>
-    <script src="playAnims.js"></script>
-    <script>
-        async function initialize() {
-            [scene, engine, loaded] = await createScene(document.getElementById("renderCanvas"));
 
-            // Run the render loop
-            engine.runRenderLoop(function () {
-                scene.render();
-            });
 
-            // Resize the canvas when the window is resized
-            window.addEventListener("resize", function () {
-                engine.resize();
-            });
-        }
-
-        initialize().catch(error => {
-            console.error('Failed to initialize:', error);
-        });
-
-        function loadAnims() {
-            if (scene && loaded) {
-                getAnims(scene, loaded);
-            } else {
-                console.error('Scene or loaded variables are not set.');
-            }
-        }
-
-        function playLoadedAnims() {
-            if (scene && loaded) {
-                playAnims(scene, loaded);
-            } else {
-                console.error('Scene or loaded variables are not set.');
-            }
-        }
-
-        function logMeshForward() {
-            // Log the forward vector of the mesh every second
-            setInterval(() => {
-                if(loaded.meshes[1]) {
-                    // Get the forward vector of the mesh
-                    const forward = loaded.meshes[1].forward;
-
-                    // Log the forward vector
-                    console.log("Forward Vector:", forward);
-                } else {
-                    console.log("Mesh is not loaded.");
-                }
-            }, 1000); // Log every 1 second
-        }
-
-    </script>
-    <!-- <button onclick="(async function() { await getAnims(scene, loaded)});">Load Anims</button> -->
+    
     <button onclick="loadAnims()">Load Anims</button>
     <button onclick="playLoadedAnims()">Play Anims</button>
     <button onclick="logMeshForward()">Log Forward</button>
-    <!-- <button onclick="getAnims(scene, mesh)">Load Anims</button> -->
-</body>
+    <button onclick="animationSequencingAndRecording()">Load Animation sequence and Record them</button>
+    <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
+
+
+
+    <script src="SceneAndMeshLoader.js"></script>
+    <script src="AnimationLoader.js"></script>
+    <script src="playAnims.js"></script>
+    <script src="ScreenRecorder.js"></script>
+    <script src="signCollectLoader.js"></script>
+    <script>
+
+//                                                                                          PINEAPPLE 
+// 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
+//                                                                                   GOMER, JARI, OLINE, LISA
+//                                                                                      🥑🥑🥑🥑🥑🥑🥑🥑
+
+      //SETUP YOUR DIR HERE
+    //   const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+        const basePath = "/gebarenoverleg_media/fbx/";
+        const basePathMesh = "./MeshesAndAnims/"
+        var animations = [];
+        var urlParams = new URLSearchParams(window.location.search);
+        var glos = urlParams.get("glos");
+        var thema = urlParams.get("thema");
+
+
+
+        //load animations from signcollect
+        async function loadAndUseAnimations() {
+    try {
+        if(!thema)
+        {
+            thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
+        }
+        var sCArray = await signCollectLoader("oline");
+        console.log("Loaded animations:", animations);
+
+        for (let i = 0; i < sCArray.length; i++) {
+            animations[i] = sCArray[i].glos;
+        }
+        console.log("Updated animations:", animations);
+    } catch (error) {
+        console.error("Error while loading animations:", error);
+    }
+}
+
+loadAndUseAnimations();
+
+
+      document.addEventListener("DOMContentLoaded", function () {
+
+        if (glos == null) {
+          glos = "ERROR-SC"
+        }
+        
+      });
+
+      initialize().catch(error => {
+            console.error('Failed to initialize:', error);
+        });
+
+      async function initialize() {
+        [scene, engine, loaded] = await createScene(
+          document.getElementById("renderCanvas"), basePathMesh
+        );
+
+        // Run the render loop
+        engine.runRenderLoop(function () {
+          scene.render();
+        });
+
+        // Resize the canvas when the window is resized
+        window.addEventListener("resize", function () {
+          engine.resize();
+        });
+
+        // Load the animations and then play them
+        if (engine) {
+          if (await getAnims(basePath, scene, loaded, glos)) {
+            playLoadedAnims();
+          }
+        }
+      }
+
+
+
+      //Functions for buttons
+
+      //Load animation that is currntly loaded
+      function loadAnims() {
+        if (scene && loaded) {
+          getAnims(scene, loaded, glos);
+        } else {
+          console.error("Scene or loaded variables are not set.");
+        }
+      }
+
+      //Play the animation that is currently loaded
+      function playLoadedAnims() {
+        if (scene && loaded) {
+          playAnims(scene, loaded, 1);
+        } else {
+          console.error("Scene or loaded variables are not set.");
+        }
+      }
+
+        // Log the forward vector of the mesh every second
+      function logMeshForward() {
+        setInterval(() => {
+          if (loaded.meshes[1]) {
+            // Get the forward vector of the mesh
+            const forward = loaded.meshes[1].forward;
+
+            // Log the forward vector
+            console.log("Forward Vector:", forward);
+          } else {
+            console.log("Mesh is not loaded.");
+          }
+        }, 1000); // Log every 1 second
+      }
+
+
+      // Load the animations in sequence and start record them
+      async function animationSequencingAndRecording() {
+    for (let i = 0; i < animations.length; i++) {
+        console.log("Attempting to load animation:", animations[i]);
+
+        if (await getAnims(basePath, scene, loaded, animations[i])) {
+            console.log("Loading complete, now playing:", animations[i]);
+            a=i+2
+            //starting recording
+            await startRecording('renderCanvas', animations[i]); // Start recording
+            if(await playAnims(scene, loaded, a))
+            {
+                console.log("Playing complete:", animations[i]);
+                //stopping recording
+                stopRecording()
+            }
+        } else {
+            console.log("Failed to load animation:", animations[i]);
+        }
+    }
+}
+
+
+// Function to load and play animations sequentially
+async function animationSequencing() {
+    for (let i = 0; i < animations.length; i++) {
+        console.log("Attempting to load animation:", animations[i]);
+
+        if (await getAnims(basePath, scene, loaded, animations[i])) {
+            console.log("Loading complete, now playing:", animations[i]);
+            a=i+2 //because there is animation in avatar baked in and there is ERROR animation, so we skip the first two animations
+            if(await playAnims(scene, loaded, a))
+            {
+                console.log("Playing complete:", animations[i]);
+            
+            }
+        } else {
+            console.log("Failed to load animation:", animations[i]);
+        }
+    }
+}
+
+
+
+
+
+    </script>
+  </body>
 </html>

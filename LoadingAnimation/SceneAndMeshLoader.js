@@ -1,4 +1,4 @@
-var createScene = async function (canvas) {
+var createScene = async function (canvas, basePath) {
     var engine = new BABYLON.Engine(canvas, true);
     BABYLON.Animation.AllowMatricesInterpolation = true;
 
@@ -28,8 +28,11 @@ var createScene = async function (canvas) {
 
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyUEGLTF.gltf", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyFBXConverted.gltf", scene);
-    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "GlassesGuyBabylon.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "UEfbxCOCOSgltfBABYLONglb.glb", scene);
+
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "./MeshesAndAnims/", "GlassesGuyBabylon.glb", scene);
+
+
 
     var topLight = new BABYLON.PointLight("topLight", result.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     topLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
@@ -46,14 +49,14 @@ var createScene = async function (canvas) {
     // Create a sphere that we attach to the bone
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
 	sphere.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
-    sphere.attachToBone(scene.skeletons[0].bones[0], scene.meshes[1]);
+    sphere.attachToBone(scene.skeletons[0].bones[4], scene.meshes[1]);
 
     // Comment this code to visualise the sphere:
     // sphere.setEnabled(false);
 
-    var camera = new BABYLON.ArcRotateCamera("camera1", 0, Math.PI/2, 3, new BABYLON.Vector3(0, 0, 0), scene);
-    camera.target = sphere;
+    var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, 3, new BABYLON.Vector3(0, 0, -1), scene);
     camera.attachControl(canvas, true);
+    camera.target = sphere;
 
     // Display axis of the sphere
     localAxes(5, sphere, scene);
