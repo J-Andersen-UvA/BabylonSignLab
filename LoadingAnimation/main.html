@@ -18,6 +18,7 @@
     <script src="SceneAndMeshLoader.js"></script>
     <script src="AnimationLoader.js"></script>
     <script src="playAnims.js"></script>
+    <script src="ScreenRecorder.js"></script>
     <script>
         async function initialize() {
             [scene, engine, loaded] = await createScene(document.getElementById("renderCanvas"));
@@ -37,42 +38,42 @@
             console.error('Failed to initialize:', error);
         });
 
-        function loadAnims() {
+        async function loadAnim(animationName) {
             if (scene && loaded) {
-                getAnims(scene, loaded);
+                console.log("Loading animation:", animationName);
+                await getAnims(scene, loaded, animationName);
             } else {
                 console.error('Scene or loaded variables are not set.');
             }
         }
 
-        function playLoadedAnims() {
+        async function playLoadedAnims() {
             if (scene && loaded) {
-                playAnims(scene, loaded);
+                
+                playAnims(scene, loaded, 0);
             } else {
                 console.error('Scene or loaded variables are not set.');
             }
         }
 
-        function logMeshForward() {
-            // Log the forward vector of the mesh every second
-            setInterval(() => {
-                if(loaded.meshes[1]) {
-                    // Get the forward vector of the mesh
-                    const forward = loaded.meshes[1].forward;
 
-                    // Log the forward vector
-                    console.log("Forward Vector:", forward);
-                } else {
-                    console.log("Mesh is not loaded.");
-                }
-            }, 1000); // Log every 1 second
+        async function automateAnimations() {
+            const animations = ["AAP.glb", "BACARDI-A.glb"];
+
+            for (let i = 0; i < animations.length; i++) {
+
+                console.log("Current animation:", animations[i]); 
+
+                await loadAnim(animations[i]); // Load the current animation
+                await playLoadedAnims(); 
+
+                                
+            }
         }
+
 
     </script>
-    <!-- <button onclick="(async function() { await getAnims(scene, loaded)});">Load Anims</button> -->
-    <button onclick="loadAnims()">Load Anims</button>
-    <button onclick="playLoadedAnims()">Play Anims</button>
-    <button onclick="logMeshForward()">Log Forward</button>
-    <!-- <button onclick="getAnims(scene, mesh)">Load Anims</button> -->
+    <button onclick="automateAnimations()">Load Animation sequence</button>
+
 </body>
 </html>
