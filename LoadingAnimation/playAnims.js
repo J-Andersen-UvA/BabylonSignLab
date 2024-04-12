@@ -1,4 +1,4 @@
-var playAnims = async function(scene, loadedResults) {
+async function playAnims(scene, loadedResults) {
     if (!scene) {
         console.error("Scene is undefined. Unable to play animations.");
         return;
@@ -19,6 +19,6 @@ var playAnims = async function(scene, loadedResults) {
             });
 
             animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
-Hm
+        });
     }
 };

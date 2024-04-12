@@ -50,7 +50,7 @@
         async function playLoadedAnims() {
             if (scene && loaded) {
                 
-                playAnims(scene, loaded, 0);
+                await playAnims(scene, loaded, 0);
             } else {
                 console.error('Scene or loaded variables are not set.');
             }
@@ -58,15 +58,18 @@
 
 
         async function automateAnimations() {
-            const animations = ["AAP.glb", "BACARDI-A.glb"];
+            const animations = ["BACARDI-A.glb", "AAP.glb"];
 
             for (let i = 0; i < animations.length; i++) {
 
                 console.log("Current animation:", animations[i]); 
 
                 await loadAnim(animations[i]); // Load the current animation
+                
+                await startRecording('renderCanvas'); // Start recording
+                console.log("Playing animation:", animations[i]); 
                 await playLoadedAnims(); 
-
+                await stopRecording(); // Stop recording after the animation plays
                                 
             }
         }

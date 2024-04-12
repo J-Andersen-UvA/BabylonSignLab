@@ -1,7 +1,7 @@
 let mediaRecorder;
 let recordedChunks = [];
 
-function startRecording(canvasId) {
+async function startRecording(canvasId) {
     // Get canvas ID 
     const canvas = document.getElementById(canvasId);
     const stream = canvas.captureStream(30); // Capture at 30 frames per second
@@ -21,7 +21,7 @@ function startRecording(canvasId) {
     console.log('Recording started');
 }
 
-function stopRecording() {
+async function stopRecording() {
     if (mediaRecorder) {
         mediaRecorder.stop();
         console.log('Recording stopped');
