@@ -1,5 +1,10 @@
 // Load for dynamic filename
 var getAnims = async function (scene, loadedResults, animFilename) {
+    if (loaded.animationGroups && loaded.animationGroups.length > 0) {
+        loaded.animationGroups.forEach(group => group.dispose()); // Dispose of each group if necessary
+        loaded.animationGroups = []; // Reset the array
+    }
+    
     if (!scene) {
         console.error("Scene is undefined. Unable to import animations.");
         return;
