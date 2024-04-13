@@ -1,6 +1,6 @@
 async function signCollectLoader(thema) {
     try {
-        const response = await fetch('https://leffe.science.uva.nl:8043/fetch_all.php?limit=1000&offset=0&handle=themaFilter&thema=' + thema);
+        const response = await fetch('https://leffe.science.uva.nl:8043/fetch_all.php?limit=10&offset=0&handle=themaFilter&thema=' + thema);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

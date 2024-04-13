@@ -84,7 +84,7 @@
     <button onclick="loadAnims()">Load Anims</button>
     <button onclick="playLoadedAnims()">Play Anims</button>
     <button onclick="logMeshForward()">Log Forward</button>
-    <button onclick="animationSequencingAndRecording()">Load Animation sequence and Record them</button>
+    <button onclick="animationSequencing(true)">Load Animation sequence and Record them</button>
     <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
 
 
@@ -110,7 +110,9 @@
         var glos = urlParams.get("glos");
         var thema = urlParams.get("thema");
         var cameraAngle = urlParams.get("cameraAngle");
+        let keepAnimating = true;
 
+        BABYLON.Database.IDBStorageEnabled = true;
 
 
         //load animations from signcollect
@@ -192,12 +194,29 @@ loadAndUseAnimations();
 
       //Play the animation that is currently loaded
       function playLoadedAnims() {
-        if (scene && loaded) {
-          playAnims(scene, loaded, 1);
-        } else {
-          console.error("Scene or loaded variables are not set.");
+    if (scene && loaded) {
+      
+        function playAnimationForever() {
+          if(!keepAnimating){
+            return;
+          }
+            playAnims(scene, loaded, 1) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
+                .then(animationPlayed => {
+                    if (animationPlayed) {
+                        // Replay the animation after 1 second timeout and after it stopped
+                        playAnimationForever();
+                    }
+                })
+                .catch(err => {
+                    console.error("Error playing animation:", err);
+                });
         }
-      }
+        initializeAnimationGroups(loaded); //initialize animation with standard vars, start frame + 30 frames, end frame - 30 frames
+        playAnimationForever();
+    } else {
+        console.error("Scene or loaded variables are not set.");
+    }
+}
 
         // Log the forward vector of the mesh every second
       function logMeshForward() {
@@ -215,47 +234,42 @@ loadAndUseAnimations();
       }
 
 
-      // Load the animations in sequence and start record them
-      async function animationSequencingAndRecording() {
-    for (let i = 0; i < animations.length; i++) {
-        console.log("Attempting to load animation:", animations[i]);
+// Function to play animations sequentially
+async function animationSequencing(recording = false) {
+    // Stop any ongoing animation loops
+    keepAnimating = false;
 
-        if (await getAnims(basePath, scene, loaded, animations[i])) {
-            console.log("Loading complete, now playing:", animations[i]);
-            a=i+2
-            //starting recording
-            await startRecording('renderCanvas', animations[i]); // Start recording
-            if(await playAnims(scene, loaded, a))
-            {
-                console.log("Playing complete:", animations[i]);
-                //stopping recording
-                stopRecording()
+    // Stop any current animations
+    if (await stopAnims(scene, loaded)) {
+        console.log("Stopped all animations");
+
+        //waiting modal 
+      $('#errorModal').modal('show');
+      $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
+
+        // Load and initialize animations
+        if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
+            console.log("All animations preloaded and initialized.");
+            $('#errorModal').modal('hide');
+            // Play animations sequentially
+            for (let i = 0; i < animations.length; i++) {
+          if (recording)  await startRecording('renderCanvas', animations[i]); // Start recording;
+                const animationIndex = i + 2; // Adjust index if needed
+                console.log(`Now playing: ${animations[i]}`);
+                if (await playAnims(scene, loaded, animationIndex)) {
+                    console.log(`Playing complete: ${animations[i]}`);
+                    if (recording) stopRecording();
+                } else {
+                    console.log(`Failed to play animation: ${animations[i]}`);
+                }
             }
         } else {
-            console.log("Failed to load animation:", animations[i]);
+            console.error("Failed to preload and initialize animations.");
         }
     }
 }
 
 
-// Function to load and play animations sequentially
-async function animationSequencing() {
-    for (let i = 0; i < animations.length; i++) {
-        console.log("Attempting to load animation:", animations[i]);
-
-        if (await getAnims(basePath, scene, loaded, animations[i])) {
-            console.log("Loading complete, now playing:", animations[i]);
-            a=i+2 //because there is animation in avatar baked in and there is ERROR animation, so we skip the first two animations
-            if(await playAnims(scene, loaded, a))
-            {
-                console.log("Playing complete:", animations[i]);
-            
-            }
-        } else {
-            console.log("Failed to load animation:", animations[i]);
-        }
-    }
-}
 
 
 

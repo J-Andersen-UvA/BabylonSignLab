@@ -1,5 +1,7 @@
 var createScene = async function (canvas, basePathMesh, cameraAngle) {
     var engine = new BABYLON.Engine(canvas, true);
+    engine.disableManifestCheck = true //disable manifest checking for caching
+
     BABYLON.Animation.AllowMatricesInterpolation = true;
 
     // This creates a basic Babylon Scene object (non-mesh)
@@ -32,12 +34,16 @@ var createScene = async function (canvas, basePathMesh, cameraAngle) {
 
     const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
 
-
+    if (result.meshes.length > 0) {
+        var mesh = result.meshes[0]; // Get the first mesh from the imported meshes
+        mesh.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(0), BABYLON.Tools.ToRadians(180), BABYLON.Tools.ToRadians(0));
+    }
 
     var topLight = new BABYLON.PointLight("topLight", result.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     topLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
     topLight.intensity = 1; // Set light intensity
-    
+
+
 
     
     /* Creating a camera that we set to the position of the bone attached to the mesh's neck bone:
