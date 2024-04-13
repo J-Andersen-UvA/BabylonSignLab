@@ -1,6 +1,6 @@
-var createScene = async function (canvas, basePathMesh, cameraAngle) {
+var createScene = async function (canvas, basePathMesh) {
     var engine = new BABYLON.Engine(canvas, true);
-    engine.disableManifestCheck = true //disable manifest checking for caching
+    engine.disableManifestCheck = true //disable manifest checking for
 
     BABYLON.Animation.AllowMatricesInterpolation = true;
 
@@ -14,17 +14,9 @@ var createScene = async function (canvas, basePathMesh, cameraAngle) {
         }
     });
 
-    // Add zoom functionality to the camera
-    var zoomSpeed = 0.2; // Adjust this value to control the zoom speed
+   
 
-    canvas.addEventListener("wheel", function (event) {
-        // Zoom in or out based on the direction of the mouse scroll
-        if (event.deltaY > 0) {
-            camera.position.z -= zoomSpeed;
-        } else {
-            camera.position.z += zoomSpeed;
-        }
-    });
+
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
@@ -73,9 +65,14 @@ var createScene = async function (canvas, basePathMesh, cameraAngle) {
 
 
 
-    var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, 3, new BABYLON.Vector3(0, 0, -1), scene);
+     camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, 3, new BABYLON.Vector3(0, 0, -2), scene);
     camera.attachControl(canvas, true);
     camera.target = sphere;
+
+    camera.wheelPrecision = 50; //Mouse wheel speed
+
+
+
 
     // Display axis of the sphere
     localAxes(5, sphere, scene);
