@@ -109,6 +109,7 @@
         var urlParams = new URLSearchParams(window.location.search);
         var glos = urlParams.get("glos");
         var thema = urlParams.get("thema");
+        var cameraAngle = urlParams.get("cameraAngle");
 
 
 
@@ -147,8 +148,15 @@ loadAndUseAnimations();
         });
 
       async function initialize() {
+
+        if(!cameraAngle)
+        {
+            cameraAngle = -2
+        }
+
+        
         [scene, engine, loaded] = await createScene(
-          document.getElementById("renderCanvas"), basePathMesh
+          document.getElementById("renderCanvas"), basePathMesh, cameraAngle
         );
 
         // Run the render loop

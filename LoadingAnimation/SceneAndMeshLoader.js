@@ -1,4 +1,4 @@
-var createScene = async function (canvas, basePathMesh) {
+var createScene = async function (canvas, basePathMesh, cameraAngle) {
     var engine = new BABYLON.Engine(canvas, true);
     BABYLON.Animation.AllowMatricesInterpolation = true;
 
@@ -53,6 +53,19 @@ var createScene = async function (canvas, basePathMesh) {
 
     // Comment this code to visualise the sphere:
     // sphere.setEnabled(false);
+
+
+    // Initializes an ArcRotateCamera named "camera1" in the scene.
+// This camera is positioned to rotate around a target point defined by the vector (0, 0, -1).
+// The 'alpha' parameter, set as Math.PI / -2, positions the camera at -90 degrees on the XZ plane,
+// effectively placing it on the negative X-axis and facing towards the origin.
+// The 'beta' parameter of 1 radian tilts the camera slightly downward from the vertical top view.
+// The 'radius' parameter of 3 units sets the distance from the camera to the target point, placing it 3 units away.
+
+
+// This setup provides a unique side and slightly elevated view of the scene centered around the target point on the negative Z-axis.
+
+
 
     var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, 3, new BABYLON.Vector3(0, 0, -1), scene);
     camera.attachControl(canvas, true);
