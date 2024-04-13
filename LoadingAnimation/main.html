@@ -77,6 +77,31 @@
       </div>
     </div>
 
+
+    <div class="modal fade" id="signBuilder" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="errorModalLabel">Add Gloss</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <input type="text" id="searchInput" class="form-control" placeholder="Search for glos" oninput="searchGlos()">
+                  <div id="glosContainer" class="mt-3"></div>
+                  <div id="selectedGlos" class="mt-3"></div>
+
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" onclick="handleGlosses()">Create Sentence</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+
+
+
     <canvas id="renderCanvas"></canvas>
 
 
@@ -86,7 +111,7 @@
     <button onclick="logMeshForward()">Log Forward</button>
     <button onclick="animationSequencing(true)">Load Animation sequence and Record them</button>
     <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
-    <button onclick="animationGroupTest()">Test Animation Group func</button>
+    <button onclick="signBuilder()">Sign Builder</button>
 
 
 
@@ -97,6 +122,8 @@
     <script src="signCollectLoader.js"></script>
     <script src="cameraController.js"></script>
     <script src="noiseGenerator.js"></script>
+    <script src="signBuilder.js"></script>
+
     <script>
 //                                                                                          PINEAPPLE 
 // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -118,6 +145,7 @@
         var myAnimationGroup;
         var animationGroupFrom;
         var animationGroupTo; 
+        var zinArray = []
 
         BABYLON.Database.IDBStorageEnabled = true;
 
@@ -131,11 +159,16 @@
         var movingCamera = urlParams.get("movingCamera"); //movingCamera=1, if you want camera to keep moving
         var play = urlParams.get("play"); //play=no, if you don't want to play the animation
         var zin = urlParams.get("zin") //IK,BEN,GOMER
+        var limit = urlParams.get("limit") //limit=50, if you want to limit the amount of animations
 
 
         if(!play)
         {
           play = true
+        }
+        if(!limit)
+        {
+          limit = 50
         }
 
 
@@ -147,7 +180,7 @@
         {
             thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
         }
-        var sCArray = await signCollectLoader(thema); //if you want to know thema names, go to signcollect website and ask Gomer for login
+        var sCArray = await signCollectLoader(thema, "themaFilter", limit); //if you want to know thema names, go to signcollect website and ask Gomer for login
         console.log("Loaded animations:", animations);
 
         for (let i = 0; i < sCArray.length; i++) {
@@ -231,6 +264,10 @@ else
               createCameraRotationAnimation(camera, 220, 340, 600); // Rotates from 0 to 180 degrees over 100 frames
 
             }
+            else
+            {
+              createCameraRotationAnimation(camera, 270, 270, 600); // Rotates from 0 to 180 degrees over 100 frames
+            }
 
             if(play != "no")
           {
@@ -286,7 +323,7 @@ else
 
 
 // Function to play animations sequentially
-async function animationSequencing(recording = false) {
+async function animationSequencing(recording = false, keepPlaying = true) {
     // Stop any ongoing animation loops
     keepAnimating = false;
 
@@ -302,8 +339,13 @@ async function animationSequencing(recording = false) {
         if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
             console.log("All animations preloaded and initialized.");
             $('#errorModal').modal('hide');
+            $('#errorModal').hide();
+            $("#modal-backdrop").hide();
+
             // Play animations sequentially
             for (let i = 0; i < animations.length; i++) {
+              $('#errorModal').modal('hide');
+
           if (recording)  await startRecording('renderCanvas', animations[i]); // Start recording;
                 const animationIndex = i + 2; // Adjust index if needed
                 console.log(`Now playing: ${animations[i]}`);
@@ -312,6 +354,18 @@ async function animationSequencing(recording = false) {
                     if (recording) stopRecording();
                 } else {
                     console.log(`Failed to play animation: ${animations[i]}`);
+                }
+
+                if(i == animations.length - 1 && keepPlaying == false)
+                {
+                  keepAnimating = true;
+                  playLoadedAnims();
+                }
+                else if(i == animations.length - 1 && keepPlaying == true)
+                {
+                  //here i want to restart the for loop to 0
+                  i = -1;
+                  console.log("restart")
                 }
             }
         } else {
