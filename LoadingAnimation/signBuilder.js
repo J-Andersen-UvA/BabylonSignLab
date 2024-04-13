@@ -59,13 +59,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    window.cleanSentence = function(){
+        zinArray = []
+        updateGlosDisplay()
+    }
+
     // Function to handle the final array of glosses
     window.handleGlosses = function () {
         animations = zinArray
 
         //we want to adjust frames
-        animationGroupFrom = 40;
-        animationGroupTo = 40;
+        animationGroupFrom = 60;
+        animationGroupTo = 60;
 
 
         $('#signBuilder').modal('hide');
