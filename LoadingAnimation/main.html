@@ -29,10 +29,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"
     />
-
-    <script src="https://cdn.jsdelivr.net/npm/simplex-noise"></script>
-
-
+    
     <style>
       #renderCanvas {
         width: 100%;
@@ -89,6 +86,7 @@
     <button onclick="logMeshForward()">Log Forward</button>
     <button onclick="animationSequencing(true)">Load Animation sequence and Record them</button>
     <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
+    <button onclick="animationGroupTest()">Test Animation Group func</button>
 
 
 
@@ -98,8 +96,8 @@
     <script src="ScreenRecorder.js"></script>
     <script src="signCollectLoader.js"></script>
     <script src="cameraController.js"></script>
+    <script src="noiseGenerator.js"></script>
     <script>
-
 //                                                                                          PINEAPPLE 
 // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
 //                                                                                   GOMER, JARI, OLINE, LISA
@@ -113,7 +111,16 @@
         var urlParams = new URLSearchParams(window.location.search); 
         let keepAnimating = true;
         var camera;
+        var scene;
+        var engine;
+        var loaded;
+        var mesh;
+        var myAnimationGroup;
+        var animationGroupFrom;
+        var animationGroupTo; 
+
         BABYLON.Database.IDBStorageEnabled = true;
+
 
 
 
@@ -122,17 +129,25 @@
         var thema = urlParams.get("thema");
         var cameraAngle = urlParams.get("cameraAngle");
         var movingCamera = urlParams.get("movingCamera");
+        var play = urlParams.get("play");
+        var zin = urlParams.get("zin")
+
+
+        if(!play)
+        {
+          play = true
+        }
 
 
 
         //load animations from signcollect
-        async function loadAndUseAnimations() {
+        async function loadSignCollectLabels() {
     try {
         if(!thema)
         {
             thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
         }
-        var sCArray = await signCollectLoader("oline");
+        var sCArray = await signCollectLoader(thema); //if you want to know thema names, go to signcollect website and ask Gomer for login
         console.log("Loaded animations:", animations);
 
         for (let i = 0; i < sCArray.length; i++) {
@@ -144,7 +159,23 @@
     }
 }
 
-loadAndUseAnimations();
+if(zin)
+{
+  //we want to adjust frame from and to for blending
+  animationGroupFrom = 80;
+  animationGroupTo = 100;
+
+  //split zin with , and return as array
+  animations = zin.split(",");
+}
+else
+{
+    //we want to adjust frame from and to for blending
+    animationGroupFrom = 30; //start frame + 30
+  animationGroupTo = 30; //end frame - 30
+  loadSignCollectLabels();
+
+}
 
 
       document.addEventListener("DOMContentLoaded", function () {
@@ -161,7 +192,7 @@ loadAndUseAnimations();
 
       async function initialize() {
         
-        [scene, engine, loaded] = await createScene(
+        [scene, engine, loaded, myAnimationGroup] = await createScene(
           document.getElementById("renderCanvas"), basePathMesh
         );
 
@@ -177,6 +208,12 @@ loadAndUseAnimations();
 
         // Load the animations and then play them
         if (engine) {
+
+          //start seed generator 
+
+          // console.log(getSkeletonBones(scene))
+
+          console.log(scene.skeletons[0])
           if (await getAnims(basePath, scene, loaded, glos)) {
             if(cameraAngle)
             {
@@ -195,7 +232,11 @@ loadAndUseAnimations();
 
             }
 
+            if(play != "no")
+          {
             playLoadedAnims();
+
+          }
           }
         }
       }
@@ -208,6 +249,8 @@ loadAndUseAnimations();
       function loadAnims() {
         if (scene && loaded) {
           getAnims(scene, loaded, glos);
+          // loadAndModifyAnimation(scene.skeletons[0], mesh, 1, loaded.animationGroup);
+
         } else {
           console.error("Scene or loaded variables are not set.");
         }
@@ -239,20 +282,7 @@ loadAndUseAnimations();
     }
 }
 
-        // Log the forward vector of the mesh every second
-      function logMeshForward() {
-        setInterval(() => {
-          if (loaded.meshes[1]) {
-            // Get the forward vector of the mesh
-            const forward = loaded.meshes[1].forward;
 
-            // Log the forward vector
-            console.log("Forward Vector:", forward);
-          } else {
-            console.log("Mesh is not loaded.");
-          }
-        }, 1000); // Log every 1 second
-      }
 
 
 // Function to play animations sequentially
@@ -291,7 +321,10 @@ async function animationSequencing(recording = false) {
 }
 
 
+function animationGroupTest(){
+  console.log(myAnimationGroup.isPlaying())
 
+}
 
 
 

@@ -27,13 +27,14 @@ var createScene = async function (canvas, basePathMesh) {
     const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
 
     if (result.meshes.length > 0) {
-        var mesh = result.meshes[0]; // Get the first mesh from the imported meshes
+        mesh = result.meshes[0]; // Get the first mesh from the imported meshes
         mesh.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(0), BABYLON.Tools.ToRadians(180), BABYLON.Tools.ToRadians(0));
     }
 
     var topLight = new BABYLON.PointLight("topLight", result.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     topLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
     topLight.intensity = 1; // Set light intensity
+
 
 
 
@@ -76,6 +77,9 @@ var createScene = async function (canvas, basePathMesh) {
 
     // Display axis of the sphere
     localAxes(5, sphere, scene);
+
+    //  myAnimationGroup = new BABYLON.AnimationGroup("My New Animation Group");
+    // console.log(myAnimationGroup.start(true))
 
     return [scene, engine, result];
 };

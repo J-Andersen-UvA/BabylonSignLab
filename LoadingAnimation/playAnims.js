@@ -26,8 +26,9 @@ function getLoadedMeshes(loadedResults) {
 async function initializeAnimationGroups(loadedResults) {
     loadedResults.animationGroups.forEach(animationGroup => {
         if (!animationGroup.initialized) {
-            animationGroup.from += 30; //we subtract frames from 
-            animationGroup.to -= 30;
+            // animationGroup.normalize(0, 200); //messes up more
+            animationGroup.from += animationGroupFrom; // for estimation of frames, we would need tool of amit to determine mid frame
+            animationGroup.to -= animationGroupTo;
             animationGroup.initialized = true;
         }
     });
@@ -46,32 +47,25 @@ async function playAnims(scene, loadedResults, animationIndex) {
     // Check the range of the animation index
     if (animationIndex >= 0 && animationIndex < loadedResults.animationGroups.length) {
         const animationGroup = loadedResults.animationGroups[animationIndex];
+
+        animationGroup.enableBlending = true;
+        // animationGroup.normalize = true;
+
         if (!animationGroup.targetedAnimations || animationGroup.targetedAnimations.some(ta => ta.target === null)) {
             console.error("Animation target missing for some animations in the group:", animationGroup.name);
             return false;
         }
 
-        const midFrame = (animationGroup.from + animationGroup.to) / 2;  // Calculate midpoint frame
-        let midRotationCaptured = false;  // Flag to ensure rotation is captured only once
-
         return new Promise((resolve, reject) => {
             // Listen to the animation frame advance
             scene.onBeforeRenderObservable.add((eventData, eventState) => {
-                if (!midRotationCaptured && animationGroup.targetedAnimations.some(ta => {
-                    return ta.target && ta.animation.runtimeAnimations.some(ra => {
-                        // Check if the current frame is around the midpoint
-                        return ra.currentFrame >= midFrame;
-                    });
-                })) {
-                    // Capture and apply the midpoint rotation for each target
-                    animationGroup.targetedAnimations.forEach(targetedAnimation => {
-                        const target = targetedAnimation.target;
-                        if (target && target.rotationQuaternion) {
-                            target.rotationQuaternion = target.rotationQuaternion.clone();
-                        }
-                    });
-                    midRotationCaptured = true;  // Set the flag to avoid multiple captures
-                }
+                animationGroup.targetedAnimations.forEach(targetedAnimation => {
+                    const target = targetedAnimation.target;
+                    if (target && target.rotationQuaternion) {
+                        target.rotationQuaternion.normalize(); // Normalize the quaternion every frame
+                    }
+                });
+            
             });
 
             animationGroup.onAnimationEndObservable.addOnce(() => {
