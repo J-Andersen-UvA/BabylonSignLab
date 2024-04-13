@@ -169,7 +169,7 @@
         }
         if(!limit)
         {
-          limit = 50
+          limit = 5
         }
 
 
@@ -328,13 +328,15 @@ async function animationSequencing(recording = false, keepPlaying = true) {
     // Stop any ongoing animation loops
     keepAnimating = false;
 
+        //waiting modal 
+        $('#errorModal').modal('show');
+      $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
     // Stop any current animations
     if (await stopAnims(scene, loaded)) {
-        console.log("Stopped all animations");
+      if(await removeAnims(scene, loaded)){
+        console.log(animations);
+        console.log(loaded.animationGroups);
 
-        //waiting modal 
-      $('#errorModal').modal('show');
-      $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
 
         // Load and initialize animations
         if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
@@ -344,25 +346,26 @@ async function animationSequencing(recording = false, keepPlaying = true) {
             $("#modal-backdrop").hide();
 
             // Play animations sequentially
-            for (let i = 0; i < animations.length; i++) {
+            for (let i = 0; i < loaded.animationGroups.length; i++) {
               $('#errorModal').modal('hide');
+              glos = loaded.animationGroups[i].glos;
 
-          if (recording)  await startRecording('renderCanvas', animations[i]); // Start recording;
-                const animationIndex = i+1; // Adjust index if needed
-                console.log(`Now playing: ${animations[i]}`);
+          if (recording)  await startRecording('renderCanvas', glos); // Start recording;
+                const animationIndex = i; // Adjust index if needed
+                console.log(`Now playing: ${glos}`);
                 if (await playAnims(scene, loaded, animationIndex)) {
-                    console.log(`Playing complete: ${animations[i]}`);
+                    console.log(`Playing complete: ${glos}`);
                     if (recording) stopRecording();
                 } else {
-                    console.log(`Failed to play animation: ${animations[i]}`);
+                    console.log(`Failed to play animation: ${glos}`);
                 }
 
-                if(i == animations.length - 1 && keepPlaying == false)
+                if(i == loaded.animationGroups.length - 1 && keepPlaying == false)
                 {
                   keepAnimating = true;
                   playLoadedAnims();
                 }
-                else if(i == animations.length - 1 && keepPlaying == true)
+                else if(i == loaded.animationGroups.length - 1 && keepPlaying == true)
                 {
                   //here i want to restart the for loop to 0
                   i = -1;
@@ -373,7 +376,7 @@ async function animationSequencing(recording = false, keepPlaying = true) {
             console.error("Failed to preload and initialize animations.");
         }
     }
-}
+}}
 
 
 function animationGroupTest(){

@@ -30,6 +30,8 @@ async function getAnims(basePath, scene, loadedResults, glos) {
 
         // Empty the animationGroups array in loadedResults
         loadedResults.animationGroups = [];
+        lastIndex = result.animationGroups.length -1;
+        result.animationGroups[lastIndex].glos=glos;
 
         // Add animations to the loadedResults's animation group
         loadedResults.animationGroups = result.animationGroups;
