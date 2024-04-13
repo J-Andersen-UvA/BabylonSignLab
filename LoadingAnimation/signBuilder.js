@@ -1,5 +1,6 @@
 function signBuilder(){
     animations = []
+    removeAnims(scene, loaded);
 
     $("#signBuilder").modal("show")
 
@@ -62,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.cleanSentence = function(){
         zinArray = []
         updateGlosDisplay()
+
     }
 
     // Function to handle the final array of glosses
@@ -71,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
         //we want to adjust frames
         animationGroupFrom = 60;
         animationGroupTo = 60;
-
 
         $('#signBuilder').modal('hide');
         console.log('Handling glosses:', glosArray);

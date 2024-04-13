@@ -348,7 +348,7 @@ async function animationSequencing(recording = false, keepPlaying = true) {
               $('#errorModal').modal('hide');
 
           if (recording)  await startRecording('renderCanvas', animations[i]); // Start recording;
-                const animationIndex = i + 2; // Adjust index if needed
+                const animationIndex = i+1; // Adjust index if needed
                 console.log(`Now playing: ${animations[i]}`);
                 if (await playAnims(scene, loaded, animationIndex)) {
                     console.log(`Playing complete: ${animations[i]}`);

@@ -122,3 +122,20 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
     initializeAnimationGroups(loaded);  // Initialize all at once after loading
     return true;
 }
+
+
+async function removeAnims(scene, loadedResults) {
+    // Validate the input parameters
+    if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
+        console.error("Invalid input. Unable to remove animations.");
+        return false;
+    }
+
+    // Remove all animations from the scene
+    loadedResults.animationGroups.forEach(animationGroup => {
+        scene.removeAnimationGroup(animationGroup);
+    });
+
+    console.log("All animations have been removed.");
+    return true;
+}
