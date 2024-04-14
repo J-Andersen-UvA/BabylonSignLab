@@ -113,7 +113,7 @@
     <button onclick="loadAnims()">Load Anims</button>
     <button onclick="playLoadedAnims()">Play Anims</button>
     <button onclick="logMeshForward()">Log Forward</button>
-    <button onclick="animationSequencing('glos')">Load Animation sequence and Record them</button>
+    <button onclick="animationSequencing('glos'); recordingMethod=''">Load Animation sequence and Record them</button>
     <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
     <button onclick="signBuilder()">Sign Builder</button>
 
@@ -145,14 +145,12 @@
         var scene;
         var engine;
         var loaded;
-        var mesh;
-        var myAnimationGroup;
         var animationGroupFrom;
         var animationGroupTo; 
         var zinArray = []
-        var zinRecording;
         var recordingMethod;
         var recordingFile;
+        let continueLoop = true;
 
         BABYLON.Database.IDBStorageEnabled = true;
 
@@ -223,12 +221,17 @@ else
         if (glos == null) {
           glos = "ERROR-SC"
         }
-        
-      });
+        var canvas = document.getElementById("renderCanvas");
+    if (!canvas) {
+        throw new Error("The canvas element is not available.");
+    }
 
       initialize().catch(error => {
             console.error('Failed to initialize:', error);
         });
+
+        
+      });
 
       async function initialize() {
         
@@ -322,8 +325,22 @@ else
 
 
 // Function to play animations sequentially
-async function animationSequencing(recording = false, keepPlaying = true) {
+async function animationSequencing(recording = false, keepPlaying = true, frame) {
+  continueLoop = false
     // Stop any ongoing animation loops
+
+    if(frame == "blend")
+    {
+              //we want to adjust frames
+              animationGroupFrom = 60;
+        animationGroupTo = 60;
+    }
+    else
+    {
+        //we want to adjust frames
+        animationGroupFrom = 30;
+        animationGroupTo = 30;
+    }
     keepAnimating = false;
 
     console.log(recording)
@@ -346,8 +363,9 @@ async function animationSequencing(recording = false, keepPlaying = true) {
             recordingFile = zinArray.join(' ');
             if (recording && recordingMethod == "zin")  await startRecording('renderCanvas', recordingFile); // Start recording;
 
+            continueLoop = true
 
-          for (let i = 0; i < loaded.animationGroups.length; i++) {
+          for (let i = 0; i < loaded.animationGroups.length && continueLoop; i++) {
               glos = loaded.animationGroups[i].glos;
 
             if (recording && recordingMethod != "zin")  await startRecording('renderCanvas', glos); // Start recording;
@@ -373,6 +391,7 @@ async function animationSequencing(recording = false, keepPlaying = true) {
                   i = -1;
                   console.log("restart")
                 }
+                if (!continueLoop) break;
             }
         } else {
             console.error("Failed to preload and initialize animations.");

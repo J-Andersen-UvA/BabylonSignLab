@@ -1,5 +1,13 @@
 var createScene = async function (canvas, basePathMesh) {
-    var engine = new BABYLON.Engine(canvas, true);
+
+    var options = {
+        antialias: true, // Enable or disable antialiasing
+        powerPreference: "high-performance",
+        stencil: true,
+    };
+
+    
+    var engine = new BABYLON.Engine(canvas, options);
     engine.disableManifestCheck = true //disable manifest checking for
 
     BABYLON.Animation.AllowMatricesInterpolation = true;

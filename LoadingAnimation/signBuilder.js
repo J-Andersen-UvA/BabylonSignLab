@@ -1,6 +1,7 @@
 function signBuilder(){
     animations = []
     removeAnims(scene, loaded);
+    continueLoop = false;
 
     $("#signBuilder").modal("show")
 
@@ -70,21 +71,20 @@ document.addEventListener('DOMContentLoaded', function () {
     window.handleGlosses = function () {
         animations = zinArray
 
-        //we want to adjust frames
-        animationGroupFrom = 60;
-        animationGroupTo = 60;
+
 
         $('#signBuilder').modal('hide');
         console.log('Handling glosses:', glosArray);
+        continueLoop = true;
 
         if(recordingMethod == "zin")
         {
-            animationSequencing(recording=true, keepPlaying=true);
+            animationSequencing(recording=true, keepPlaying=true, frame="blend");
 
         }
         else
         {
-            animationSequencing(recording=false, keepPlaying=true);
+            animationSequencing(recording=false, keepPlaying=true, frame="blend");
 
         }
     };
