@@ -131,10 +131,7 @@ async function removeAnims(scene, loadedResults) {
         return false;
     }
 
-    // Remove all animations from the scene
-    loadedResults.animationGroups.forEach(animationGroup => {
-        scene.removeAnimationGroup(animationGroup);
-    });
+    scene.animationGroups = []
 
     console.log("All animations have been removed.");
     return true;
