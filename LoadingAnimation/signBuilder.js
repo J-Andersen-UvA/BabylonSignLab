@@ -76,8 +76,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         $('#signBuilder').modal('hide');
         console.log('Handling glosses:', glosArray);
-        animationSequencing(recording=false, keepPlaying=true);
+
+        if(recordingMethod == "zin")
+        {
+            animationSequencing(recording=true, keepPlaying=true);
+
+        }
+        else
+        {
+            animationSequencing(recording=false, keepPlaying=true);
+
+        }
     };
+
+    window.toggleRecording = function(){
+        //check if the checkbox is checked
+        if (document.getElementById('recordCheckbox').checked) {
+            recordingMethod = "zin"
+        } else {
+            recordingMethod = ""
+        }
+    }
+        
 });
 
 

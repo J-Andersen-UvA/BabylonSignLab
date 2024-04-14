@@ -92,9 +92,12 @@
 
               </div>
               <div class="modal-footer">
+                <!-- add checkbox to enable recording -->
+                Record and save the sentence? <input type="checkbox" id="recordCheckbox" class="form-check-input" onclick="toggleRecording()">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="button" class="btn btn-warning" onclick="cleanSentence()">Clean Sentence</button>
                   <button type="button" class="btn btn-primary" onclick="handleGlosses()">Create Sentence</button>
+                  
               </div>
           </div>
       </div>
@@ -110,7 +113,7 @@
     <button onclick="loadAnims()">Load Anims</button>
     <button onclick="playLoadedAnims()">Play Anims</button>
     <button onclick="logMeshForward()">Log Forward</button>
-    <button onclick="animationSequencing(true)">Load Animation sequence and Record them</button>
+    <button onclick="animationSequencing('glos')">Load Animation sequence and Record them</button>
     <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
     <button onclick="signBuilder()">Sign Builder</button>
 
@@ -147,6 +150,9 @@
         var animationGroupFrom;
         var animationGroupTo; 
         var zinArray = []
+        var zinRecording;
+        var recordingMethod;
+        var recordingFile;
 
         BABYLON.Database.IDBStorageEnabled = true;
 
@@ -320,9 +326,10 @@ async function animationSequencing(recording = false, keepPlaying = true) {
     // Stop any ongoing animation loops
     keepAnimating = false;
 
+    console.log(recording)
+
         //waiting modal 
-        $('#errorModal').modal('show');
-      $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
+        await showModal();
     // Stop any current animations
     if (await stopAnims(scene, loaded)) {
       if(await removeAnims(scene, loaded)){
@@ -333,21 +340,22 @@ async function animationSequencing(recording = false, keepPlaying = true) {
         // Load and initialize animations
         if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
             console.log("All animations preloaded and initialized.");
-            $('#errorModal').modal('hide');
-            $('#errorModal').hide();
-            $("#modal-backdrop").hide();
+            await hideModal();
 
-            // Play animations sequentially
-            for (let i = 0; i < loaded.animationGroups.length; i++) {
-              $('#errorModal').modal('hide');
+
+            recordingFile = zinArray.join(' ');
+            if (recording && recordingMethod == "zin")  await startRecording('renderCanvas', recordingFile); // Start recording;
+
+
+          for (let i = 0; i < loaded.animationGroups.length; i++) {
               glos = loaded.animationGroups[i].glos;
 
-          if (recording)  await startRecording('renderCanvas', glos); // Start recording;
-                const animationIndex = i; // Adjust index if needed
+            if (recording && recordingMethod != "zin")  await startRecording('renderCanvas', glos); // Start recording;
+
                 console.log(`Now playing: ${glos}`);
-                if (await playAnims(scene, loaded, animationIndex)) {
+                if (await playAnims(scene, loaded, i)) {
                     console.log(`Playing complete: ${glos}`);
-                    if (recording) stopRecording();
+                    if (recording == "glos") stopRecording();
                 } else {
                     console.log(`Failed to play animation: ${glos}`);
                 }
@@ -359,6 +367,8 @@ async function animationSequencing(recording = false, keepPlaying = true) {
                 }
                 else if(i == loaded.animationGroups.length - 1 && keepPlaying == true)
                 {
+                  if (recordingMethod == "zin" && recording) stopRecording();
+                  recording = false;
                   //here i want to restart the for loop to 0
                   i = -1;
                   console.log("restart")
@@ -371,7 +381,24 @@ async function animationSequencing(recording = false, keepPlaying = true) {
 }}
 
 
+// Function to show modal and wait for it to be shown
+function showModal() {
+  return new Promise((resolve) => {
+    $('#errorModal').modal('show').on('shown.bs.modal', () => {
+      $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
+      resolve();
+    });
+  });
+}
 
+// Function to hide modal and wait for it to be hidden
+function hideModal() {
+  return new Promise((resolve) => {
+    $('#errorModal').modal('hide').on('hidden.bs.modal', () => {
+      resolve();
+    });
+  });
+}
 
 
     </script>

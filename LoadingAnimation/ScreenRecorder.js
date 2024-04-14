@@ -2,24 +2,41 @@ let mediaRecorder;
 let recordedChunks = [];
 
 async function startRecording(canvasId, animFilename) {
-    const canvas = document.getElementById(canvasId);
-    const stream = canvas.captureStream(30); // Capture at 30 frames per second
+    return new Promise((resolve, reject) => {
+        const canvas = document.getElementById(canvasId);
+        const stream = canvas.captureStream(30); // Capture at 30 frames per second
 
-    recordedChunks = [];
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        recordedChunks = [];
+        const options = {
+            mimeType: 'video/webm',
+            videoBitsPerSecond: 8000000, // Set video bitrate to 8 Mbps
+            width: 1920, // Set video width to 1920 pixels
+            height: 1080 // Set video height to 1080 pixels
+        };
 
-    mediaRecorder.ondataavailable = function(event) {
-        if (event.data.size > 0) {
-            recordedChunks.push(event.data);
+        mediaRecorder = new MediaRecorder(stream, options);
+
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = function() {
+            onSaveRecording(animFilename); // Pass the animFilename to the onSaveRecording function
+        };
+
+        mediaRecorder.start();
+
+        mediaRecorder.onstart = () =>{
+
+            resolve();
+
         }
-    };
 
-    mediaRecorder.onstop = function() {
-        onSaveRecording(animFilename); // Pass the animFilename to the onSaveRecording function
-    };
 
-    mediaRecorder.start();
-    console.log('Recording started');
+
+    });
 }
 
 async function stopRecording() {

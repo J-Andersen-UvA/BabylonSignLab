@@ -70,7 +70,6 @@ async function playAnims(scene, loadedResults, animationIndex) {
 
             animationGroup.onAnimationEndObservable.addOnce(() => {
                 scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
-                console.log("Animation played:", animationGroup.name);
                 resolve(true);
             });
 
