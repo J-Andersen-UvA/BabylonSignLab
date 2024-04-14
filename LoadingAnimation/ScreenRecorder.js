@@ -4,7 +4,7 @@ let recordedChunks = [];
 async function startRecording(canvasId, animFilename) {
     return new Promise((resolve, reject) => {
         const canvas = document.getElementById(canvasId);
-        const stream = canvas.captureStream(30); // Capture at 30 frames per second
+        const stream = canvas.captureStream(60); // Capture at 30 frames per second
 
         recordedChunks = [];
         const options = {

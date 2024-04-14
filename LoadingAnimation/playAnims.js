@@ -30,6 +30,16 @@ async function initializeAnimationGroups(loadedResults) {
             animationGroup.from += animationGroupFrom; // for estimation of frames, we would need tool of amit to determine mid frame
             animationGroup.to -= animationGroupTo;
             animationGroup.initialized = true;
+            //console.log("Retargeting animation group: " + animationGroup.name);
+            animationGroup.targetedAnimations.forEach((targetedAnimation) =>
+            {
+                //this can be used to inject seed noise for randomization in coordinates/rotation of bones
+
+                // const newTargetBone = targetSkeleton.bones.filter((bone) => { return bone.name === targetedAnimation.target.name })[0];
+                // // //console.log("Retargeting bone: " + target.name + "->" + newTargetBone.name);
+                // targetedAnimation.target = newTargetBone ? newTargetBone.getTransformNode() : null;
+                // console.log(targetedAnimation.target);
+            });
         }
     });
     return true;
