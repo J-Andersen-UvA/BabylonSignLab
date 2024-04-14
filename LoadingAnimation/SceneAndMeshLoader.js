@@ -112,6 +112,9 @@ if (pineappleResult.meshes.length > 0) {
             var actorPositionZ = actorMesh.position.z;
             var actorPositionY = actorMesh.position.y;
 
+            //stop any animation of pineapple
+            scene.stopAnimation(pineappleMesh);
+
     
             // Bounce towards position z = 0 and make it "fly" on y-axis
             for (var frame = 0; frame <= 40; frame++) {
@@ -153,6 +156,9 @@ if (pineappleResult.meshes.length > 0) {
               // Observable to detect when the frame 40 is reached
         var observer = scene.onBeforeRenderObservable.add(() => {
             if (scene.getAnimationRatio() * 40 >= 40) {
+                //change pineapple in another mesh
+                
+
                 scene.onBeforeRenderObservable.remove(observer); // Remove observer to avoid repeated execution
                 pineappleMesh.dispose(); // Remove the mesh from the scene
                 console.log("Pineapple mesh has been removed from the scene.");
