@@ -1,4 +1,4 @@
-async function playAnims(scene, loadedResults) {
+async function playAnims(scene, loadedResults, animFilename) {
     if (!scene) {
         console.error("Scene is undefined. Unable to play animations.");
         return;
@@ -10,15 +10,22 @@ async function playAnims(scene, loadedResults) {
         return;
     }
 
+
     // Use a loop instead of forEach to await on each animation play
     for (let animationGroup of loadedResults.animationGroups) {
         // Await a promise that resolves when the animation ends
+        
+        // await window.startRecording('renderCanvas', animFilename);
         await new Promise((resolve) => {
             animationGroup.onAnimationEndObservable.addOnce(() => {
-                resolve(); 
+                resolve();
             });
 
             animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
         });
+        // await window.stopRecording();
     }
-};
+
+    // Stop recording after all animations have played
+    
+}

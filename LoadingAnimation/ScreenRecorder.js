@@ -1,5 +1,7 @@
 let mediaRecorder;
 let recordedChunks = [];
+let recordStartTime;
+let skipDuration = 330; // milliseconds to skip, approx 10 frames at 30 fps
 
 async function startRecording(canvasId, animFilename) {
     const canvas = document.getElementById(canvasId);
@@ -9,8 +11,14 @@ async function startRecording(canvasId, animFilename) {
     mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
 
     mediaRecorder.ondataavailable = function(event) {
-        if (event.data.size > 0) {
-            recordedChunks.push(event.data);
+        const currentTime = Date.now();
+        const elapsed = currentTime - recordStartTime;
+
+        // Skip the first and last 0.33 seconds of recording
+        if (elapsed > skipDuration && !mediaRecorder.paused) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
         }
     };
 
@@ -18,14 +26,21 @@ async function startRecording(canvasId, animFilename) {
         onSaveRecording(animFilename); // Pass the animFilename to the onSaveRecording function
     };
 
-    mediaRecorder.start();
-    console.log('Recording started');
+    // Delay recording start to skip first 0.33 seconds
+    setTimeout(() => {
+        mediaRecorder.start();
+        console.log('Recording started');
+        recordStartTime = Date.now(); // Initialize start time after delay
+    }, skipDuration);
 }
 
 async function stopRecording() {
     if (mediaRecorder) {
-        mediaRecorder.stop();
-        console.log('Recording stopped');
+        // Stop recording earlier to skip last 0.33 seconds
+        setTimeout(() => {
+            mediaRecorder.stop();
+            console.log('Recording stopped');
+        }, -skipDuration);
     }
 }
 
