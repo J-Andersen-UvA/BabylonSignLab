@@ -26,12 +26,16 @@ var createScene = async function (canvas) {
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyUEGLTF.gltf", scene);
-    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyFBXConverted.gltf", scene);
     const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "GlassesGuyBabylon.glb", scene);
-    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "UEfbxCOCOSgltfBABYLONglb.glb", scene);
+    var glassesGuy = result.meshes[0].getChildren()[0].getChildren()[0];
+    glassesGuy.parent = null;
+    result.meshes[0].dispose();
+    result.meshes[0] = null;
+    console.error(result);
+    console.error(scene);
 
-    var topLight = new BABYLON.PointLight("topLight", result.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
+
+    var topLight = new BABYLON.PointLight("topLight", glassesGuy.getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     topLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
     topLight.intensity = 1; // Set light intensity
     
