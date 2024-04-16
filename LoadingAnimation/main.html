@@ -127,7 +127,6 @@
     <script src="cameraController.js"></script>
     <script src="noiseGenerator.js"></script>
     <script src="signBuilder.js"></script>
-
     <script>
 //                                                                                          PINEAPPLE 
 // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -230,7 +229,12 @@ else
             console.error('Failed to initialize:', error);
         });
 
-        
+       /* async function loadAnim(animationName) {
+            if (scene && loaded) {
+                console.log("Loading animation:", animationName);
+                await getAnims(scene, loaded, animationName);
+            } else {
+                console.error('Scene or loaded variables are not set.');*/        
       });
 
       async function initialize() {
@@ -269,6 +273,12 @@ else
             {
               createCameraRotationAnimation(camera, 220, 340, 600); // Rotates from 0 to 180 degrees over 100 frames
 
+/*        async function playLoadedAnims() {
+            if (scene && loaded) {
+                
+                await playAnims(scene, loaded, 0);
+            } else {
+                console.error('Scene or loaded variables are not set.');*/
             }
 
             if(play != "no")
@@ -324,6 +334,22 @@ else
 
 
 
+
+        /*async function automateAnimations() {
+            const animations = ["BACARDI-A.glb", "AAP.glb"];
+
+            for (let i = 0; i < animations.length; i++) {
+
+                console.log("Current animation:", animations[i]); 
+
+                await loadAnim(animations[i]); // Load the current animation
+                
+                await startRecording('renderCanvas', animations[i]); // Start recording
+                console.log("Playing animation:", animations[i]); 
+                await playLoadedAnims(); 
+                await stopRecording(); // Stop recording after the animation plays
+                                
+            }*/
 // Function to play animations sequentially
 async function animationSequencing(recording = false, keepPlaying = true, frame) {
   continueLoop = false
@@ -418,6 +444,7 @@ function hideModal() {
     });
   });
 }
+
 
 
     </script>

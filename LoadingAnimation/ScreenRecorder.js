@@ -33,9 +33,6 @@ async function startRecording(canvasId, animFilename) {
             resolve();
 
         }
-
-
-
     });
 }
 

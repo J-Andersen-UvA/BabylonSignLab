@@ -4,6 +4,9 @@ async function getAnims(basePath, scene, loadedResults, glos) {
         console.error("Scene is undefined. Unable to import animations.");
         return false;
     }
+    const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+  
+    const result = await BABYLON.SceneLoader.ImportAnimationsAsync(basePath, animFilename, scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Only allow glTF and glB loaders to not play animations automatically
     BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
