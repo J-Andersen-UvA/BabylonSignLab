@@ -1,452 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Babylon.js Animation Example</title>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-  
+<head>
+  <meta charset="UTF-8" />
+  <title>Babylon.js Animation Example</title>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-      crossorigin="anonymous"
-    ></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"
-    />
-    
-    <style>
-      #renderCanvas {
-        width: 100%;
-        height: 100%;
-        touch-action: none;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Bootstrap Modal -->
-    <div
-      class="modal fade"
-      id="errorModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="errorModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="errorModalLabel">Error</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id="errorModalBody">
-            <!-- Error message goes here -->
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-          </div>
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css" />
+
+  <style>
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Bootstrap Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Error</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="errorModalBody">
+          <!-- Error message goes here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
         </div>
       </div>
     </div>
-
-
-    <div class="modal fade" id="signBuilder" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title" id="errorModalLabel">Add Gloss</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                  <input type="text" id="searchInput" class="form-control" placeholder="Search for glos" oninput="searchGlos()">
-                  <div id="glosContainer" class="mt-3"></div>
-                  <div id="selectedGlos" class="mt-3"></div>
-
-              </div>
-              <div class="modal-footer">
-                <!-- add checkbox to enable recording -->
-                Record and save the sentence? <input type="checkbox" id="recordCheckbox" class="form-check-input" onclick="toggleRecording()">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-warning" onclick="cleanSentence()">Clean Sentence</button>
-                  <button type="button" class="btn btn-primary" onclick="handleGlosses()">Create Sentence</button>
-                  
-              </div>
-          </div>
-      </div>
   </div>
-  
 
 
+  <div class="modal fade" id="signBuilder" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Add Gloss</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="searchInput" class="form-control" placeholder="Search for glos" oninput="searchGlos()">
+          <div id="glosContainer" class="mt-3"></div>
+          <div id="selectedGlos" class="mt-3"></div>
 
-    <canvas id="renderCanvas"></canvas>
+        </div>
+        <div class="modal-footer">
+          <!-- add checkbox to enable recording -->
+          Record and save the sentence? <input type="checkbox" id="recordCheckbox" class="form-check-input"
+            onclick="toggleRecording()">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-warning" onclick="cleanSentence()">Clean Sentence</button>
+          <button type="button" class="btn btn-primary" onclick="handleGlosses()">Create Sentence</button>
 
-
-    
-    <button onclick="loadAnims()">Load Anims</button>
-    <button onclick="playLoadedAnims()">Play Anims</button>
-    <button onclick="logMeshForward()">Log Forward</button>
-    <button onclick="animationSequencing('glos'); recordingMethod=''">Load Animation sequence and Record them</button>
-    <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
-    <button onclick="signBuilder()">Sign Builder</button>
-
-
-
-    <script src="SceneAndMeshLoader.js"></script>
-    <script src="AnimationLoader.js"></script>
-    <script src="playAnims.js"></script>
-    <script src="ScreenRecorder.js"></script>
-    <script src="signCollectLoader.js"></script>
-    <script src="cameraController.js"></script>
-    <script src="noiseGenerator.js"></script>
-    <script src="signBuilder.js"></script>
-    <script>
-//                                                                                          PINEAPPLE 
-// 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
-//                                                                                   GOMER, JARI, OLINE, LISA
-//                                                                                      🥑🥑🥑🥑🥑🥑🥑🥑
-
-      //SETUP YOUR DIR HERE
-    //   const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
-        const basePath = "/gebarenoverleg_media/fbx/";
-        const basePathMesh = "./MeshesAndAnims/"
-        var animations = [];
-        var urlParams = new URLSearchParams(window.location.search); 
-        let keepAnimating = true;
-        var camera;
-        var scene;
-        var engine;
-        var loaded;
-        var animationGroupFrom;
-        var animationGroupTo; 
-        var zinArray = []
-        var recordingMethod;
-        var recordingFile;
-        let continueLoop = true;
-
-        BABYLON.Database.IDBStorageEnabled = true;
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 
 
-        //URL params for gloss, thema, cameraAngle, movingCamera
-        var glos = urlParams.get("glos"); //glos=AAP
-        var thema = urlParams.get("thema"); //thema=oline
-        var cameraAngle = urlParams.get("cameraAngle"); //cameraAngle=270
-        var movingCamera = urlParams.get("movingCamera"); //movingCamera=1, if you want camera to keep moving
-        var play = urlParams.get("play"); //play=no, if you don't want to play the animation
-        var zin = urlParams.get("zin") //IK,BEN,GOMER
-        var limit = urlParams.get("limit") //limit=50, if you want to limit the amount of animations
-
-
-        if(!play)
-        {
-          play = true
-        }
-        if(!limit)
-        {
-          limit = 5
-        }
+  <canvas id="renderCanvas"></canvas>
 
 
 
-        //load animations from signcollect
-        async function loadSignCollectLabels() {
-    try {
-        if(!thema)
-        {
-            thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
+  <button onclick="loadAnims()">Load Anims</button>
+  <button onclick="playLoadedAnims()">Play Anims</button>
+  <button onclick="logMeshForward()">Log Forward</button>
+  <button onclick="animationSequencing('glos'); recordingMethod=''">Load Animation sequence and Record them</button>
+  <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
+  <button onclick="signBuilder()">Sign Builder</button>
+
+
+
+  <script src="SceneAndMeshLoader.js"></script>
+  <script src="AnimationLoader.js"></script>
+  <script src="playAnims.js"></script>
+  <script src="ScreenRecorder.js"></script>
+  <script src="signCollectLoader.js"></script>
+  <script src="cameraController.js"></script>
+  <script src="noiseGenerator.js"></script>
+  <script src="signBuilder.js"></script>
+  <script>
+    //                                                                                          PINEAPPLE 
+    // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
+    //                                                                                   GOMER, JARI, OLINE, LISA
+    //                                                                                      🥑🥑🥑🥑🥑🥑🥑🥑
+
+    //SETUP YOUR DIR HERE
+    const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+    // const basePath = "/gebarenoverleg_media/fbx/";
+    // const basePathMesh = "./MeshesAndAnims/"
+    const basePathMesh = "http://localhost:8080/MeshesAndAnims/"
+    var animations = [];
+    var urlParams = new URLSearchParams(window.location.search);
+    let keepAnimating = true;
+    var camera;
+    var scene;
+    var engine;
+    var loaded;
+    var animationGroupFrom;
+    var animationGroupTo;
+    var zinArray = []
+    var recordingMethod;
+    var recordingFile;
+    let continueLoop = true;
+
+
+    //URL params for gloss, thema, cameraAngle, movingCamera
+    var glos = urlParams.get("glos"); //glos=AAP
+    var thema = urlParams.get("thema"); //thema=oline
+    var cameraAngle = urlParams.get("cameraAngle"); //cameraAngle=270
+    var movingCamera = urlParams.get("movingCamera"); //movingCamera=1, if you want camera to keep moving
+    var play = urlParams.get("play"); //play=no, if you don't want to play the animation
+    var zin = urlParams.get("zin") //IK,BEN,GOMER
+    var limit = urlParams.get("limit") //limit=50, if you want to limit the amount of animations
+    var local = urlParams.get("local") //local=1, if you want to load animations from local folder
+
+    // No babylon database storage when testing locally
+    if (local != 1) {
+      BABYLON.Database.IDBStorageEnabled = true;
+    }
+
+    if (!play) {
+      play = true
+    }
+    if (!limit) {
+      limit = 5
+    }
+
+    //load animations from signcollect
+    async function loadSignCollectLabels() {
+      // supress loading from signcollect if we are locally testing
+      if (local == 1) {
+        return;
+      }
+
+      try {
+        if (!thema) {
+          thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
         }
         var sCArray = await signCollectLoader(thema, "themaFilter", limit); //if you want to know thema names, go to signcollect website and ask Gomer for login
         console.log("Loaded animations:", animations);
 
         for (let i = 0; i < sCArray.length; i++) {
-            animations[i] = sCArray[i].glos;
+          animations[i] = sCArray[i].glos;
         }
         console.log("Updated animations:", animations);
-    } catch (error) {
+      } catch (error) {
+        // Supress error if we are locally testing
         console.error("Error while loading animations:", error);
+      }
     }
-}
 
-if(zin)
-{
-  //we want to adjust frame from and to for blending
-  animationGroupFrom = 80;
-  animationGroupTo = 100;
+    if (zin) {
+      //we want to adjust frame from and to for blending
+      animationGroupFrom = 80;
+      animationGroupTo = 100;
 
-  //split zin with , and return as array
-  animations = zin.split(",");
-}
-else
-{
-    //we want to adjust frame from and to for blending
-    animationGroupFrom = 30; //start frame + 30
-  animationGroupTo = 30; //end frame - 30
-  loadSignCollectLabels();
-
-}
+      //split zin with , and return as array
+      animations = zin.split(",");
+    }
+    else {
+      //we want to adjust frame from and to for blending
+      animationGroupFrom = 30; //start frame + 30
+      animationGroupTo = 30; //end frame - 30
+      loadSignCollectLabels();
+    }
 
 
-      document.addEventListener("DOMContentLoaded", function () {
-
-        if (glos == null) {
-          glos = "ERROR-SC"
-        }
-        var canvas = document.getElementById("renderCanvas");
-    if (!canvas) {
+    document.addEventListener("DOMContentLoaded", function () {
+      if (glos == null) {
+        glos = "ERROR-SC"
+      }
+      var canvas = document.getElementById("renderCanvas");
+      if (!canvas) {
         throw new Error("The canvas element is not available.");
-    }
+      }
 
       initialize().catch(error => {
-            console.error('Failed to initialize:', error);
-        });
-
-       /* async function loadAnim(animationName) {
-            if (scene && loaded) {
-                console.log("Loading animation:", animationName);
-                await getAnims(scene, loaded, animationName);
-            } else {
-                console.error('Scene or loaded variables are not set.');*/        
+        console.error('Failed to initialize:', error);
       });
 
-      async function initialize() {
-        
-        [scene, engine, loaded, myAnimationGroup] = await createScene(
-          document.getElementById("renderCanvas"), basePathMesh
-        );
+      /* async function loadAnim(animationName) {
+           if (scene && loaded) {
+               console.log("Loading animation:", animationName);
+               await getAnims(scene, loaded, animationName);
+           } else {
+               console.error('Scene or loaded variables are not set.');*/
+    });
 
-        // Run the render loop
-        engine.runRenderLoop(function () {
-          scene.render();
-        });
+    async function initialize() {
 
-        // Resize the canvas when the window is resized
-        window.addEventListener("resize", function () {
-          engine.resize();
-        });
+      [scene, engine, loaded, myAnimationGroup] = await createScene(
+        document.getElementById("renderCanvas"), basePathMesh
+      );
 
-        // Load the animations and then play them
-        if (engine) {
+      // Run the render loop
+      engine.runRenderLoop(function () {
+        scene.render();
+      });
 
-          //start seed generator 
+      // Resize the canvas when the window is resized
+      window.addEventListener("resize", function () {
+        engine.resize();
+      });
 
-          // console.log(getSkeletonBones(scene))
+      // Load the animations and then play them
+      if (engine) {
 
-          console.log(scene.skeletons[0])
-          if (await getAnims(basePath, scene, loaded, glos)) {
-            if(cameraAngle)
-            {
-              createCameraRotationAnimation(camera, cameraAngle, cameraAngle, 1);
+        //start seed generator 
 
-            }
-            
+        // console.log(getSkeletonBones(scene))
 
-            if(movingCamera)
-            {
-              createCameraRotationAnimation(camera, 220, 340, 600); // Rotates from 0 to 180 degrees over 100 frames
+        console.log(scene.skeletons[0])
+        if (await getAnims(basePath, scene, loaded, glos)) {
+          if (cameraAngle) {
+            createCameraRotationAnimation(camera, cameraAngle, cameraAngle, 1);
 
-/*        async function playLoadedAnims() {
-            if (scene && loaded) {
-                
-                await playAnims(scene, loaded, 0);
-            } else {
-                console.error('Scene or loaded variables are not set.');*/
-            }
+          }
 
-            if(play != "no")
-          {
+
+          if (movingCamera) {
+            createCameraRotationAnimation(camera, 220, 340, 600); // Rotates from 0 to 180 degrees over 100 frames
+
+            /*        async function playLoadedAnims() {
+                        if (scene && loaded) {
+                            
+                            await playAnims(scene, loaded, 0);
+                        } else {
+                            console.error('Scene or loaded variables are not set.');*/
+          }
+
+          if (play != "no") {
             playLoadedAnims();
 
           }
-          }
         }
       }
+    }
 
 
 
-      //Functions for buttons
+    //Functions for buttons
 
-      //Load animation that is currntly loaded
-      function loadAnims() {
-        if (scene && loaded) {
-          getAnims(scene, loaded, glos);
-          // loadAndModifyAnimation(scene.skeletons[0], mesh, 1, loaded.animationGroup);
+    //Load animation that is currntly loaded
+    function loadAnims() {
+      if (scene && loaded) {
+        getAnims(scene, loaded, glos);
+        // loadAndModifyAnimation(scene.skeletons[0], mesh, 1, loaded.animationGroup);
 
-        } else {
-          console.error("Scene or loaded variables are not set.");
-        }
+      } else {
+        console.error("Scene or loaded variables are not set.");
       }
+    }
 
-      //Play the animation that is currently loaded
-      function playLoadedAnims() {
-    if (scene && loaded) {
-      
+    //Play the animation that is currently loaded
+    function playLoadedAnims() {
+      if (scene && loaded) {
+
         function playAnimationForever() {
-          if(!keepAnimating){
+          if (!keepAnimating) {
             return;
           }
-            playAnims(scene, loaded, 1) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
-                .then(animationPlayed => {
-                    if (animationPlayed) {
-                        // Replay the animation after 1 second timeout and after it stopped
-                        playAnimationForever();
-                    }
-                })
-                .catch(err => {
-                    console.error("Error playing animation:", err);
-                });
+          playAnims(scene, loaded, 1) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
+            .then(animationPlayed => {
+              if (animationPlayed) {
+                // Replay the animation after 1 second timeout and after it stopped
+                playAnimationForever();
+              }
+            })
+            .catch(err => {
+              console.error("Error playing animation:", err);
+            });
         }
         initializeAnimationGroups(loaded); //initialize animation with standard vars, start frame + 30 frames, end frame - 30 frames
         playAnimationForever();
-    } else {
+      } else {
         console.error("Scene or loaded variables are not set.");
+      }
     }
-}
 
 
 
 
 
-        /*async function automateAnimations() {
-            const animations = ["BACARDI-A.glb", "AAP.glb"];
+    /*async function automateAnimations() {
+        const animations = ["BACARDI-A.glb", "AAP.glb"];
 
-            for (let i = 0; i < animations.length; i++) {
+        for (let i = 0; i < animations.length; i++) {
 
-                console.log("Current animation:", animations[i]); 
+            console.log("Current animation:", animations[i]); 
 
-                await loadAnim(animations[i]); // Load the current animation
-                
-                await startRecording('renderCanvas', animations[i]); // Start recording
-                console.log("Playing animation:", animations[i]); 
-                await playLoadedAnims(); 
-                await stopRecording(); // Stop recording after the animation plays
-                                
-            }*/
-// Function to play animations sequentially
-async function animationSequencing(recording = false, keepPlaying = true, frame) {
-  continueLoop = false
-    // Stop any ongoing animation loops
+            await loadAnim(animations[i]); // Load the current animation
+            
+            await startRecording('renderCanvas', animations[i]); // Start recording
+            console.log("Playing animation:", animations[i]); 
+            await playLoadedAnims(); 
+            await stopRecording(); // Stop recording after the animation plays
+                            
+        }*/
+    // Function to play animations sequentially
+    async function animationSequencing(recording = false, keepPlaying = true, frame) {
+      continueLoop = false
+      // Stop any ongoing animation loops
 
-    if(frame == "blend")
-    {
-              //we want to adjust frames
-              animationGroupFrom = 60;
+      if (frame == "blend") {
+        //we want to adjust frames
+        animationGroupFrom = 60;
         animationGroupTo = 60;
-    }
-    else
-    {
+      }
+      else {
         //we want to adjust frames
         animationGroupFrom = 30;
         animationGroupTo = 30;
-    }
-    keepAnimating = false;
+      }
+      keepAnimating = false;
 
-    console.log(recording)
+      console.log(recording)
 
-        //waiting modal 
-        await showModal();
-    // Stop any current animations
-    if (await stopAnims(scene, loaded)) {
-      if(await removeAnims(scene, loaded)){
-        console.log(animations);
-        console.log(loaded.animationGroups);
+      //waiting modal 
+      await showModal();
+      // Stop any current animations
+      if (await stopAnims(scene, loaded)) {
+        if (await removeAnims(scene, loaded)) {
+          console.log(animations);
+          console.log(loaded.animationGroups);
 
 
-        // Load and initialize animations
-        if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
+          // Load and initialize animations
+          if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
             console.log("All animations preloaded and initialized.");
             await hideModal();
 
 
             recordingFile = zinArray.join(' ');
-            if (recording && recordingMethod == "zin")  await startRecording('renderCanvas', recordingFile); // Start recording;
+            if (recording && recordingMethod == "zin") await startRecording('renderCanvas', recordingFile); // Start recording;
 
             continueLoop = true
 
-          for (let i = 0; i < loaded.animationGroups.length && continueLoop; i++) {
+            for (let i = 0; i < loaded.animationGroups.length && continueLoop; i++) {
               glos = loaded.animationGroups[i].glos;
 
-            if (recording && recordingMethod != "zin")  await startRecording('renderCanvas', glos); // Start recording;
+              if (recording && recordingMethod != "zin") await startRecording('renderCanvas', glos); // Start recording;
 
-                console.log(`Now playing: ${glos}`);
-                if (await playAnims(scene, loaded, i)) {
-                    console.log(`Playing complete: ${glos}`);
-                    if (recording == "glos") stopRecording();
-                } else {
-                    console.log(`Failed to play animation: ${glos}`);
-                }
+              console.log(`Now playing: ${glos}`);
+              if (await playAnims(scene, loaded, i)) {
+                console.log(`Playing complete: ${glos}`);
+                if (recording == "glos") stopRecording();
+              } else {
+                console.log(`Failed to play animation: ${glos}`);
+              }
 
-                if(i == loaded.animationGroups.length - 1 && keepPlaying == false)
-                {
-                  keepAnimating = true;
-                  playLoadedAnims();
-                }
-                else if(i == loaded.animationGroups.length - 1 && keepPlaying == true)
-                {
-                  if (recordingMethod == "zin" && recording) stopRecording();
-                  recording = false;
-                  //here i want to restart the for loop to 0
-                  i = -1;
-                  console.log("restart")
-                }
-                if (!continueLoop) break;
+              if (i == loaded.animationGroups.length - 1 && keepPlaying == false) {
+                keepAnimating = true;
+                playLoadedAnims();
+              }
+              else if (i == loaded.animationGroups.length - 1 && keepPlaying == true) {
+                if (recordingMethod == "zin" && recording) stopRecording();
+                recording = false;
+                //here i want to restart the for loop to 0
+                i = -1;
+                console.log("restart")
+              }
+              if (!continueLoop) break;
             }
-        } else {
+          } else {
             console.error("Failed to preload and initialize animations.");
+          }
         }
+      }
     }
-}}
 
 
-// Function to show modal and wait for it to be shown
-function showModal() {
-  return new Promise((resolve) => {
-    $('#errorModal').modal('show').on('shown.bs.modal', () => {
-      $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
-      resolve();
-    });
-  });
-}
+    // Function to show modal and wait for it to be shown
+    function showModal() {
+      return new Promise((resolve) => {
+        $('#errorModal').modal('show').on('shown.bs.modal', () => {
+          $('#errorModalLabel').text("Please wait, loading Anims. First time always takes longer");
+          resolve();
+        });
+      });
+    }
 
-// Function to hide modal and wait for it to be hidden
-function hideModal() {
-  return new Promise((resolve) => {
-    $('#errorModal').modal('hide').on('hidden.bs.modal', () => {
-      resolve();
-    });
-  });
-}
+    // Function to hide modal and wait for it to be hidden
+    function hideModal() {
+      return new Promise((resolve) => {
+        $('#errorModal').modal('hide').on('hidden.bs.modal', () => {
+          resolve();
+        });
+      });
+    }
 
 
 
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

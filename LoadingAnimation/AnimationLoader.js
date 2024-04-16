@@ -4,9 +4,9 @@ async function getAnims(basePath, scene, loadedResults, glos) {
         console.error("Scene is undefined. Unable to import animations.");
         return false;
     }
-    const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
-  
-    const result = await BABYLON.SceneLoader.ImportAnimationsAsync(basePath, animFilename, scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
+    // basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+
+    // const result = await BABYLON.SceneLoader.ImportAnimationsAsync(basePath, animFilename, scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Only allow glTF and glB loaders to not play animations automatically
     BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
@@ -15,6 +15,7 @@ async function getAnims(basePath, scene, loadedResults, glos) {
         }
     });
 
+    console.log("Loading animations for " + glos + "...")
     // Import animations asynchronously without auto-starting them
     try {
         const result = await BABYLON.SceneLoader.ImportAnimationsAsync(
@@ -33,8 +34,8 @@ async function getAnims(basePath, scene, loadedResults, glos) {
 
         // Empty the animationGroups array in loadedResults
         loadedResults.animationGroups = [];
-        lastIndex = result.animationGroups.length -1;
-        result.animationGroups[lastIndex].glos=glos;
+        lastIndex = result.animationGroups.length - 1;
+        result.animationGroups[lastIndex].glos = glos;
 
         // Add animations to the loadedResults's animation group
         loadedResults.animationGroups = result.animationGroups;
