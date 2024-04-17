@@ -32,18 +32,27 @@ var createScene = async function (canvas, basePathMesh) {
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyUEGLTF.gltf", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyFBXConverted.gltf", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "UEfbxCOCOSgltfBABYLONglb.glb", scene);
-    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleanedExtraTransformNodes.glb", scene);
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleaned.glb", scene);
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleaned2.glb", scene);
 
     if (result.meshes.length > 0) {
         mesh = result.meshes[0]; // Get the first mesh from the imported meshes
         mesh.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(0), BABYLON.Tools.ToRadians(180), BABYLON.Tools.ToRadians(0));
     }
-    var glassesGuy = result.meshes[0].getChildren()[0].getChildren()[0];
+
+    var glassesGuy = result.meshes[0].getChildren()[0];
     glassesGuy.parent = null;
     result.meshes[0].dispose();
     result.meshes[0] = null;
     // console.error(result);
     // console.error(scene);
+    // for each mesh in glassesGuy, console error the morphTargetManager
+    // console.error(glassesGuy.getChildren());
+    // console.error(glassesGuy.meshes[0].name);
+    // console.error(glassesGuy.meshes[0].morphTargetManager._targets);
+
 
     var topLight = new BABYLON.PointLight("topLight", glassesGuy.getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     topLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
@@ -98,7 +107,7 @@ var createScene = async function (canvas, basePathMesh) {
                 keys.push(generateKey(frame, 0.1));
             }
         }
-        console.log(keys);
+        // console.log(keys);
 
         // Add bouncing animation to pineapple
         var animationBox = new BABYLON.Animation("myAnimation", "position.y", 15, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
