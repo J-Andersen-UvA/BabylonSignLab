@@ -111,7 +111,8 @@
     //                                                                                      🥑🥑🥑🥑🥑🥑🥑🥑
 
     //SETUP YOUR DIR HERE
-    const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+    // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+    const basePath = "http://localhost:8080/MeshesAndAnims/";
     // const basePath = "/gebarenoverleg_media/fbx/";
     // const basePathMesh = "./MeshesAndAnims/"
     const basePathMesh = "http://localhost:8080/MeshesAndAnims/"
@@ -139,6 +140,7 @@
     var zin = urlParams.get("zin") //IK,BEN,GOMER
     var limit = urlParams.get("limit") //limit=50, if you want to limit the amount of animations
     var local = urlParams.get("local") //local=1, if you want to load animations from local folder
+    var gltf = urlParams.get("gltf") //local=1, if you want to load animations with gltf extension
 
     // No babylon database storage when testing locally
     if (local != 1) {
@@ -237,7 +239,7 @@
         // console.log(getSkeletonBones(scene))
 
         console.log(scene.skeletons[0])
-        if (await getAnims(basePath, scene, loaded, glos)) {
+        if (await getAnims(basePath, scene, loaded, glos, gltf)) {
           if (cameraAngle) {
             createCameraRotationAnimation(camera, cameraAngle, cameraAngle, 1);
 

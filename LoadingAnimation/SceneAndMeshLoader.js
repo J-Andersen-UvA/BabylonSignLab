@@ -33,7 +33,9 @@ var createScene = async function (canvas, basePathMesh) {
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "glassesGuyFBXConverted.gltf", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "UEfbxCOCOSgltfBABYLONglb.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
-    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleanedExtraTransformNodes.glb", scene);
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleanedExtraTransformNodes.glb", scene);
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "Nemu/Nemu.glb", scene);
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "HeadTwistMesh.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleaned.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleaned2.glb", scene);
 
@@ -74,7 +76,7 @@ var createScene = async function (canvas, basePathMesh) {
     sphere.attachToBone(scene.skeletons[0].bones[4], scene.meshes[1]);
 
     // Comment this code to visualise the sphere:
-    // sphere.setEnabled(false);
+    sphere.setEnabled(false);
 
     //🍍
     const pineappleResult = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "pineapple.glb", scene);
