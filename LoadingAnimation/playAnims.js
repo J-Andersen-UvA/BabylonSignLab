@@ -57,8 +57,12 @@ async function playAnims(scene, loadedResults, animationIndex) {
     // Check the range of the animation index
     if (animationIndex >= 0 && animationIndex < loadedResults.animationGroups.length) {
         const animationGroup = loadedResults.animationGroups[animationIndex];
+        console.error(loadedResults.animationGroups[animationIndex]);
 
-        animationGroup.enableBlending = true;
+        // Only blend if there are more than one animation groups
+        if (animationIndex != loadedResults.animationGroups.length) {
+            animationGroup.enableBlending = true;
+        }
         // animationGroup.normalize = true;
 
         if (!animationGroup.targetedAnimations || animationGroup.targetedAnimations.some(ta => ta.target === null)) {
@@ -87,7 +91,7 @@ async function playAnims(scene, loadedResults, animationIndex) {
             animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
         });
     } else {
-        console.error("Invalid animation index:", animationIndex);
+        console.error("Invalid animation index:", animationIndex, "for loadedResults.animationGroups.length:", loadedResults.animationGroups.length, "animations.");
         return false;
     }
 }

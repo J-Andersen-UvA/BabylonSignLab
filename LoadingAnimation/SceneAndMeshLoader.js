@@ -34,7 +34,10 @@ var createScene = async function (canvas, basePathMesh) {
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, "http://localhost:8080/MeshesAndAnims/", "UEfbxCOCOSgltfBABYLONglb.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "GlassesGuyBabylon.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleanedExtraTransformNodes.glb", scene);
-    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "Nemu/Nemu.glb", scene);
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePath, "NemuAnimJari.gltf", scene, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, {suppressWarnings : true});
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "Nemu/newNeutral.glb", scene, BABYLON.SceneLoaderAnimationGroupLoadingMode.Clean, {suppressWarnings : true});
+    // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "Nemu/newNeutral.glb", scene);
+    const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "Nemu/NemuWithGlassesGuyBlendshapes.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "HeadTwistMesh.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleaned.glb", scene);
     // const result = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "glassesGuyBabylonCleaned2.glb", scene);
@@ -44,10 +47,13 @@ var createScene = async function (canvas, basePathMesh) {
         mesh.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(0), BABYLON.Tools.ToRadians(180), BABYLON.Tools.ToRadians(0));
     }
 
-    var glassesGuy = result.meshes[0].getChildren()[0];
-    glassesGuy.parent = null;
-    result.meshes[0].dispose();
-    result.meshes[0] = null;
+    mesh.animationGroups = [];
+
+
+    // var glassesGuy = result.meshes[0].getChildren()[0];
+    // glassesGuy.parent = null;
+    // result.meshes[0].dispose();
+    // result.meshes[0] = null;
     // console.error(result);
     // console.error(scene);
     // for each mesh in glassesGuy, console error the morphTargetManager
@@ -56,7 +62,7 @@ var createScene = async function (canvas, basePathMesh) {
     // console.error(glassesGuy.meshes[0].morphTargetManager._targets);
 
 
-    var topLight = new BABYLON.PointLight("topLight", glassesGuy.getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
+    var topLight = new BABYLON.PointLight("topLight", mesh.getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     topLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
     topLight.intensity = 1; // Set light intensity
 
