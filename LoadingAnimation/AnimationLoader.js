@@ -9,11 +9,11 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf) {
     // const result = await BABYLON.SceneLoader.ImportAnimationsAsync(basePath, animFilename, scene, false, BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync, null);
 
     // Only allow glTF and glB loaders to not play animations automatically
-    BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
-        if (loader.name === "gltf" || loader.name === "glb") {
-            loader.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
-        }
-    });
+    // BABYLON.SceneLoader.OnPluginActivatedObservable.add(function (loader) {
+    //     if (loader.name === "gltf" || loader.name === "glb") {
+    //         loader.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE;
+    //     }
+    // });
 
     // var nemu = scene.meshes[2].name;
     // console.error(loadedResults);
@@ -65,36 +65,38 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf) {
         // ***************************************** //
         // practicing blendshapes
         // Get blendshape animation data
-        // console.log("Data: ", result);
-        // // Check if animations were successfully imported
-        // if (result && result.animationGroups) {
-        //     // Iterate over each animation group
-        //     result.animationGroups.forEach(animationGroup => {
-        //         // Check if this animation group affects blendshapes
-        //         console.log(animationGroup.targetedAnimations[0].target);
-        //         if (animationGroup.targetedAnimations[0].target instanceof BABYLON.MorphTargetManager) {
-        //             // Access blendshape animations
-        //             var blendshapeManager = animationGroup.targetedAnimations[0].target;
+        console.log("Data: ", result);
+        // Check if animations were successfully imported
+        if (result && result.animationGroups) {
+            // Iterate over each animation group
+            result.animationGroups.forEach(animationGroup => {
+                // Check if this animation group affects blendshapes
+                console.log(animationGroup.targetedAnimations[0].target);
+                if (animationGroup.targetedAnimations[0].target instanceof BABYLON.MorphTargetManager) {
+                    // Access blendshape animations
+                    var blendshapeManager = animationGroup.targetedAnimations[0].target;
                     
-        //             // Iterate over blendshape animations
-        //             blendshapeManager.targets.forEach((blendshape, index) => {
-        //                 // Access keyframes for this blendshape
-        //                 var keys = blendshape.animations[0].getKeys(); // Assuming blendshape animations are stored in the first animation track
+                    // Iterate over blendshape animations
+                    blendshapeManager.targets.forEach((blendshape, index) => {
+                        // Access keyframes for this blendshape
+                        var keys = blendshape.animations[0].getKeys(); // Assuming blendshape animations are stored in the first animation track
                         
-        //                 // Log out key values for this blendshape
-        //                 console.log("Blendshape " + index + " keys:");
-        //                 keys.forEach(function(key, index) {
-        //                     console.log("Key " + index + ": Time = " + key.frame + ", Value = " + key.value);
-        //                 });
-        //             });
-        //         }
-        //     });
-        // } else {
-        //     console.error("Failed to load animations or unexpected data structure.");
-        // }
+                        // Log out key values for this blendshape
+                        console.log("Blendshape " + index + " keys:");
+                        keys.forEach(function(key, index) {
+                            console.log("Key " + index + ": Time = " + key.frame + ", Value = " + key.value);
+                        });
+                    });
+                } else {
+                    console.error("Animation group does not affect blendshapes.");
+                }
+            });
+        } else {
+            console.error("Failed to load animations or unexpected data structure.");
+        }
 
-        // // getMeshMorphs("Face");
-        // checkMorphTargetAnims(scene);
+        // getMeshMorphs("Face");
+        checkMorphTargetAnims(scene);
         // ***************************************** //
         
         return true;
@@ -143,7 +145,9 @@ function checkMorphTargetAnims(scene) {
 
             // Log information about the mesh
             console.log("Mesh: " + mesh.name);
-
+            console.log(mesh);
+            console.log("Morph Target Manager:");
+            console.log(morphTargetManager);
             // Check if the morph target manager has animations
             if (morphTargetManager.animations && morphTargetManager.animations.length > 0) {
                 // Iterate over the animations of the morph target manager

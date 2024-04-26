@@ -55,7 +55,8 @@ async function playAnims(scene, loadedResults, animationIndex) {
     }
 
     // Check the range of the animation index
-    if (animationIndex >= 0 && animationIndex < loadedResults.animationGroups.length) {
+    if (animationIndex >= 0 && animationIndex <= loadedResults.animationGroups.length) {
+        // animationIndex -= 1;
         const animationGroup = loadedResults.animationGroups[animationIndex];
         console.error(loadedResults.animationGroups[animationIndex]);
 
