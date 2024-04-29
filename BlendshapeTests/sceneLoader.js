@@ -25,7 +25,6 @@ var setCameraOnBone = function (scene, canvas, targetMesh, boneIndex=4, visualiz
     sphere.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
     sphere.attachToBone(scene.skeletons[0].bones[boneIndex], targetMesh);
 
-    // Comment this code to visualise the sphere:
     sphere.setEnabled(visualizeSphere);
 
     // Initializes an ArcRotateCamera named "camera1" in the scene.
@@ -39,15 +38,21 @@ var setCameraOnBone = function (scene, canvas, targetMesh, boneIndex=4, visualiz
     camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, 3, new BABYLON.Vector3(0, 0, -2), scene);
     camera.attachControl(canvas, true);
     camera.target = sphere;
+    camera.wheelPrecision = 50; //Mouse wheel speed
+
 };
 
-var loadAsset = async function (scene, path="http://localhost:8081/meshes/", fileName) {
-    console.log("Loading mesh from" + path + fileName + "...");
+var loadAssetMesh = async function (scene, path="http://localhost:8081/meshes/", fileName) {
+    console.log("Loading mesh from: " + path + fileName + "...");
 
     const asset = {
         fetched: await BABYLON.SceneLoader.ImportMeshAsync(null, path, fileName, scene),
         mainMesh: null,
-        faceMesh: null
+        faceMesh: null,
+        teethMesh: null,
+        eyeMesh: null,
+        morphTargetManagers: [],
+        skeletons: []
     };
 
     // stop and remove embedded animation group
@@ -60,9 +65,22 @@ var loadAsset = async function (scene, path="http://localhost:8081/meshes/", fil
     for (mesh of asset.fetched.meshes) {
         if (mesh.name === "__root__") {
             asset.mainMesh = mesh;
+        } else if (mesh.name === "newNeutral_primitive0") {
+            asset.eyeMesh = mesh;
         } else if (mesh.name === "newNeutral_primitive1") {
             asset.faceMesh = mesh;
+        } else if (mesh.name === "newNeutral_primitive2") {
+            asset.teethMesh = mesh;
         }
+
+        if (mesh.morphTargetManager) {
+            asset.morphTargetManagers.push(mesh.morphTargetManager);
+        }
+    }
+
+    // Find all skeletons
+    for (skeleton of asset.fetched.skeletons) {
+        asset.skeletons.push(skeleton);
     }
 
     if (asset.faceMesh !== null) {
@@ -71,3 +89,52 @@ var loadAsset = async function (scene, path="http://localhost:8081/meshes/", fil
 
     return asset;
 };
+
+var loadAssetAnimation = async function (scene, path="http://localhost:8081/anims/", fileName) {
+    console.log("Loading animation from: " + path + fileName + "...");
+
+    const asset = {
+        fetched: await BABYLON.SceneLoader.ImportMeshAsync(null, path, fileName, scene),
+        // fetched: await BABYLON.SceneLoader.ImportAnimationsAsync(path, fileName, scene),
+        morphTargetManagers: [],
+        animationGroups: [],
+        skeletons: []
+    };
+
+    // Find all meshes with morph target managers
+    for (mesh of asset.fetched.meshes) {
+        if (mesh.name === "__root__") {
+            asset.mainMesh = mesh;
+        } else if (mesh.morphTargetManager) {
+            asset.morphTargetManagers.push(mesh.morphTargetManager);
+        }
+    }
+
+    // Find all animation groups
+    for (animGroup of scene.animationGroups) {
+        asset.animationGroups.push(animGroup);
+    }
+
+    // Find all skeletons
+    for (skeleton of asset.fetched.skeletons) {
+        asset.skeletons.push(skeleton);
+    }
+
+    return asset;
+};
+
+var loadAssetOnlyAnimation = async function (scene, path="http://localhost:8081/anims/", fileName) {
+    console.log("Loading animation only from: " + path + fileName + "...");
+
+    const asset = {
+        fetched: await BABYLON.SceneLoader.ImportAnimationsAsync(path, fileName, scene),
+        animationGroups: []
+    };
+
+    // Find all animation groups
+    for (animGroup of scene.animationGroups) {
+        asset.animationGroups.push(animGroup);
+    }
+
+    return asset;
+}

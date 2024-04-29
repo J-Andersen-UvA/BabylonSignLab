@@ -29,9 +29,11 @@
 
 <body>
     <h1>Hello, Babylon!</h1>
-    
+
     <canvas id="renderCanvas"></canvas>
-    <button type="button" onclick="goCreateScene()">go</button>
+    <button type="button" onclick="goCreateScene()">loadScene</button>
+    <button type="button" onclick="goLoadAnim()">loadAnim</button>
+    <button type="button" onclick="onlyAnims()">loadOnlyAnim</button>
 
     <!-- Your JavaScript scripts -->
     <script src="sceneLoader.js"></script>
@@ -43,6 +45,9 @@
         var canvas = null;
         var scene = null;
         var engine = null;
+        var assetMesh = null;
+        var assetAnim = null;
+        var assetOnlyAnim = null;
 
         document.addEventListener("DOMContentLoaded", function () {
             canvas = document.getElementById("renderCanvas");
@@ -53,15 +58,94 @@
 
         async function goCreateScene() {
             [scene, engine] = await createScene(canvas, meshFile);
-            const asset = await loadAsset(scene, "http://localhost:8081/meshes/", meshFile);
-            setCameraOnBone(scene, asset, asset.mainMesh);
+            assetMesh = await loadAssetMesh(scene, "http://localhost:8081/anims/", meshFile);
+            setCameraOnBone(scene, assetMesh, assetMesh.mainMesh);
 
             // Run the render loop
             engine.runRenderLoop(function () {
                 scene.render();
             });
+            console.log(assetMesh);
         }
 
+        async function goLoadAnim() {
+            assetAnim = await loadAssetAnimation(scene, "http://localhost:8081/anims/", animFile);
+            // console.log(assetAnim.animationGroups);
+            // assetMesh.fetched.animationGroups = new BABYLON.AnimationGroup("mainAnimGroup");
+            // assetMesh.animationGroups = assetMesh.fetched.animationGroups;
+
+            // console.log(assetAnim.animationGroups[0]);
+            // assetAnim.animationGroups.forEach(anim => {
+            //     console.log(anim);
+            //     for (var { target, animation } of anim.targetedAnimations) {
+            //         console.log(target.name);
+            //         console.log(animation);
+            //         // assetMesh.animationGroups.addTargetedAnimation(animation, assetMesh.mainMesh);
+            //         let idx = assetAnim.skeletons[0].getBoneIndexByName(target.name);
+            //         newTarget = assetMesh.skeletons[0].bones[idx];
+            //         assetMesh.animationGroups.clone(animation, newTarget);
+
+            //     }
+            // });
+            // assetMesh.fetched.animationGroups.push(assetAnim.animationGroups.clone("anim", assetMesh.mainMesh, true));
+            // console.error(assetMesh.fetched.animationGroups);
+
+            // assetMesh.morphTargetManagers = assetAnim.morphTargetManagers;
+            // console.log(assetMesh.morphTargetManagers);
+            // assetMesh.faceMesh.morphTargetManager = assetAnim.faceMesh.morphTargetManager;
+            // playAnim(scene, anim);
+
+            
+            assetAnim.mainMesh.dispose();
+            // TEST
+            assetAnim.animationGroups[0].clone("anim", (target) => {
+                // First set all bone targets to the linkedTransformNode
+                let idx = assetMesh.skeletons[0].getBoneIndexByName(target.name);
+                var targetBone = assetMesh.skeletons[0].bones[idx];
+                if (targetBone) {
+                    return targetBone._linkedTransformNode;
+                }
+
+                // Then all morphtargets for the face mesh and jaw mesh
+                morphIndex = getMorphTargetIndex(assetMesh.faceMesh.morphTargetManager, target.name);
+                let mtm = assetMesh.faceMesh.morphTargetManager.getTarget(morphIndex);
+                console.log(mtm);
+
+                return mtm;
+            });
+
+            console.log(scene.animationGroups[1]);
+            console.log(scene.animationGroups[1].name);
+            console.log("playing: ", scene.animationGroups[1].isPlaying);
+            scene.animationGroups[1].play(true);
+            console.log("playing: ", scene.animationGroups[1].isPlaying);
+
+            console.log(assetMesh.skeletons[0]);
+
+        }
+
+        async function onlyAnims() {
+            assetOnlyAnim = await loadAssetOnlyAnimation(scene, "http://localhost:8081/anims/", animFile);
+            console.log(assetOnlyAnim);
+
+            // Put the animation on the mesh
+            assetOnlyAnim.fetched.morphTargetManagers.forEach(mtm => {
+                console.log(mtm);
+                assetMesh.mainMesh.morphTargetManager.addTargetedAnimation(mtm.animations[0], mtm.target);
+            });
+
+            // assetOnlyAnim.animationGroups.clone("anim", assetMesh.mainMesh, true);
+        }
+
+        function getMorphTargetIndex(morphTargetManager, targetName) {
+            for (var i = 0; i < morphTargetManager.numTargets; i++) {
+                if (morphTargetManager.getTarget(i).name === targetName) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
     </script>
 
 </body>
