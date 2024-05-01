@@ -70,88 +70,53 @@
 
         async function goLoadAnim() {
             assetAnim = await loadAssetAnimation(scene, "http://localhost:8081/anims/", animFile);
-            // console.log(assetAnim.animationGroups);
-            // assetMesh.fetched.animationGroups = new BABYLON.AnimationGroup("mainAnimGroup");
-            // assetMesh.animationGroups = assetMesh.fetched.animationGroups;
 
-            // console.log(assetAnim.animationGroups[0]);
-            // assetAnim.animationGroups.forEach(anim => {
-            //     console.log(anim);
-            //     for (var { target, animation } of anim.targetedAnimations) {
-            //         console.log(target.name);
-            //         console.log(animation);
-            //         // assetMesh.animationGroups.addTargetedAnimation(animation, assetMesh.mainMesh);
-            //         let idx = assetAnim.skeletons[0].getBoneIndexByName(target.name);
-            //         newTarget = assetMesh.skeletons[0].bones[idx];
-            //         assetMesh.animationGroups.clone(animation, newTarget);
-
-            //     }
-            // });
-            // assetMesh.fetched.animationGroups.push(assetAnim.animationGroups.clone("anim", assetMesh.mainMesh, true));
-            // console.error(assetMesh.fetched.animationGroups);
-
-            // assetMesh.morphTargetManagers = assetAnim.morphTargetManagers;
-            // console.log(assetMesh.morphTargetManagers);
-            // assetMesh.faceMesh.morphTargetManager = assetAnim.faceMesh.morphTargetManager;
-            // playAnim(scene, anim);
-
-            
+            // Dispose of the original mesh, only use the target mesh
             assetAnim.mainMesh.dispose();
 
-            var morphName = null;
-            var nextMeshReady = false;
-            var curMeshMTM = 0;
-            console.log(assetMesh.morphTargetManagers.length);
-            assetAnim.animationGroups[0].clone("anim", (target) => {
-                // First set all bone targets to the linkedTransformNode
-                let idx = assetMesh.skeletons[0].getBoneIndexByName(target.name);
-                var targetBone = assetMesh.skeletons[0].bones[idx];
-                if (targetBone) {
-                    return targetBone._linkedTransformNode;
-                }
+            retargetAnimWithBlendshapes(assetMesh, assetAnim.animationGroups[0], "anim");
 
-                // Save first name and run a check for when we encounter this name again.
-                // If we do, we know we need to go give the morphs to the next mesh.
-                if (morphName !== target.name) {
-                    morphName = target.name;
-                    nextMeshReady = false;
-                } else if (morphName === target.name && !nextMeshReady) {
-                    curMeshMTM++;
-                    if (curMeshMTM >= assetMesh.morphTargetManagers.length) {
-                        curMeshMTM = 0;
-                        nextMeshReady = true;
-                    }
-                }
-
-                // Then all morphtargets for the face mesh and jaw mesh
-                morphIndex = getMorphTargetIndex(assetMesh.morphTargetManagers[curMeshMTM], target.name);
-                let mtm = assetMesh.morphTargetManagers[curMeshMTM].getTarget(morphIndex);
-                console.log(target.name);
-
-                return mtm;
-            });
-
-            console.log(scene.animationGroups[1]);
-            console.log(scene.animationGroups[1].name);
-            console.log("playing: ", scene.animationGroups[1].isPlaying);
-            scene.animationGroups[1].play(true);
-            console.log("playing: ", scene.animationGroups[1].isPlaying);
-
-            console.log(assetMesh.skeletons[0]);
-
+            // Dispose of the original animation group and play the new one
+            scene.animationGroups[0].dispose();
+            scene.animationGroups[0].play(true);
         }
 
         async function onlyAnims() {
             assetOnlyAnim = await loadAssetOnlyAnimation(scene, "http://localhost:8081/anims/", animFile);
-            console.log(assetOnlyAnim);
 
-            // Put the animation on the mesh
-            assetOnlyAnim.fetched.morphTargetManagers.forEach(mtm => {
-                console.log(mtm);
-                assetMesh.mainMesh.morphTargetManager.addTargetedAnimation(mtm.animations[0], mtm.target);
+            retargetAnimWithBlendshapes(assetMesh, assetOnlyAnim.animationGroups[0], "anim");
+
+            // Dispose of the original animation group and play the new one
+            scene.animationGroups[0].dispose();
+            scene.animationGroups[0].play(true);
+        }
+
+        function retargetAnimWithBlendshapes(targetMesh, animGroup, cloneName="anim") {
+            var morphName = null;
+            var curMeshMTM = 0;
+            var morphIndex = 0;
+            animGroup.clone("anim", (target) => {
+                // First set all bone targets to the linkedTransformNode
+                let idx = targetMesh.skeletons[0].getBoneIndexByName(target.name);
+                var targetBone = targetMesh.skeletons[0].bones[idx];
+                if (targetBone) {
+                    return targetBone._linkedTransformNode;
+                }
+
+                // Iterate over morphManagers if we don't have a new morph target
+                // Otherwise reset the index
+                if (morphName !== target.name) {
+                    curMeshMTM = 0;
+                    morphName = target.name;
+                }
+
+                // If we don't have bones anymore, we can assume we are in the morph target section
+                morphIndex = getMorphTargetIndex(targetMesh.morphTargetManagers[curMeshMTM], target.name);
+                let mtm = targetMesh.morphTargetManagers[curMeshMTM].getTarget(morphIndex);
+                curMeshMTM++;
+
+                return mtm;
             });
-
-            // assetOnlyAnim.animationGroups.clone("anim", assetMesh.mainMesh, true);
         }
 
         function getMorphTargetIndex(morphTargetManager, targetName) {

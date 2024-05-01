@@ -105,7 +105,9 @@ var loadAssetAnimation = async function (scene, path="http://localhost:8081/anim
     for (mesh of asset.fetched.meshes) {
         if (mesh.name === "__root__") {
             asset.mainMesh = mesh;
-        } else if (mesh.morphTargetManager) {
+        }
+        
+        if (mesh.morphTargetManager) {
             asset.morphTargetManagers.push(mesh.morphTargetManager);
         }
     }
