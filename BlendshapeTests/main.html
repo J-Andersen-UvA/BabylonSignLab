@@ -58,7 +58,7 @@
 
         async function goCreateScene() {
             [scene, engine] = await createScene(canvas, meshFile);
-            assetMesh = await loadAssetMesh(scene, "http://localhost:8081/anims/", meshFile);
+            assetMesh = await loadAssetMesh(scene, "http://localhost:8081/meshes/", meshFile);
             setCameraOnBone(scene, assetMesh, assetMesh.mainMesh);
 
             // Run the render loop
@@ -97,7 +97,11 @@
 
             
             assetAnim.mainMesh.dispose();
-            // TEST
+
+            var morphName = null;
+            var nextMeshReady = false;
+            var curMeshMTM = 0;
+            console.log(assetMesh.morphTargetManagers.length);
             assetAnim.animationGroups[0].clone("anim", (target) => {
                 // First set all bone targets to the linkedTransformNode
                 let idx = assetMesh.skeletons[0].getBoneIndexByName(target.name);
@@ -106,10 +110,23 @@
                     return targetBone._linkedTransformNode;
                 }
 
+                // Save first name and run a check for when we encounter this name again.
+                // If we do, we know we need to go give the morphs to the next mesh.
+                if (morphName !== target.name) {
+                    morphName = target.name;
+                    nextMeshReady = false;
+                } else if (morphName === target.name && !nextMeshReady) {
+                    curMeshMTM++;
+                    if (curMeshMTM >= assetMesh.morphTargetManagers.length) {
+                        curMeshMTM = 0;
+                        nextMeshReady = true;
+                    }
+                }
+
                 // Then all morphtargets for the face mesh and jaw mesh
-                morphIndex = getMorphTargetIndex(assetMesh.faceMesh.morphTargetManager, target.name);
-                let mtm = assetMesh.faceMesh.morphTargetManager.getTarget(morphIndex);
-                console.log(mtm);
+                morphIndex = getMorphTargetIndex(assetMesh.morphTargetManagers[curMeshMTM], target.name);
+                let mtm = assetMesh.morphTargetManagers[curMeshMTM].getTarget(morphIndex);
+                console.log(target.name);
 
                 return mtm;
             });
