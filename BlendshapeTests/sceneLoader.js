@@ -55,10 +55,9 @@ var loadAssetMesh = async function (scene, path="http://localhost:8081/meshes/",
         skeletons: []
     };
 
-    // stop and remove embedded animation group
-    if (scene.animationGroups.length > 0) {
-        scene.animationGroups[0].stop();
-        scene.animationGroups[0].dispose();
+    // Find all animation groups
+    for (animGroup of scene.animationGroups) {
+        asset.animationGroups.push(animGroup);
     }
 
     // Find the root mesh and the face mesh for its morph target manager
@@ -83,60 +82,5 @@ var loadAssetMesh = async function (scene, path="http://localhost:8081/meshes/",
         asset.skeletons.push(skeleton);
     }
 
-    if (asset.faceMesh !== null) {
-        console.log(asset.faceMesh.morphTargetManager);
-    }
-
     return asset;
 };
-
-var loadAssetAnimation = async function (scene, path="http://localhost:8081/anims/", fileName) {
-    console.log("Loading animation from: " + path + fileName + "...");
-
-    const asset = {
-        fetched: await BABYLON.SceneLoader.ImportMeshAsync(null, path, fileName, scene),
-        // fetched: await BABYLON.SceneLoader.ImportAnimationsAsync(path, fileName, scene),
-        morphTargetManagers: [],
-        animationGroups: [],
-        skeletons: []
-    };
-
-    // Find all meshes with morph target managers
-    for (mesh of asset.fetched.meshes) {
-        if (mesh.name === "__root__") {
-            asset.mainMesh = mesh;
-        }
-        
-        if (mesh.morphTargetManager) {
-            asset.morphTargetManagers.push(mesh.morphTargetManager);
-        }
-    }
-
-    // Find all animation groups
-    for (animGroup of scene.animationGroups) {
-        asset.animationGroups.push(animGroup);
-    }
-
-    // Find all skeletons
-    for (skeleton of asset.fetched.skeletons) {
-        asset.skeletons.push(skeleton);
-    }
-
-    return asset;
-};
-
-var loadAssetOnlyAnimation = async function (scene, path="http://localhost:8081/anims/", fileName) {
-    console.log("Loading animation only from: " + path + fileName + "...");
-
-    const asset = {
-        fetched: await BABYLON.SceneLoader.ImportAnimationsAsync(path, fileName, scene),
-        animationGroups: []
-    };
-
-    // Find all animation groups
-    for (animGroup of scene.animationGroups) {
-        asset.animationGroups.push(animGroup);
-    }
-
-    return asset;
-}

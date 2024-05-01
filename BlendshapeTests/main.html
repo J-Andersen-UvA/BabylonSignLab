@@ -32,23 +32,30 @@
 
     <canvas id="renderCanvas"></canvas>
     <button type="button" onclick="goCreateScene()">loadScene</button>
-    <button type="button" onclick="goLoadAnim()">loadAnim</button>
-    <button type="button" onclick="onlyAnims()">loadOnlyAnim</button>
+    <button type="button" onclick="loadAnim()">loadAnimAndPlay</button>
 
     <!-- Your JavaScript scripts -->
     <script src="sceneLoader.js"></script>
+    <script src="animLoader.js"></script>
+    <script src="retargetAnims.js"></script>
 
     <script>
+        // User input from the URL
         var urlParams = new URLSearchParams(window.location.search);
         var meshFile = urlParams.get("mesh");
         var animFile = urlParams.get("anim");
+        
+        // Babylon globals
         var canvas = null;
         var scene = null;
         var engine = null;
+
+        // Asset globals
         var assetMesh = null;
         var assetAnim = null;
         var assetOnlyAnim = null;
 
+        // Wait for the DOM to be ready than fetch the canvas element
         document.addEventListener("DOMContentLoaded", function () {
             canvas = document.getElementById("renderCanvas");
             if (!canvas) {
@@ -56,6 +63,7 @@
             }
         });
 
+        // Load the scene and the mesh
         async function goCreateScene() {
             [scene, engine] = await createScene(canvas, meshFile);
             assetMesh = await loadAssetMesh(scene, "http://localhost:8081/meshes/", meshFile);
@@ -65,23 +73,10 @@
             engine.runRenderLoop(function () {
                 scene.render();
             });
-            console.log(assetMesh);
         }
 
-        async function goLoadAnim() {
-            assetAnim = await loadAssetAnimation(scene, "http://localhost:8081/anims/", animFile);
-
-            // Dispose of the original mesh, only use the target mesh
-            assetAnim.mainMesh.dispose();
-
-            retargetAnimWithBlendshapes(assetMesh, assetAnim.animationGroups[0], "anim");
-
-            // Dispose of the original animation group and play the new one
-            scene.animationGroups[0].dispose();
-            scene.animationGroups[0].play(true);
-        }
-
-        async function onlyAnims() {
+        // Load the animation and retarget it to the global mesh
+        async function loadAnim() {
             assetOnlyAnim = await loadAssetOnlyAnimation(scene, "http://localhost:8081/anims/", animFile);
 
             retargetAnimWithBlendshapes(assetMesh, assetOnlyAnim.animationGroups[0], "anim");
@@ -89,44 +84,6 @@
             // Dispose of the original animation group and play the new one
             scene.animationGroups[0].dispose();
             scene.animationGroups[0].play(true);
-        }
-
-        function retargetAnimWithBlendshapes(targetMesh, animGroup, cloneName="anim") {
-            var morphName = null;
-            var curMeshMTM = 0;
-            var morphIndex = 0;
-            animGroup.clone("anim", (target) => {
-                // First set all bone targets to the linkedTransformNode
-                let idx = targetMesh.skeletons[0].getBoneIndexByName(target.name);
-                var targetBone = targetMesh.skeletons[0].bones[idx];
-                if (targetBone) {
-                    return targetBone._linkedTransformNode;
-                }
-
-                // Iterate over morphManagers if we don't have a new morph target
-                // Otherwise reset the index
-                if (morphName !== target.name) {
-                    curMeshMTM = 0;
-                    morphName = target.name;
-                }
-
-                // If we don't have bones anymore, we can assume we are in the morph target section
-                morphIndex = getMorphTargetIndex(targetMesh.morphTargetManagers[curMeshMTM], target.name);
-                let mtm = targetMesh.morphTargetManagers[curMeshMTM].getTarget(morphIndex);
-                curMeshMTM++;
-
-                return mtm;
-            });
-        }
-
-        function getMorphTargetIndex(morphTargetManager, targetName) {
-            for (var i = 0; i < morphTargetManager.numTargets; i++) {
-                if (morphTargetManager.getTarget(i).name === targetName) {
-                    return i;
-                }
-            }
-
-            return -1;
         }
     </script>
 
