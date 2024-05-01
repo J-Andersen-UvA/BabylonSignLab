@@ -17,7 +17,7 @@
 */
 function retargetAnimWithBlendshapes(targetMesh, animGroup, cloneName = "anim") {
     var morphName = null;
-    var curMeshMTM = 0;
+    var curMTM = 0;
     var morphIndex = 0;
     animGroup.clone("anim", (target) => {
         // First set all bone targets to the linkedTransformNode
@@ -30,14 +30,14 @@ function retargetAnimWithBlendshapes(targetMesh, animGroup, cloneName = "anim") 
         // Iterate over morphManagers if we don't have a new morph target
         // Otherwise reset the index
         if (morphName !== target.name) {
-            curMeshMTM = 0;
+            curMTM = 0;
             morphName = target.name;
         }
 
         // If we don't have bones anymore, we can assume we are in the morph target section
-        morphIndex = getMorphTargetIndex(targetMesh.morphTargetManagers[curMeshMTM], target.name);
-        let mtm = targetMesh.morphTargetManagers[curMeshMTM].getTarget(morphIndex);
-        curMeshMTM++;
+        morphIndex = getMorphTargetIndex(targetMesh.morphTargetManagers[curMTM], target.name);
+        let mtm = targetMesh.morphTargetManagers[curMTM].getTarget(morphIndex);
+        curMTM++;
 
         return mtm;
     });

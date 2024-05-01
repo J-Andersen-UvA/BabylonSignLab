@@ -14,7 +14,7 @@ var loadAssetOnlyAnimation = async function (scene, path="http://localhost:8081/
     };
 
     // Find all animation groups
-    for (animGroup of scene.animationGroups) {
+    for (animGroup of asset.fetched.animationGroups) {
         asset.animationGroups.push(animGroup);
     }
 

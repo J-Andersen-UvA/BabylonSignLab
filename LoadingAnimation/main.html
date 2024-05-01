@@ -97,13 +97,14 @@
 
 
   <script src="SceneAndMeshLoader.js"></script>
-  <script src="AnimationLoader.js"></script>
+  <script src="AnimationFuncs.js"></script>
   <script src="playAnims.js"></script>
   <script src="ScreenRecorder.js"></script>
   <script src="signCollectLoader.js"></script>
   <script src="cameraController.js"></script>
   <script src="noiseGenerator.js"></script>
   <script src="signBuilder.js"></script>
+  <script src="retargetAnims.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -115,13 +116,14 @@
     const basePath = "http://localhost:8080/MeshesAndAnims/";
     // const basePath = "/gebarenoverleg_media/fbx/";
     // const basePathMesh = "./MeshesAndAnims/"
-    const basePathMesh = "http://localhost:8080/MeshesAndAnims/"
+    const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
     var animations = [];
     var urlParams = new URLSearchParams(window.location.search);
     let keepAnimating = true;
     var camera;
     var scene;
     var engine;
+    var canvas;
     var loaded;
     var animationGroupFrom;
     var animationGroupTo;
@@ -198,7 +200,7 @@
       if (glos == null) {
         glos = "ERROR-SC"
       }
-      var canvas = document.getElementById("renderCanvas");
+      canvas = document.getElementById("renderCanvas");
       if (!canvas) {
         throw new Error("The canvas element is not available.");
       }
@@ -206,25 +208,23 @@
       initialize().catch(error => {
         console.error('Failed to initialize:', error);
       });
-
-      /* async function loadAnim(animationName) {
-           if (scene && loaded) {
-               console.log("Loading animation:", animationName);
-               await getAnims(scene, loaded, animationName);
-           } else {
-               console.error('Scene or loaded variables are not set.');*/
     });
 
     async function initialize() {
-
-      [scene, engine, loaded, myAnimationGroup] = await createScene(
+      [scene, engine] = await createScene(
         document.getElementById("renderCanvas"), basePathMesh
       );
+      loaded = await loadAssetMesh(scene, basePathMesh);
+      rotateMesh180(loaded.mainMesh);
+      setCameraOnBone(scene, canvas, loaded.mainMesh);
+      createPineapple(scene, basePath, loaded.mainMesh);
 
       // Run the render loop
       engine.runRenderLoop(function () {
         scene.render();
       });
+
+
 
       // Resize the canvas when the window is resized
       window.addEventListener("resize", function () {
@@ -239,10 +239,14 @@
         // console.log(getSkeletonBones(scene))
 
         console.log(scene.skeletons[0])
-        if (await getAnims(basePath, scene, loaded, glos, gltf)) {
+        animAsset = await getAnims(basePath, scene, loaded, glos, gltf);
+        retargetAnimWithBlendshapes(loaded, animAsset.animationGroups[0], "anim");
+        keepOnlyAnimationGroup(scene, "anim");
+
+        if (animAsset) {
+
           if (cameraAngle) {
             createCameraRotationAnimation(camera, cameraAngle, cameraAngle, 1);
-
           }
 
 
