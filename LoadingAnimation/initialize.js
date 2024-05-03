@@ -33,17 +33,18 @@ function setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, glt
     }
 
     if (zin) {
-        //we want to adjust frame from and to for blending
-        animationGroupFrom = 80;
-        animationGroupTo = 100;
+        // We want to adjust frame from and to for blending
+        AnimationSequencer.setFrom(80);
+        AnimationSequencer.setTo(100);
 
         //split zin with , and return as array
         animations = zin.split(",");
     }
     else {
         //we want to adjust frame from and to for blending
-        animationGroupFrom = 30; //start frame + 30
-        animationGroupTo = 30; //end frame - 30
+        AnimationSequencer.setFrom(30);
+        AnimationSequencer.setTo(30);
+
         animations = loadSignCollectLabels(local, thema, limit, animations);
     }
 

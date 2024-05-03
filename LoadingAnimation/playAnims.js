@@ -32,6 +32,8 @@ function playAnimationForever(scene, loaded) {
 // of the main file. And we dont need to use a global continueloop variable.
 const AnimationSequencer = (function () {
     let continueLoop = false;
+    let animationGroupFrom = 80;
+    let animationGroupTo = 100;
 
     async function startAnimationLoop(basePath, scene, loadedMesh, animations) {
         continueLoop = true;
@@ -76,14 +78,33 @@ const AnimationSequencer = (function () {
         }
     }
 
-    async function stopAnimationLoop() {
+    function stopAnimationLoop() {
         continueLoop = false;
     }
 
+    function setAnimationGroupFrom(value) {
+        animationGroupFrom = value;
+    }
+
+    function setAnimationGroupTo(value) {
+        animationGroupTo = value;
+    }
+
+    function getAnimationGroupFrom() {
+        return animationGroupFrom;
+    }
+
+    function getAnimationGroupTo() {
+        return animationGroupTo;
+    }
 
     return {
         start: startAnimationLoop,
-        stop: stopAnimationLoop
+        stop: stopAnimationLoop,
+        setFrom: setAnimationGroupFrom,
+        setTo: setAnimationGroupTo,
+        getFrom: getAnimationGroupFrom,
+        getTo: getAnimationGroupTo
     };
 })();
 
@@ -91,8 +112,8 @@ async function initializeAnimationGroups(loadedResults) {
     loadedResults.animationGroups.forEach(animationGroup => {
         if (!animationGroup.initialized) {
             // animationGroup.normalize(0, 200); //messes up more
-            animationGroup.from += animationGroupFrom; // for estimation of frames, we would need tool of amit to determine mid frame
-            animationGroup.to -= animationGroupTo;
+            animationGroup.from += AnimationSequencer.getFrom(); // for estimation of frames, we would need tool of amit to determine mid frame
+            animationGroup.to -= AnimationSequencer.getTo();
             animationGroup.initialized = true;
             //console.log("Retargeting animation group: " + animationGroup.name);
             animationGroup.targetedAnimations.forEach((targetedAnimation) => {
