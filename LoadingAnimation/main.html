@@ -198,7 +198,7 @@
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
       // Stop any ongoing animation loops
       // continueLoop = false
-      await AnimationSequencer.stop();
+      AnimationSequencer.stop();
 
       if (frame == "blend") {
         //we want to adjust frames

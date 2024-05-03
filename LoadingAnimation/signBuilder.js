@@ -4,11 +4,7 @@ function signBuilder(){
     AnimationSequencer.stop();
 
     $("#signBuilder").modal("show")
-
-
 }
-
-
 
 document.addEventListener('DOMContentLoaded', function () {
     var glosArray = [];
