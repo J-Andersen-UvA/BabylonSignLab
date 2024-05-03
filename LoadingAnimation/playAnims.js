@@ -1,34 +1,3 @@
-// Import the BABYLON module
-
-/*
-The following functions are deprecated and should not be used.
-We are fetching this information on load of the model itself.
-
-// Get a list of loaded animations
-function getLoadedAnimations(loadedResults) {
-    const loadedAnimations = [];
-
-    // Store each animation group
-    loadedResults.animationGroups.forEach(animationGroup => {
-        loadedAnimations.push(animationGroup);
-    });
-
-    return loadedAnimations;
-}
-
-// Get a list of loaded meshes
-function getLoadedMeshes(loadedResults) {
-    const loadedMeshes = [];
-
-    // Store each mesh
-    for (let mesh in loadedResults.meshes) {
-        loadedMeshes.push(loadedResults.meshes[mesh]);
-    }
-
-    return loadedMeshes;
-}
-*/
-
 //Play the animation that is currently loaded
 function playLoadedAnims(scene, loaded) {
     if (scene && loaded) {
@@ -46,12 +15,11 @@ function playLoadedAnims(scene, loaded) {
 }
 
 function playAnimationForever(scene, loaded) {
-    console.log(scene, loaded);
     playAnims(scene, loaded, 0) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
         .then(animationPlayed => {
             if (animationPlayed) {
                 // Replay the animation after 1 second timeout and after it stopped
-                playAnimationForever();
+                playAnimationForever(scene, loaded);
             }
         })
         .catch(err => {
@@ -131,9 +99,6 @@ async function playAnims(scene, loadedResults, animationIndex) {
     }
 }
 
-
-
-
 async function stopAnims(scene, loadedResults) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
@@ -168,9 +133,9 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
         }
     }
     initializeAnimationGroups(loaded);  // Initialize all at once after loading
+
     return true;
 }
-
 
 async function removeAnims(scene, loadedResults) {
     // Validate the input parameters
@@ -184,3 +149,34 @@ async function removeAnims(scene, loadedResults) {
     console.log("All animations have been removed.");
     return true;
 }
+
+
+
+/*
+The following functions are deprecated and should not be used.
+We are fetching this information on load of the model itself.
+
+// Get a list of loaded animations
+function getLoadedAnimations(loadedResults) {
+    const loadedAnimations = [];
+
+    // Store each animation group
+    loadedResults.animationGroups.forEach(animationGroup => {
+        loadedAnimations.push(animationGroup);
+    });
+
+    return loadedAnimations;
+}
+
+// Get a list of loaded meshes
+function getLoadedMeshes(loadedResults) {
+    const loadedMeshes = [];
+
+    // Store each mesh
+    for (let mesh in loadedResults.meshes) {
+        loadedMeshes.push(loadedResults.meshes[mesh]);
+    }
+
+    return loadedMeshes;
+}
+*/
