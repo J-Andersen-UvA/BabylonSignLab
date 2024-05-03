@@ -1,4 +1,9 @@
 // Import the BABYLON module
+
+/*
+The following functions are deprecated and should not be used.
+We are fetching this information on load of the model itself.
+
 // Get a list of loaded animations
 function getLoadedAnimations(loadedResults) {
     const loadedAnimations = [];
@@ -22,6 +27,7 @@ function getLoadedMeshes(loadedResults) {
 
     return loadedMeshes;
 }
+*/
 
 async function initializeAnimationGroups(loadedResults) {
     loadedResults.animationGroups.forEach(animationGroup => {

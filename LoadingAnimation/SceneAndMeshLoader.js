@@ -142,7 +142,6 @@ function localAxes(size, mesh, scene) {
     pilot_local_axisZ.parent = mesh;
 }
 
-
 function generateKey(frame, value) {
     return {
         frame: frame,
@@ -263,13 +262,7 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
                 });
             }
         });
-
-
-
-
     }
-
-
 
     var pineappleLight = new BABYLON.PointLight("pineappleLight", pineappleResult.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
     pineappleLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
