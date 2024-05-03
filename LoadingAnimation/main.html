@@ -85,19 +85,15 @@
 
   <canvas id="renderCanvas"></canvas>
 
-
-
-  <button onclick="loadAnims()">Load Anims</button>
-  <button onclick="playLoadedAnims()">Play Anims</button>
-  <button onclick="logMeshForward()">Log Forward</button>
+  <!-- Define clickable buttons for user to interact with the website -->
   <button onclick="animationSequencing('glos'); recordingMethod=''">Load Animation sequence and Record them</button>
   <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
   <button onclick="signBuilder()">Sign Builder</button>
 
 
-
+  <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
-  <script src="AnimationFuncs.js"></script>
+  <script src="animationFetcher.js"></script>
   <script src="playAnims.js"></script>
   <script src="ScreenRecorder.js"></script>
   <script src="signCollectLoader.js"></script>
@@ -138,7 +134,7 @@
     var recordingMethod;
     var recordingFile;
     let keepAnimating = true;
-    let continueLoop = true;
+    // let continueLoop = true;
 
     // URL params for gloss, thema, cameraAngle, movingCamera (followed by an example comment)
     var urlParams = new URLSearchParams(window.location.search);
@@ -158,7 +154,7 @@
     */
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
-      [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf] = setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf);
+      [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations] = setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations);
 
       canvas = document.getElementById("renderCanvas");
       if (!canvas) {
@@ -194,54 +190,15 @@
       }
     });
 
-    if (zin) {
-      //we want to adjust frame from and to for blending
-      animationGroupFrom = 80;
-      animationGroupTo = 100;
 
-      //split zin with , and return as array
-      animations = zin.split(",");
-    }
-    else {
-      //we want to adjust frame from and to for blending
-      animationGroupFrom = 30; //start frame + 30
-      animationGroupTo = 30; //end frame - 30
-      animations = loadSignCollectLabels(local, thema, limit, animations);
-    }
-
-
-    //Functions for buttons
-
-    //Load animation that is currntly loadedMesh
-    function loadAnims() {
-      if (scene && loadedMesh) {
-        getAnims(scene, loadedMesh, glos);
-        // loadAndModifyAnimation(scene.skeletons[0], mesh, 1, loadedMesh.animationGroup);
-
-      } else {
-        console.error("Scene or loadedMesh variables are not set.");
-      }
-    }
-
-    /*async function automateAnimations() {
-        const animations = ["BACARDI-A.glb", "AAP.glb"];
-
-        for (let i = 0; i < animations.length; i++) {
-
-            console.log("Current animation:", animations[i]); 
-
-            await loadAnim(animations[i]); // Load the current animation
-            
-            await startRecording('renderCanvas', animations[i]); // Start recording
-            console.log("Playing animation:", animations[i]); 
-            await playLoadedAnims(); 
-            await stopRecording(); // Stop recording after the animation plays
-                            
-        }*/
+    /*
+      Functions for buttons start here.
+    */
     // Function to play animations sequentially
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
-      continueLoop = false
       // Stop any ongoing animation loops
+      // continueLoop = false
+      await AnimationSequencer.stop();
 
       if (frame == "blend") {
         //we want to adjust frames
@@ -262,54 +219,10 @@
       // Stop any current animations
       if (await stopAnims(scene, loadedMesh)) {
         if (await removeAnims(scene, loadedMesh)) {
-          console.log(animations);
-          console.log(loadedMesh.animationGroups);
-
-
-          // Load and initialize animations
-          if (await preloadAndInitializeAnimations(basePath, scene, loadedMesh, animations)) {
-            console.log("All animations preloaded and initialized.");
-            await hideModal();
-
-
-            recordingFile = zinArray.join(' ');
-            if (recording && recordingMethod == "zin") await startRecording('renderCanvas', recordingFile); // Start recording;
-
-            continueLoop = true
-
-            for (let i = 0; i < loadedMesh.animationGroups.length && continueLoop; i++) {
-              glos = loadedMesh.animationGroups[i].glos;
-
-              if (recording && recordingMethod != "zin") await startRecording('renderCanvas', glos); // Start recording;
-
-              console.log(`Now playing: ${glos}`);
-              if (await playAnims(scene, loadedMesh, i)) {
-                console.log(`Playing complete: ${glos}`);
-                if (recording == "glos") stopRecording();
-              } else {
-                console.log(`Failed to play animation: ${glos}`);
-              }
-
-              if (i == loadedMesh.animationGroups.length - 1 && keepPlaying == false) {
-                keepAnimating = true;
-                playLoadedAnims();
-              }
-              else if (i == loadedMesh.animationGroups.length - 1 && keepPlaying == true) {
-                if (recordingMethod == "zin" && recording) stopRecording();
-                recording = false;
-                //here i want to restart the for loop to 0
-                i = -1;
-                console.log("restart")
-              }
-              if (!continueLoop) break;
-            }
-          } else {
-            console.error("Failed to preload and initialize animations.");
-          }
+          await AnimationSequencer.start(basePath, scene, loadedMesh, animations);
         }
       }
     }
-
 
     // Function to show modal and wait for it to be shown
     function showModal() {
@@ -329,9 +242,6 @@
         });
       });
     }
-
-
-
   </script>
 </body>
 

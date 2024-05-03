@@ -1,7 +1,7 @@
 function signBuilder(){
     animations = []
-    removeAnims(scene, loaded);
-    continueLoop = false;
+    removeAnims(scene, loadedMesh);
+    AnimationSequencer.stop();
 
     $("#signBuilder").modal("show")
 

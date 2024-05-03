@@ -1,5 +1,5 @@
 
-function setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf) {
+function setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations) {
     // No babylon database storage when testing locally
     if (local != 1) {
         BABYLON.Database.IDBStorageEnabled = true;
@@ -32,7 +32,22 @@ function setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, glt
                         console.error('Scene or loaded variables are not set.');*/
     }
 
-    return [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf];
+    if (zin) {
+        //we want to adjust frame from and to for blending
+        animationGroupFrom = 80;
+        animationGroupTo = 100;
+
+        //split zin with , and return as array
+        animations = zin.split(",");
+    }
+    else {
+        //we want to adjust frame from and to for blending
+        animationGroupFrom = 30; //start frame + 30
+        animationGroupTo = 30; //end frame - 30
+        animations = loadSignCollectLabels(local, thema, limit, animations);
+    }
+
+    return [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations];
 }
 
 async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh) {

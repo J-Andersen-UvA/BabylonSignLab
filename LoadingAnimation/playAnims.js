@@ -27,6 +27,66 @@ function playAnimationForever(scene, loaded) {
         });
 }
 
+// Define an object to encapsulate animation sequencing logic
+// That way, we can have the starting and stopping of the animation in this file instead
+// of the main file. And we dont need to use a global continueloop variable.
+const AnimationSequencer = (function () {
+    let continueLoop = false;
+
+    async function startAnimationLoop(basePath, scene, loadedMesh, animations) {
+        continueLoop = true;
+
+        // Load and initialize animations
+        if (await preloadAndInitializeAnimations(basePath, scene, loadedMesh, animations)) {
+            console.log("All animations preloaded and initialized.");
+            await hideModal();
+
+            recordingFile = zinArray.join(' ');
+            if (recording && recordingMethod == "zin") await startRecording('renderCanvas', recordingFile); // Start recording;
+
+            for (let i = 0; i < loadedMesh.animationGroups.length; i++) {
+                if (!continueLoop) break;
+
+                glos = loadedMesh.animationGroups[i].glos;
+
+                if (recording && recordingMethod != "zin") await startRecording('renderCanvas', glos); // Start recording;
+
+                console.log(`Now playing: ${glos}`);
+                if (await playAnims(scene, loadedMesh, i)) {
+                    console.log(`Playing complete: ${glos}`);
+                    if (recording == "glos") stopRecording();
+                } else {
+                    console.log(`Failed to play animation: ${glos}`);
+                }
+
+                if (i == loadedMesh.animationGroups.length - 1 && keepPlaying == false) {
+                    keepAnimating = true;
+                    playLoadedAnims();
+                }
+                else if (i == loadedMesh.animationGroups.length - 1 && keepPlaying == true) {
+                    if (recordingMethod == "zin" && recording) stopRecording();
+                    recording = false;
+                    //here i want to restart the for loop to 0
+                    i = -1;
+                    console.log("restart")
+                }
+            }
+        } else {
+            console.error("Failed to preload and initialize animations.");
+        }
+    }
+
+    async function stopAnimationLoop() {
+        continueLoop = false;
+    }
+
+
+    return {
+        start: startAnimationLoop,
+        stop: stopAnimationLoop
+    };
+})();
+
 async function initializeAnimationGroups(loadedResults) {
     loadedResults.animationGroups.forEach(animationGroup => {
         if (!animationGroup.initialized) {
@@ -107,7 +167,7 @@ async function stopAnims(scene, loadedResults) {
     }
 
     // Stop animations on all meshes
-    loadedResults.meshes.forEach(mesh => {
+    loadedResults.fetched.meshes.forEach(mesh => {
         scene.stopAnimation(mesh);
     });
 
