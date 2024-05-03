@@ -45,6 +45,8 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf) {
     }
 }
 
+// Keep only a single animation group
+// This function is not done yet, we cant remove animation groups while looping over the groups
 function keepOnlyAnimationGroup(scene, groupName="anim") {
     // Remove all animation groups except the one with the specified name
     for (let i = 0; i < scene.animationGroups.length; i++) {

@@ -85,19 +85,15 @@
 
   <canvas id="renderCanvas"></canvas>
 
-
-
-  <button onclick="loadAnims()">Load Anims</button>
-  <button onclick="playLoadedAnims()">Play Anims</button>
-  <button onclick="logMeshForward()">Log Forward</button>
+  <!-- Define clickable buttons for user to interact with the website -->
   <button onclick="animationSequencing('glos'); recordingMethod=''">Load Animation sequence and Record them</button>
   <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
   <button onclick="signBuilder()">Sign Builder</button>
 
 
-
+  <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
-  <script src="AnimationFuncs.js"></script>
+  <script src="animationFetcher.js"></script>
   <script src="playAnims.js"></script>
   <script src="ScreenRecorder.js"></script>
   <script src="signCollectLoader.js"></script>
@@ -105,244 +101,114 @@
   <script src="noiseGenerator.js"></script>
   <script src="signBuilder.js"></script>
   <script src="retargetAnims.js"></script>
+  <script src="initialize.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
     //                                                                                   GOMER, JARI, OLINE, LISA
     //                                                                                      🥑🥑🥑🥑🥑🥑🥑🥑
 
-    //SETUP YOUR DIR HERE
-    // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
-    const basePath = "http://localhost:8080/MeshesAndAnims/";
-    // const basePath = "/gebarenoverleg_media/fbx/";
-    // const basePathMesh = "./MeshesAndAnims/"
-    const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
-    var animations = [];
-    var urlParams = new URLSearchParams(window.location.search);
-    let keepAnimating = true;
-    var camera;
-    var scene;
+    /*
+      Setup Dir, URL, engine, and other variables
+    */
+    // Engine vars
     var engine;
+    var scene;
     var canvas;
-    var loaded;
-    var animationGroupFrom;
-    var animationGroupTo;
+    var camera;
+    var loadedMesh;
+
+    // Directory vars (differentiated between a path for animations and a path for meshes)
+    const basePath = "http://localhost:8080/MeshesAndAnims/";
+    // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
+    // const basePath = "/gebarenoverleg_media/fbx/";
+    const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
+    // const basePathMesh = "./MeshesAndAnims/"
+
+    // Animation vars
+    var animAsset;
+    // var animationGroupFrom;
+    // var animationGroupTo;
+    var animations = [];
     var zinArray = []
     var recordingMethod;
     var recordingFile;
-    let continueLoop = true;
+    let keepAnimating = true;
+    // let continueLoop = true;
 
+    // URL params for gloss, thema, cameraAngle, movingCamera (followed by an example comment)
+    var urlParams = new URLSearchParams(window.location.search);
+    var glos = urlParams.get("glos"); // glos=AAP
+    var thema = urlParams.get("thema"); // thema=oline
+    var cameraAngle = urlParams.get("cameraAngle"); // cameraAngle=270
+    var movingCamera = urlParams.get("movingCamera"); // movingCamera=1, if you want camera to keep moving
+    var play = urlParams.get("play"); // play=no, if you don't want to play the animation
+    var zin = urlParams.get("zin") // IK,BEN,GOMER
+    var limit = urlParams.get("limit") // limit=50, if you want to limit the amount of animations
+    var gltf = urlParams.get("gltf") // gltf=1, if you want to load animations with gltf extension
+    var local = urlParams.get("local") // local=1, if you want to load animations from local folder
 
-    //URL params for gloss, thema, cameraAngle, movingCamera
-    var glos = urlParams.get("glos"); //glos=AAP
-    var thema = urlParams.get("thema"); //thema=oline
-    var cameraAngle = urlParams.get("cameraAngle"); //cameraAngle=270
-    var movingCamera = urlParams.get("movingCamera"); //movingCamera=1, if you want camera to keep moving
-    var play = urlParams.get("play"); //play=no, if you don't want to play the animation
-    var zin = urlParams.get("zin") //IK,BEN,GOMER
-    var limit = urlParams.get("limit") //limit=50, if you want to limit the amount of animations
-    var local = urlParams.get("local") //local=1, if you want to load animations from local folder
-    var gltf = urlParams.get("gltf") //gltf=1, if you want to load animations with gltf extension
-
-    // No babylon database storage when testing locally
-    if (local != 1) {
-      BABYLON.Database.IDBStorageEnabled = true;
-    }
-
-    if (!play) {
-      play = true
-    }
-    if (!limit) {
-      limit = 5
-    }
-
-    //load animations from signcollect
-    async function loadSignCollectLabels() {
-      // supress loading from signcollect if we are locally testing
-      if (local == 1) {
-        return;
-      }
-
-      try {
-        if (!thema) {
-          thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
-        }
-        var sCArray = await signCollectLoader(thema, "themaFilter", limit); //if you want to know thema names, go to signcollect website and ask Gomer for login
-        console.log("Loaded animations:", animations);
-
-        for (let i = 0; i < sCArray.length; i++) {
-          animations[i] = sCArray[i].glos;
-        }
-        console.log("Updated animations:", animations);
-      } catch (error) {
-        // Supress error if we are locally testing
-        console.error("Error while loading animations:", error);
-      }
-    }
-
-    if (zin) {
-      //we want to adjust frame from and to for blending
-      animationGroupFrom = 80;
-      animationGroupTo = 100;
-
-      //split zin with , and return as array
-      animations = zin.split(",");
-    }
-    else {
-      //we want to adjust frame from and to for blending
-      animationGroupFrom = 30; //start frame + 30
-      animationGroupTo = 30; //end frame - 30
-      loadSignCollectLabels();
-    }
-
-
+    /*
+      Initialize the engine, scene, canvas, and mesh after the DOM has loaded
+      Then play the animation if the play parameter is not set to "no"
+    */
     document.addEventListener("DOMContentLoaded", function () {
-      if (glos == null) {
-        glos = "ERROR-SC"
-      }
+      // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
+      [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations] = setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations);
+
       canvas = document.getElementById("renderCanvas");
       if (!canvas) {
         throw new Error("The canvas element is not available.");
       }
 
-      initialize().catch(error => {
-        console.error('Failed to initialize:', error);
-      });
+      // Load the scene and mesh. Then initialize the animations
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh)
+        .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
+          scene = initializedScene;
+          engine = initializedEngine;
+          loadedMesh = initializedLoadedMesh;
+          initAnims();
+        })
+        .catch(error => {
+          console.error('Failed to initialize:', error);
+        });
+
+      function initAnims() {
+        // Load the animation
+        getAnims(basePath, scene, loadedMesh, glos, gltf)
+          .then(anim => {
+            animAsset = anim;
+            retargetAnimWithBlendshapes(loadedMesh, anim.animationGroups[0], "anim");
+            // keepOnlyAnimationGroup(scene, "anim");
+            if (play != "no") {
+              playLoadedAnims(scene, loadedMesh);
+            }
+          })
+          .catch(error => {
+            console.error('Failed to load animations:', error);
+          });
+      }
     });
 
-    async function initialize() {
-      [scene, engine] = await createScene(
-        document.getElementById("renderCanvas"), basePathMesh
-      );
-      loaded = await loadAssetMesh(scene, basePathMesh);
-      rotateMesh180(loaded.mainMesh);
-      setCameraOnBone(scene, canvas, loaded.mainMesh);
-      createPineapple(scene, basePath, loaded.mainMesh);
 
-      // Run the render loop
-      engine.runRenderLoop(function () {
-        scene.render();
-      });
-
-
-
-      // Resize the canvas when the window is resized
-      window.addEventListener("resize", function () {
-        engine.resize();
-      });
-
-      // Load the animations and then play them
-      if (engine) {
-
-        //start seed generator 
-
-        // console.log(getSkeletonBones(scene))
-
-        console.log(scene.skeletons[0])
-        animAsset = await getAnims(basePath, scene, loaded, glos, gltf);
-        retargetAnimWithBlendshapes(loaded, animAsset.animationGroups[0], "anim");
-        keepOnlyAnimationGroup(scene, "anim");
-
-        if (animAsset) {
-
-          if (cameraAngle) {
-            createCameraRotationAnimation(camera, cameraAngle, cameraAngle, 1);
-          }
-
-
-          if (movingCamera) {
-            createCameraRotationAnimation(camera, 220, 340, 600); // Rotates from 0 to 180 degrees over 100 frames
-
-            /*        async function playLoadedAnims() {
-                        if (scene && loaded) {
-                            
-                            await playAnims(scene, loaded, 0);
-                        } else {
-                            console.error('Scene or loaded variables are not set.');*/
-          }
-
-          if (play != "no") {
-            playLoadedAnims();
-
-          }
-        }
-      }
-    }
-
-
-
-    //Functions for buttons
-
-    //Load animation that is currntly loaded
-    function loadAnims() {
-      if (scene && loaded) {
-        getAnims(scene, loaded, glos);
-        // loadAndModifyAnimation(scene.skeletons[0], mesh, 1, loaded.animationGroup);
-
-      } else {
-        console.error("Scene or loaded variables are not set.");
-      }
-    }
-
-    //Play the animation that is currently loaded
-    function playLoadedAnims() {
-      if (scene && loaded) {
-
-        function playAnimationForever() {
-          if (!keepAnimating) {
-            return;
-          }
-          playAnims(scene, loaded, 1) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
-            .then(animationPlayed => {
-              if (animationPlayed) {
-                // Replay the animation after 1 second timeout and after it stopped
-                playAnimationForever();
-              }
-            })
-            .catch(err => {
-              console.error("Error playing animation:", err);
-            });
-        }
-        initializeAnimationGroups(loaded); //initialize animation with standard vars, start frame + 30 frames, end frame - 30 frames
-        playAnimationForever();
-      } else {
-        console.error("Scene or loaded variables are not set.");
-      }
-    }
-
-
-
-
-
-    /*async function automateAnimations() {
-        const animations = ["BACARDI-A.glb", "AAP.glb"];
-
-        for (let i = 0; i < animations.length; i++) {
-
-            console.log("Current animation:", animations[i]); 
-
-            await loadAnim(animations[i]); // Load the current animation
-            
-            await startRecording('renderCanvas', animations[i]); // Start recording
-            console.log("Playing animation:", animations[i]); 
-            await playLoadedAnims(); 
-            await stopRecording(); // Stop recording after the animation plays
-                            
-        }*/
+    /*
+      Functions for buttons start here.
+    */
     // Function to play animations sequentially
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
-      continueLoop = false
       // Stop any ongoing animation loops
+      // continueLoop = false
+      AnimationSequencer.stop();
 
       if (frame == "blend") {
         //we want to adjust frames
-        animationGroupFrom = 60;
-        animationGroupTo = 60;
+        AnimationSequencer.SetFrom(60);
+        AnimationSequencer.SetTo(60);
       }
       else {
         //we want to adjust frames
-        animationGroupFrom = 30;
-        animationGroupTo = 30;
+        AnimationSequencer.SetFrom(30);
+        AnimationSequencer.SetTo(30);
       }
       keepAnimating = false;
 
@@ -351,56 +217,12 @@
       //waiting modal 
       await showModal();
       // Stop any current animations
-      if (await stopAnims(scene, loaded)) {
-        if (await removeAnims(scene, loaded)) {
-          console.log(animations);
-          console.log(loaded.animationGroups);
-
-
-          // Load and initialize animations
-          if (await preloadAndInitializeAnimations(basePath, scene, loaded, animations)) {
-            console.log("All animations preloaded and initialized.");
-            await hideModal();
-
-
-            recordingFile = zinArray.join(' ');
-            if (recording && recordingMethod == "zin") await startRecording('renderCanvas', recordingFile); // Start recording;
-
-            continueLoop = true
-
-            for (let i = 0; i < loaded.animationGroups.length && continueLoop; i++) {
-              glos = loaded.animationGroups[i].glos;
-
-              if (recording && recordingMethod != "zin") await startRecording('renderCanvas', glos); // Start recording;
-
-              console.log(`Now playing: ${glos}`);
-              if (await playAnims(scene, loaded, i)) {
-                console.log(`Playing complete: ${glos}`);
-                if (recording == "glos") stopRecording();
-              } else {
-                console.log(`Failed to play animation: ${glos}`);
-              }
-
-              if (i == loaded.animationGroups.length - 1 && keepPlaying == false) {
-                keepAnimating = true;
-                playLoadedAnims();
-              }
-              else if (i == loaded.animationGroups.length - 1 && keepPlaying == true) {
-                if (recordingMethod == "zin" && recording) stopRecording();
-                recording = false;
-                //here i want to restart the for loop to 0
-                i = -1;
-                console.log("restart")
-              }
-              if (!continueLoop) break;
-            }
-          } else {
-            console.error("Failed to preload and initialize animations.");
-          }
+      if (await stopAnims(scene, loadedMesh)) {
+        if (await removeAnims(scene, loadedMesh)) {
+          await AnimationSequencer.start(basePath, scene, loadedMesh, animations);
         }
       }
     }
-
 
     // Function to show modal and wait for it to be shown
     function showModal() {
@@ -420,9 +242,6 @@
         });
       });
     }
-
-
-
   </script>
 </body>
 
