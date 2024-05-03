@@ -29,6 +29,36 @@ function getLoadedMeshes(loadedResults) {
 }
 */
 
+//Play the animation that is currently loaded
+function playLoadedAnims(scene, loaded) {
+    if (scene && loaded) {
+        // Initialize animation with standard vars, start frame + 30 frames, end frame - 30 frames
+        initializeAnimationGroups(loaded);
+
+        if (keepAnimating) {
+            playAnimationForever(scene, loaded);
+        } else {
+            playAnims(scene, loaded, 0);
+        }
+    } else {
+        console.error("Scene or loaded variables are not set.");
+    }
+}
+
+function playAnimationForever(scene, loaded) {
+    console.log(scene, loaded);
+    playAnims(scene, loaded, 0) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
+        .then(animationPlayed => {
+            if (animationPlayed) {
+                // Replay the animation after 1 second timeout and after it stopped
+                playAnimationForever();
+            }
+        })
+        .catch(err => {
+            console.error("Error playing animation:", err);
+        });
+}
+
 async function initializeAnimationGroups(loadedResults) {
     loadedResults.animationGroups.forEach(animationGroup => {
         if (!animationGroup.initialized) {
@@ -37,8 +67,7 @@ async function initializeAnimationGroups(loadedResults) {
             animationGroup.to -= animationGroupTo;
             animationGroup.initialized = true;
             //console.log("Retargeting animation group: " + animationGroup.name);
-            animationGroup.targetedAnimations.forEach((targetedAnimation) =>
-            {
+            animationGroup.targetedAnimations.forEach((targetedAnimation) => {
                 //this can be used to inject seed noise for randomization in coordinates/rotation of bones
 
                 // const newTargetBone = targetSkeleton.bones.filter((bone) => { return bone.name === targetedAnimation.target.name })[0];
@@ -51,18 +80,17 @@ async function initializeAnimationGroups(loadedResults) {
     return true;
 }
 
-
-
 async function playAnims(scene, loadedResults, animationIndex) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
+        // console.log(scene, loadedResults, loadedResults.animationGroups, loadedResults.animationGroups.length);
         console.error("Invalid input. Unable to play animations.");
         return false;
     }
 
     // Check the range of the animation index
     if (animationIndex >= 0 && animationIndex <= loadedResults.animationGroups.length) {
-        animationIndex -= 1;
+        // animationIndex -= 1;
         const animationGroup = loadedResults.animationGroups[animationIndex];
         console.error(loadedResults.animationGroups[animationIndex]);
 
@@ -86,7 +114,7 @@ async function playAnims(scene, loadedResults, animationIndex) {
                         target.rotationQuaternion.normalize(); // Normalize the quaternion every frame
                     }
                 });
-            
+
             });
 
             animationGroup.onAnimationEndObservable.addOnce(() => {
