@@ -155,7 +155,7 @@
     */
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
-      [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations] = setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations);
+      [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
 
       canvas = document.getElementById("renderCanvas");
       if (!canvas) {
@@ -163,7 +163,7 @@
       }
 
       // Load the scene and mesh. Then initialize the animations
-      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, boneLock)
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, movingCamera, boneLock)
         .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
           scene = initializedScene;
           engine = initializedEngine;
