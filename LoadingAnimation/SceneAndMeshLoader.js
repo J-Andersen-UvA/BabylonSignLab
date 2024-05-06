@@ -84,7 +84,7 @@ var setLightOnMesh = function (scene, mesh) {
     topLight.intensity = 1; // Set light intensity
 }
 
-var setCameraOnBone = function (scene, canvas, targetMesh, boneIndex = 4, visualizeSphere = false) {
+var setCameraOnBone = function (scene, canvas, targetMesh, skeleton, boneIndex = 4, visualizeSphere = false) {
     /* Creating a camera that we set to the position of the bone attached to the mesh's neck bone:
     * 1. Create an empty object that we visualize as a sphere
     * 2. Attach the sphere to the bone
@@ -96,7 +96,7 @@ var setCameraOnBone = function (scene, canvas, targetMesh, boneIndex = 4, visual
     console.log("Initializing camera...");
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
     sphere.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
-    sphere.attachToBone(scene.skeletons[0].bones[boneIndex], targetMesh);
+    sphere.attachToBone(skeleton.bones[boneIndex], targetMesh);
 
     sphere.setEnabled(visualizeSphere);
 

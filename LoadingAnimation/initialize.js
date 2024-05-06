@@ -51,13 +51,14 @@ function setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, glt
     return [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations];
 }
 
-async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh) {
+async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, boneLock=4) {
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas"), basePathMesh
     );
     loadedMesh = await loadAssetMesh(scene, basePathMesh);
     rotateMesh180(loadedMesh.mainMesh);
-    setCameraOnBone(scene, canvas, loadedMesh.mainMesh);
+    if (!boneLock) { boneLock = 4; } // Make sure we have a boneLock
+    setCameraOnBone(scene, canvas, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
     createPineapple(scene, basePath, loadedMesh.mainMesh);
 
     // Run the render loop
