@@ -21,7 +21,7 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
     var morphName = null;
     var curMTM = 0;
     var morphIndex = 0;
-    animGroup.clone("anim", (target) => {
+    return animGroup.clone("anim", (target) => {
         // First set all bone targets to the linkedTransformNode
         let idx = targetMeshAsset.skeletons[0].getBoneIndexByName(target.name);
         var targetBone = targetMeshAsset.skeletons[0].bones[idx];
