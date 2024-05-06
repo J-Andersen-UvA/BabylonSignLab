@@ -1,9 +1,15 @@
 
-function setCameraParams(scene, camera, cameraAngle, movingCamera) {
+function setCameraParams(scene, camera, cameraAngle, cameraAngleBeta, movingCamera) {
     // cameraAngle is in degrees so we set it to radians
     if (cameraAngle) {
         cameraAngle = BABYLON.Tools.ToRadians(cameraAngle);
         camera.alpha = cameraAngle;
+    }
+
+    // cameraAngleBeta is in degrees so we set it to radians
+    if (cameraAngleBeta) {
+        cameraAngleBeta = BABYLON.Tools.ToRadians(cameraAngleBeta);
+        camera.beta = cameraAngleBeta;
     }
 
     if (movingCamera) {

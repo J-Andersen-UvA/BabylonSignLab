@@ -141,6 +141,7 @@
     var glos = urlParams.get("glos"); // glos=AAP
     var thema = urlParams.get("thema"); // thema=oline
     var cameraAngle = urlParams.get("cameraAngle"); // cameraAngle=270
+    var cameraAngleBeta = urlParams.get("cameraAngleBeta"); // cameraAngle=270
     var movingCamera = urlParams.get("movingCamera"); // movingCamera=1, if you want camera to keep moving
     var boneLock = urlParams.get("boneLock"); // boneLock=4, 0 == hip, 4 == neck, etc.
     var play = urlParams.get("play"); // play=no, if you don't want to play the animation
@@ -163,7 +164,7 @@
       }
 
       // Load the scene and mesh. Then initialize the animations
-      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, movingCamera, boneLock)
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock)
         .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
           scene = initializedScene;
           engine = initializedEngine;
