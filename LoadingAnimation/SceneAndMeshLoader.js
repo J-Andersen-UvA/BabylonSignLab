@@ -240,4 +240,5 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
     //🍍
 };
 
+// For testing purposes
 module.exports = { createScene, loadAssetMesh, rotateMesh180, setLightOnMesh, localAxes, generateKey, createPineapple };
