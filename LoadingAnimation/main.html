@@ -94,7 +94,7 @@
 
   <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
-  <script src="animationFetcher.js"></script>
+  <script src="animFetchAndDestroy.js"></script>
   <script src="playAnims.js"></script>
   <script src="ScreenRecorder.js"></script>
   <script src="signCollectLoader.js"></script>
@@ -169,6 +169,8 @@
           scene = initializedScene;
           engine = initializedEngine;
           loadedMesh = initializedLoadedMesh;
+          removeAnims(scene, loadedMesh);
+          removeAnims(scene, scene);
           initAnims();
         })
         .catch(error => {
@@ -180,8 +182,9 @@
         getAnims(basePath, scene, loadedMesh, glos, gltf)
           .then(anim => {
             animAsset = anim;
-            retargetAnimWithBlendshapes(loadedMesh, anim.animationGroups[0], "anim");
-            // keepOnlyAnimationGroup(scene, "anim");
+            animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+            
+            keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
             if (play != "no") {
               playLoadedAnims(scene, loadedMesh);
             }

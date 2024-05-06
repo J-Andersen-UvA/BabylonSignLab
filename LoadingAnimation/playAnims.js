@@ -63,7 +63,7 @@ const AnimationSequencer = (function () {
 
                 if (i == loadedMesh.animationGroups.length - 1 && keepPlaying == false) {
                     keepAnimating = true;
-                    playLoadedAnims();
+                    playLoadedAnims(scene, loadedMesh);
                 }
                 else if (i == loadedMesh.animationGroups.length - 1 && keepPlaying == true) {
                     if (recordingMethod == "zin" && recording) stopRecording();
@@ -141,10 +141,10 @@ async function playAnims(scene, loadedResults, animationIndex) {
     if (animationIndex >= 0 && animationIndex <= loadedResults.animationGroups.length) {
         // animationIndex -= 1;
         const animationGroup = loadedResults.animationGroups[animationIndex];
-        console.error(loadedResults.animationGroups[animationIndex]);
+        console.error(loadedResults.animationGroups);
 
         // Only blend if there are more than one animation groups
-        if (animationIndex != loadedResults.animationGroups.length) {
+        if (animationIndex+1 != loadedResults.animationGroups.length) {
             animationGroup.enableBlending = true;
         }
         // animationGroup.normalize = true;
@@ -217,20 +217,6 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
 
     return true;
 }
-
-async function removeAnims(scene, loadedResults) {
-    // Validate the input parameters
-    if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
-        console.error("Invalid input. Unable to remove animations.");
-        return false;
-    }
-
-    scene.animationGroups = []
-
-    console.log("All animations have been removed.");
-    return true;
-}
-
 
 
 /*
