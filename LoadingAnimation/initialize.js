@@ -43,8 +43,11 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     loadedMesh = await loadAssetMesh(scene, basePathMesh);
     rotateMesh180(loadedMesh.mainMesh);
     if (!boneLock) { boneLock = 4; } // Make sure we have a boneLock
-    var camera = setCameraOnBone(scene, canvas, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
-    setCameraParams(scene, camera, cameraAngle, cameraAngleBeta, movingCamera);
+
+    // Create first camera, then access it through the singleton
+    var camera = CameraController.getInstance();
+    CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
+    CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
     createPineapple(scene, basePath, loadedMesh.mainMesh);
 
     // Run the render loop
