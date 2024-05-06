@@ -38,7 +38,7 @@ function setParams(local, play, limit, glos, zin, gltf, animations) {
 
 async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4) {
     [scene, engine] = await createScene(
-        document.getElementById("renderCanvas"), basePathMesh
+        document.getElementById("renderCanvas")
     );
     loadedMesh = await loadAssetMesh(scene, basePathMesh);
     rotateMesh180(loadedMesh.mainMesh);

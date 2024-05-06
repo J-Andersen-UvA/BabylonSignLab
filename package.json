@@ -1,0 +1,12 @@
+{
+    "name": "my-awesome-test-package",
+    "version": "0.1",
+    "author": "Jari Andersen <j.andersen@uva.nl>",
+    "scripts": {
+        "test": "jest"
+    },
+    "devDependencies": {
+        "babylonjs": "^7.5.0",
+        "jsdom": "^24.0.0"
+    }
+}
