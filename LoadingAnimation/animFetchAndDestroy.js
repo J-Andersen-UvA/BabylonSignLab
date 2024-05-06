@@ -101,3 +101,5 @@ function removeAnims(scene, animHolder) {
     console.log("All animations have been removed.");
     return true;
 }
+
+module.exports = { getAnims, keepOnlyAnimationGroup, removeAnims };

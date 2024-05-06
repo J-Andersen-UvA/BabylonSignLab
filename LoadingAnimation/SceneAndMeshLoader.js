@@ -1,4 +1,4 @@
-var createScene = async function (canvas, basePathMesh) {
+async function createScene(canvas) {
     console.log("Loading Scene!");
 
     var options = {
@@ -239,3 +239,6 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
     pineappleLight.intensity = 1; // Set light intensity
     //🍍
 };
+
+// For testing purposes
+module.exports = { createScene, loadAssetMesh, rotateMesh180, setLightOnMesh, localAxes, generateKey, createPineapple };
