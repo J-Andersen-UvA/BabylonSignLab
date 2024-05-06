@@ -29,7 +29,7 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm install --save-dev jsdom babylonjs
-    # - run: npm test
+    - run: npm test
     # - uses: actions/checkout@v1
-    - name: Run Jest
-      uses: stefanoeb/jest-action@1.0.3
+    # - name: Run Jest
+    #   uses: stefanoeb/jest-action@1.0.3
