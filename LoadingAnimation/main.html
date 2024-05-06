@@ -141,6 +141,7 @@
     var glos = urlParams.get("glos"); // glos=AAP
     var thema = urlParams.get("thema"); // thema=oline
     var cameraAngle = urlParams.get("cameraAngle"); // cameraAngle=270
+    var cameraAngleBeta = urlParams.get("cameraAngleBeta"); // cameraAngle=270
     var movingCamera = urlParams.get("movingCamera"); // movingCamera=1, if you want camera to keep moving
     var boneLock = urlParams.get("boneLock"); // boneLock=4, 0 == hip, 4 == neck, etc.
     var play = urlParams.get("play"); // play=no, if you don't want to play the animation
@@ -155,7 +156,7 @@
     */
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
-      [local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations] = setParams(local, play, limit, glos, cameraAngle, movingCamera, zin, gltf, animations);
+      [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
 
       canvas = document.getElementById("renderCanvas");
       if (!canvas) {
@@ -163,7 +164,7 @@
       }
 
       // Load the scene and mesh. Then initialize the animations
-      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, boneLock)
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock)
         .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
           scene = initializedScene;
           engine = initializedEngine;
