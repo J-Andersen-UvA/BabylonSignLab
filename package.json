@@ -1,7 +1,6 @@
 {
     "name": "my-awesome-test-package",
     "version": "1.0.0",
-    "author": "Jari Andersen <j.andersen@uva.nl>",
     "scripts": {
         "test": "jest"
     },
