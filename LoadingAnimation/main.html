@@ -142,6 +142,7 @@
     var thema = urlParams.get("thema"); // thema=oline
     var cameraAngle = urlParams.get("cameraAngle"); // cameraAngle=270
     var movingCamera = urlParams.get("movingCamera"); // movingCamera=1, if you want camera to keep moving
+    var boneLock = urlParams.get("boneLock"); // boneLock=4, 0 == hip, 4 == neck, etc.
     var play = urlParams.get("play"); // play=no, if you don't want to play the animation
     var zin = urlParams.get("zin") // IK,BEN,GOMER
     var limit = urlParams.get("limit") // limit=50, if you want to limit the amount of animations
@@ -162,7 +163,7 @@
       }
 
       // Load the scene and mesh. Then initialize the animations
-      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh)
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, boneLock)
         .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
           scene = initializedScene;
           engine = initializedEngine;
