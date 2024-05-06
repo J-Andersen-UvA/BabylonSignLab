@@ -28,6 +28,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
+    - run: npm install --save-dev jsdom babylonjs
     # - run: npm test
     - uses: actions/checkout@v1
     - name: Run Jest
