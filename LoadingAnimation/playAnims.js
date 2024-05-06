@@ -32,6 +32,7 @@ function playAnimationForever(scene, loaded) {
 // of the main file. And we dont need to use a global continueloop variable.
 const AnimationSequencer = (function () {
     let continueLoop = false;
+    let notSequencing = false;
     let animationGroupFrom = 80;
     let animationGroupTo = 100;
 
@@ -98,19 +99,29 @@ const AnimationSequencer = (function () {
         return animationGroupTo;
     }
 
+    function sequencing() {
+        return notSequencing;
+    }
+
+    function setSequencing(value) {
+        notSequencing = value;
+    }
+
     return {
         start: startAnimationLoop,
         stop: stopAnimationLoop,
         setFrom: setAnimationGroupFrom,
         setTo: setAnimationGroupTo,
         getFrom: getAnimationGroupFrom,
-        getTo: getAnimationGroupTo
+        getTo: getAnimationGroupTo,
+        getSequencing: sequencing,
+        setSequencing: setSequencing
     };
 })();
 
 async function initializeAnimationGroups(loadedResults) {
     loadedResults.animationGroups.forEach(animationGroup => {
-        if (!animationGroup.initialized) {
+        if (!animationGroup.initialized && AnimationSequencer.getSequencing()) {
             // animationGroup.normalize(0, 200); //messes up more
             animationGroup.from += AnimationSequencer.getFrom(); // for estimation of frames, we would need tool of amit to determine mid frame
             animationGroup.to -= AnimationSequencer.getTo();
