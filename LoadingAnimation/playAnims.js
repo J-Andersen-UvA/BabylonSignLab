@@ -162,7 +162,7 @@ async function playAnims(scene, loadedResults, animationIndex) {
 
         if (!animationGroup.targetedAnimations || animationGroup.targetedAnimations.some(ta => ta.target === null)) {
             console.error("Animation target missing for some animations in the group:", animationGroup.name);
-            return false;
+            // return false;
         }
 
         return new Promise((resolve, reject) => {
