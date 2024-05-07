@@ -46,6 +46,12 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
 
         // If we don't have bones anymore, we can assume we are in the morph target section
         morphIndex = getMorphTargetIndex(targetMeshAsset.morphTargetManagers[curMTM], target.name);
+
+        if (morphIndex === -1) {
+            console.error("Morph target not found for target:", target.name);
+            return null;
+        }
+
         let mtm = targetMeshAsset.morphTargetManagers[curMTM].getTarget(morphIndex);
         curMTM++;
 
@@ -244,3 +250,5 @@ function getMorphTargetIndex(morphTargetManager, targetName) {
 //             "glassesGuy_mesh_7_1_MorphTarget": "morphTarget69"
 //         };
 //     }
+
+module.exports = { retargetAnimWithBlendshapes, getMorphTargetIndex };
