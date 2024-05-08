@@ -229,6 +229,34 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
     return true;
 }
 
+function signFetcher(){
+    $("#glossModal").modal("show")
+}
+
+function stopLoadAndPlayAnimation(path) {
+    console.log(path);
+    console.log(EngineController.scene);
+
+    // Stop the currently playing animation
+    stopAnims(EngineController.scene, EngineController.loadedMesh);
+
+    // Remove the currently loaded animation
+    removeAnims(EngineController.scene, loadedMesh);
+    removeAnims(EngineController.scene, scene);
+
+    // Fetch the new animation and play
+    getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullpath = true)
+        .then(anim => {
+            anim.animationGroups.push(retargetAnimWithBlendshapes(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
+            // console.log(anim.animationGroups);
+            keepOnlyAnimationGroup(EngineController.scene, anim, EngineController.loadedMesh, "freshAnim");
+            // playLoadedAnims(EngineController.scene, EngineController.loadedMesh);
+            playAnims(EngineController.scene, EngineController.loadedMesh, 0);
+        })
+        .catch(error => {
+            console.error('Failed to load animations:', error);
+        });
+}
 
 /*
 The following functions are deprecated and should not be used.

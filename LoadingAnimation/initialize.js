@@ -31,7 +31,7 @@ const ParamsManager = {
             AnimationSequencer.setFrom(30);
             AnimationSequencer.setTo(30);
 
-            this.animations = loadSignCollectLabels(thema, [], ParamsManager.limit);
+            this.animations = loadSignCollectLabels(ParamsManager.local, thema, [], ParamsManager.limit);
         }
 
         this.gltf = gltf;
@@ -39,6 +39,59 @@ const ParamsManager = {
         return [this.local, this.play, this.limit, this.glos, this.zin, this.gltf, this.animations];
     }
 };
+
+// singleton for engine related items
+const EngineController = (function () {
+    let engine = null;
+    let scene = null;
+    let loadedMesh = null;
+
+    function setEngine(newEngine) {
+        engine = newEngine;
+    }
+
+    function getEngine() {
+        return engine;
+    }
+
+    function setScene(newScene) {
+        scene = newScene;
+    }
+
+    function getScene() {
+        return scene;
+    }
+
+    function setLoadedMesh(newLoadedMesh) {
+        loadedMesh = newLoadedMesh;
+    }
+
+    function getLoadedMesh() {
+        return loadedMesh;
+    }
+
+    return {
+        set engine(newEngine) {
+            setEngine(newEngine);
+        },
+        get engine() {
+            return getEngine();
+        },
+        set scene(newScene) {
+            setScene(newScene);
+        },
+        get scene() {
+            return getScene();
+        },
+        set loadedMesh(newLoadedMesh) {
+            setLoadedMesh(newLoadedMesh);
+        },
+        get loadedMesh() {
+            return getLoadedMesh();
+        }
+    };
+})();
+
 
 // Usage:
 // ParamsManager.setParams(local, play, limit, glos, zin, gltf, animations);
