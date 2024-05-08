@@ -21,6 +21,7 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
     var morphName = null;
     var curMTM = 0;
     var morphIndex = 0;
+    var mtm;
 
     return animGroup.clone(cloneName, (target) => {
         if (!target) {
@@ -42,17 +43,17 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
             morphName = target.name;
         }
 
-        // console.log(getBlendshapeValue(morphName, NPMGlassesGuyMap()));
-
         // If we don't have bones anymore, we can assume we are in the morph target section
         morphIndex = getMorphTargetIndex(targetMeshAsset.morphTargetManagers[curMTM], target.name);
 
+        // Sometimes a mesh has extra bits of clothing like glasses, which are not part of the morph targets.
+        // Because we don't know the order of the morph targets, we need to copy these values to the previous one.
         if (morphIndex === -1) {
-            console.error("Morph target not found for target:", target.name);
-            return null;
+            if (!mtm) { return null; }
+            else { return mtm; }
         }
 
-        let mtm = targetMeshAsset.morphTargetManagers[curMTM].getTarget(morphIndex);
+        mtm = targetMeshAsset.morphTargetManagers[curMTM].getTarget(morphIndex);
         curMTM++;
 
         return mtm;
@@ -62,6 +63,11 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
 // Helper function to get the morph target index, since babylon only provides
 // morph targets through the index. Which follow GLTF standards but is not useful for us.
 function getMorphTargetIndex(morphTargetManager, targetName) {
+    if (!morphTargetManager) {
+        console.error("Morph target manager not found.");
+        return -1;
+    }
+
     for (var i = 0; i < morphTargetManager.numTargets; i++) {
         if (morphTargetManager.getTarget(i).name === targetName) {
             return i;
