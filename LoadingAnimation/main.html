@@ -129,7 +129,7 @@
     var animAsset;
     // var animationGroupFrom;
     // var animationGroupTo;
-    var animations = [];
+    // var animations = [];
     var zinArray = []
     var recordingMethod;
     var recordingFile;
@@ -156,7 +156,9 @@
     */
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
-      [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
+      // [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
+      ParamsManager.setParams(local, play, limit, glos, zin, gltf);
+
 
       canvas = document.getElementById("renderCanvas");
       if (!canvas) {
@@ -179,13 +181,13 @@
 
       function initAnims() {
         // Load the animation
-        getAnims(basePath, scene, loadedMesh, glos, gltf)
+        getAnims(basePath, scene, loadedMesh, ParamsManager.glos, ParamsManager.gltf)
           .then(anim => {
             animAsset = anim;
             animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
             console.log(animAsset.animationGroups);
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
-            if (play != "no") {
+            if (ParamsManager.play != "no") {
               playLoadedAnims(scene, loadedMesh);
             }
           })
@@ -225,7 +227,7 @@
       // Stop any current animations
       if (await stopAnims(scene, loadedMesh)) {
         if (await removeAnims(scene, loadedMesh)) {
-          await AnimationSequencer.start(basePath, scene, loadedMesh, animations);
+          await AnimationSequencer.start(basePath, scene, loadedMesh, ParamsManager.animations);
         }
       }
     }

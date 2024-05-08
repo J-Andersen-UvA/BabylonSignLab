@@ -15,9 +15,9 @@ async function signCollectLoader(thema, filter, limit) {
 }
 
 //load animations from signcollect
-async function loadSignCollectLabels(local, thema, limit, animations) {
+async function loadSignCollectLabels(thema, animations, limit = 5) {
     // supress loading from signcollect if we are locally testing
-    if (local == 1) {
+    if (ParamsManager.local == 1) {
         return;
     }
 
