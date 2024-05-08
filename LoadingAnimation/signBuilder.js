@@ -1,5 +1,5 @@
 function signBuilder(){
-    animations = []
+    ParamsManager.animations = [];
     removeAnims(scene, loadedMesh);
     AnimationSequencer.stop();
 
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to handle the final array of glosses
     window.handleGlosses = function () {
-        animations = zinArray
+        ParamsManager.animations = zinArray;
 
 
 

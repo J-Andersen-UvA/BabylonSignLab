@@ -1,40 +1,84 @@
+const ParamsManager = {
+    local: null,
+    play: null,
+    limit: null,
+    glos: null,
+    zin: null,
+    gltf: null,
+    animations: null,
 
-function setParams(local, play, limit, glos, zin, gltf, animations) {
-    // No babylon database storage when testing locally
-    if (local != 1) {
-        BABYLON.Database.IDBStorageEnabled = true;
+    setParams(local, play, limit, glos, zin, gltf) {
+        // No babylon database storage when testing locally
+        if (local !== 1) {
+            BABYLON.Database.IDBStorageEnabled = true;
+        }
+
+        this.local = local;
+        this.play = play !== undefined ? play : true; // Set play if we have play, else default to true
+        this.limit = limit !== undefined ? limit : 5; // Set limit if we have limit, else default to 5
+        this.glos = glos !== null ? glos : "ERROR-SC"; // Set glos if we have glos, else default to "ERROR-SC"
+        this.zin = zin;
+
+        if (zin) {
+            // We want to adjust frame from and to for blending
+            AnimationSequencer.setFrom(80);
+            AnimationSequencer.setTo(100);
+
+            // Split zin with , and return as array
+            this.animations = zin.split(",");
+        } else {
+            // We want to adjust frame from and to for blending
+            AnimationSequencer.setFrom(30);
+            AnimationSequencer.setTo(30);
+
+            this.animations = loadSignCollectLabels(thema, [], ParamsManager.limit);
+        }
+
+        this.gltf = gltf;
+
+        return [this.local, this.play, this.limit, this.glos, this.zin, this.gltf, this.animations];
     }
+};
 
-    if (!play) {
-        play = true;
-    }
+// Usage:
+// ParamsManager.setParams(local, play, limit, glos, zin, gltf, animations);
 
-    if (!limit) {
-        limit = 5;
-    }
+// function setParams(local, play, limit, glos, zin, gltf, animations) {
+//     // No babylon database storage when testing locally
+//     if (local != 1) {
+//         BABYLON.Database.IDBStorageEnabled = true;
+//     }
 
-    if (glos == null) {
-        glos = "ERROR-SC";
-    }
+//     if (!play) {
+//         play = true;
+//     }
 
-    if (zin) {
-        // We want to adjust frame from and to for blending
-        AnimationSequencer.setFrom(80);
-        AnimationSequencer.setTo(100);
+//     if (!limit) {
+//         limit = 5;
+//     }
 
-        //split zin with , and return as array
-        animations = zin.split(",");
-    }
-    else {
-        //we want to adjust frame from and to for blending
-        AnimationSequencer.setFrom(30);
-        AnimationSequencer.setTo(30);
+//     if (glos == null) {
+//         glos = "ERROR-SC";
+//     }
 
-        animations = loadSignCollectLabels(local, thema, limit, animations);
-    }
+//     if (zin) {
+//         // We want to adjust frame from and to for blending
+//         AnimationSequencer.setFrom(80);
+//         AnimationSequencer.setTo(100);
 
-    return [local, play, limit, glos, zin, gltf, animations];
-}
+//         //split zin with , and return as array
+//         animations = zin.split(",");
+//     }
+//     else {
+//         //we want to adjust frame from and to for blending
+//         AnimationSequencer.setFrom(30);
+//         AnimationSequencer.setTo(30);
+
+//         animations = loadSignCollectLabels(local, thema, limit, animations);
+//     }
+
+//     return [local, play, limit, glos, zin, gltf, animations];
+// }
 
 async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4) {
     [scene, engine] = await createScene(
