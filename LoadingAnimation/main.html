@@ -183,7 +183,7 @@
           .then(anim => {
             animAsset = anim;
             animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
-            
+            console.log(animAsset.animationGroups);
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
             if (play != "no") {
               playLoadedAnims(scene, loadedMesh);
