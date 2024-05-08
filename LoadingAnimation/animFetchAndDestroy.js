@@ -1,17 +1,21 @@
 // Import animations for BabylonJS
-async function getAnims(basePath, scene, loadedResults, glos, gltf) {
+async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = false) {
     if (!scene) {
         console.error("Scene is undefined. Unable to import animations.");
         return false;
     }
 
-    console.log("Loading animations for " + glos + "...")
-    // Import animations asynchronously without auto-starting them
+    if (fullPath === false) {
+        console.log("Loading animations for " + glos + "...");
+    } else {
+        console.log("Loading animations for " + basePath + "...");
+    }
+        // Import animations asynchronously without auto-starting them
     try {
         const result = {
             fetched: await BABYLON.SceneLoader.ImportAnimationsAsync(
                 basePath,
-                glos + (gltf == 1 ? ".gltf" : ".glb"),
+                (fullPath === false ? glos + (gltf == 1 ? ".gltf" : ".glb") : ""),
                 scene,
                 false,
                 BABYLON.SceneLoaderAnimationGroupLoadingMode.Sync,
