@@ -2,6 +2,10 @@ var CameraController = (function() {
     // Private variables and functions
     var camera;
     
+    function setNearPlane(value) {
+        camera.minZ = value;
+    }
+
     function setAngleAlpha(angle) {
         camera.alpha = BABYLON.Tools.ToRadians(angle);
     }
@@ -110,6 +114,7 @@ var CameraController = (function() {
         setAngleBeta: setAngleBeta,
         getAngleAlpha: getAngleAlpha,
         getAngleBeta: getAngleBeta,
+        setNearPlane: setNearPlane,
         getInstance: function(scene, canvas) {
             if (!camera) {
                 console.log("Initializing camera instance...");
