@@ -138,11 +138,18 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
         document.getElementById("renderCanvas")
     );
     loadedMesh = await loadAssetMesh(scene, basePathMesh);
+
+    // for all meshes in disable frustum culling
+    loadedMesh.fetched.meshes.forEach(mesh => {
+        mesh.alwaysSelectAsActiveMesh = true;
+    });
+
     rotateMesh180(loadedMesh.mainMesh);
     if (!boneLock) { boneLock = 4; } // Make sure we have a boneLock
 
     // Create first camera, then access it through the singleton
     var camera = CameraController.getInstance();
+    CameraController.setNearPlane(0.1);
     CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
     createPineapple(scene, basePath, loadedMesh.mainMesh);
