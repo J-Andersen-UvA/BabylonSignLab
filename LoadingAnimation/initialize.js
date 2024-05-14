@@ -150,7 +150,8 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     // Create first camera, then access it through the singleton
     var camera = CameraController.getInstance();
     CameraController.setNearPlane(0.1);
-    CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
+    // CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
+    CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=true, setLocalAxis=true);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
     createPineapple(scene, basePath, loadedMesh.mainMesh);
 

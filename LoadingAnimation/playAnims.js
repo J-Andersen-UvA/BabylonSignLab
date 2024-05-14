@@ -143,7 +143,6 @@ async function initializeAnimationGroups(loadedResults) {
 async function playAnims(scene, loadedResults, animationIndex) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
-        // console.log(scene, loadedResults, loadedResults.animationGroups, loadedResults.animationGroups.length);
         console.error("Invalid input. Unable to play animations.");
         return false;
     }
@@ -155,7 +154,7 @@ async function playAnims(scene, loadedResults, animationIndex) {
         console.error(loadedResults.animationGroups);
 
         // Only blend if there are more than one animation groups
-        if (animationIndex+1 != loadedResults.animationGroups.length) {
+        if (animationIndex + 1 != loadedResults.animationGroups.length) {
             animationGroup.enableBlending = true;
         }
         // animationGroup.normalize = true;
@@ -229,7 +228,7 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
     return true;
 }
 
-function signFetcher(){
+function signFetcher() {
     $("#glossModal").modal("show")
 }
 
@@ -245,13 +244,31 @@ function stopLoadAndPlayAnimation(path) {
     removeAnims(EngineController.scene, scene);
 
     // Fetch the new animation and play
-    getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullpath = true)
+    getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullPath = true)
         .then(anim => {
+            console.log("getAnims returned: ", anim);
             anim.animationGroups.push(retargetAnimWithBlendshapes(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
             // console.log(anim.animationGroups);
             keepOnlyAnimationGroup(EngineController.scene, anim, EngineController.loadedMesh, "freshAnim");
-            // playLoadedAnims(EngineController.scene, EngineController.loadedMesh);
-            playAnims(EngineController.scene, EngineController.loadedMesh, 0);
+            EngineController.loadedMesh.animationGroups = anim.animationGroups;
+            EngineController.scene.animationGroups = anim.animationGroups;
+
+            playAnims(EngineController.scene, EngineController.loadedMesh, 0, true);
+            
+            // wait for the EngineController.loadedMesh.animationGroups[0].isPlaying to start playing then refocus camera
+            new Promise(resolve => {
+                const checkPlaying = setInterval(() => {
+                    if (EngineController.loadedMesh.animationGroups[0].isPlaying) {
+                        clearInterval(checkPlaying);
+                        resolve();
+                    }
+                }, 1000);
+            }).then(() => {
+                // Code to execute after the animation starts playing
+                // Refocus the camera
+                CameraController.reFocusCamera();
+            });
+
         })
         .catch(error => {
             console.error('Failed to load animations:', error);

@@ -88,7 +88,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="text" id="glossInput" class="form-control" placeholder="Enter gloss">
+          <input type="text" id="glossInput" class="form-control" placeholder="Enter gloss" value="http://localhost:8080/MeshesAndAnims/HeadTwist3NPM.glb">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -107,6 +107,8 @@
   <button onclick="signBuilder()">Sign Builder</button>
   <button onclick="signFetcher()">New Gloss</button>
   <button onclick="addAngle(10)">test add 10 degrees</button>
+  <button onclick="getAngle()">get angle</button>
+  <button onclick="CameraController.reFocusCamera(loadedMesh)">set angle</button>
 
 
   <!-- Fetch all scripts that we use -->

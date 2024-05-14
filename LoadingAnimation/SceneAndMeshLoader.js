@@ -84,7 +84,7 @@ var setLightOnMesh = function (scene, mesh) {
     topLight.intensity = 1; // Set light intensity
 }
 
-//Local Axes
+// Local Axes function, made for debugging purposes. We can view the local axes of a mesh.
 function localAxes(size, mesh, scene) {
     var pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
@@ -110,6 +110,16 @@ function localAxes(size, mesh, scene) {
     pilot_local_axisX.parent = mesh;
     pilot_local_axisY.parent = mesh;
     pilot_local_axisZ.parent = mesh;
+}
+
+function hipsFrontAxes(size, mesh, scene) {
+    var localHipsAxis = BABYLON.Mesh.CreateLines("localHipsAxis", [
+        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, -size, 0), new BABYLON.Vector3(-0.05 * size, -size * 0.95, 0),
+        new BABYLON.Vector3(0, -size, 0), new BABYLON.Vector3(0.05 * size, -size * 0.95, 0)
+    ], scene);
+    localHipsAxis.color = new BABYLON.Color3(0, 1, 1);
+    
+    localHipsAxis.parent = mesh;
 }
 
 function generateKey(frame, value) {
@@ -241,4 +251,4 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
 };
 
 // For testing purposes
-module.exports = { createScene, loadAssetMesh, rotateMesh180, setLightOnMesh, localAxes, generateKey, createPineapple };
+module.exports = { createScene, loadAssetMesh, rotateMesh180, setLightOnMesh, localAxes, hipsFrontAxes, generateKey, createPineapple };
