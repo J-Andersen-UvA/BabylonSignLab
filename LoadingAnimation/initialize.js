@@ -7,7 +7,7 @@ const ParamsManager = {
     gltf: null,
     animations: null,
 
-    setParams(local, play, limit, glos, zin, gltf) {
+    setParams(local, play, limit, glos, zin, gltf, recording) {
         // No babylon database storage when testing locally
         if (local !== 1) {
             BABYLON.Database.IDBStorageEnabled = true;
@@ -15,7 +15,7 @@ const ParamsManager = {
 
         this.local = local;
         this.play = play !== undefined ? play : true; // Set play if we have play, else default to true
-        this.limit = limit !== undefined ? limit : 5; // Set limit if we have limit, else default to 5
+        this.limit = limit !== null ? limit : 5; // Set limit if we have limit, else default to 5
         this.glos = glos !== null ? glos : "ERROR-SC"; // Set glos if we have glos, else default to "ERROR-SC"
         this.zin = zin;
 
@@ -26,12 +26,16 @@ const ParamsManager = {
 
             // Split zin with , and return as array
             this.animations = zin.split(",");
+            console.log("Animations zin loaded:", this.animations);
         } else {
             // We want to adjust frame from and to for blending
             AnimationSequencer.setFrom(30);
             AnimationSequencer.setTo(30);
 
-            this.animations = loadSignCollectLabels(ParamsManager.local, thema, [], ParamsManager.limit);
+            this.animations = loadSignCollectLabels(this.local, thema, this.limit, []).then((animations) => {
+                console.log("Animations loaded:", animations);
+                return animations;
+            });
         }
 
         this.gltf = gltf;
@@ -137,7 +141,7 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
-    loadedMesh = await loadAssetMesh(scene, basePathMesh);
+    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="scene.glb");
 
     // for all meshes in disable frustum culling
     loadedMesh.fetched.meshes.forEach(mesh => {

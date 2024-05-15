@@ -36,7 +36,7 @@ const AnimationSequencer = (function () {
     let animationGroupFrom = 80;
     let animationGroupTo = 100;
 
-    async function startAnimationLoop(basePath, scene, loadedMesh, animations) {
+    async function startAnimationLoop(basePath, scene, loadedMesh, animations, recording=false, recordingMethod="", keepPlaying=false) {
         continueLoop = true;
 
         // Load and initialize animations
@@ -50,14 +50,14 @@ const AnimationSequencer = (function () {
             for (let i = 0; i < loadedMesh.animationGroups.length; i++) {
                 if (!continueLoop) break;
 
-                glos = loadedMesh.animationGroups[i].glos;
+                glos = loadedMesh.animationGroups[i].name;
 
                 if (recording && recordingMethod != "zin") await startRecording('renderCanvas', glos); // Start recording;
 
                 console.log(`Now playing: ${glos}`);
                 if (await playAnims(scene, loadedMesh, i)) {
                     console.log(`Playing complete: ${glos}`);
-                    if (recording == "glos") stopRecording();
+                    if (recording == "glos") { stopRecording(); }
                 } else {
                     console.log(`Failed to play animation: ${glos}`);
                 }
@@ -77,6 +77,8 @@ const AnimationSequencer = (function () {
         } else {
             console.error("Failed to preload and initialize animations.");
         }
+
+        return;
     }
 
     function stopAnimationLoop() {
@@ -120,6 +122,7 @@ const AnimationSequencer = (function () {
 })();
 
 async function initializeAnimationGroups(loadedResults) {
+    console.log("Initializing animation groups...");
     loadedResults.animationGroups.forEach(animationGroup => {
         if (!animationGroup.initialized && AnimationSequencer.getSequencing()) {
             // animationGroup.normalize(0, 200); //messes up more
@@ -165,21 +168,24 @@ async function playAnims(scene, loadedResults, animationIndex) {
             // return false;
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
+            animationGroup.onAnimationEndObservable.addOnce(() => {
+                console.log("Animation has ended.");
+                scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
+                resolve(true);
+            });
+
             // Listen to the animation frame advance
             scene.onBeforeRenderObservable.add((eventData, eventState) => {
                 animationGroup.targetedAnimations.forEach(targetedAnimation => {
+                    // if null skip
+                    if (!targetedAnimation.target) { return; }
+
                     const target = targetedAnimation.target;
                     if (target && target.rotationQuaternion) {
                         target.rotationQuaternion.normalize(); // Normalize the quaternion every frame
                     }
                 });
-
-            });
-
-            animationGroup.onAnimationEndObservable.addOnce(() => {
-                scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
-                resolve(true);
             });
 
             // Play the animation
@@ -191,11 +197,25 @@ async function playAnims(scene, loadedResults, animationIndex) {
     }
 }
 
-async function stopAnims(scene, loadedResults) {
+function stopAnims(scene, loadedResults) {
     // Validate the input parameters
-    if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
-        console.error("Invalid input. Unable to stop animations.");
+    if (!scene) {
+        console.error("Scene is not set.");
+        console.log(scene);
         return false;
+    }
+
+    if (!loadedResults) {
+        console.error("loadedResults is not set.");
+        console.log(loadedResults);
+        return false;
+    }
+
+    if (!loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
+        console.error("AnimGroups are not present and therefore already stopped.");
+        console.log(loadedResults.animationGroups);
+        console.log(loadedResults.animationGroups.length);
+        return true;
     }
 
     // Stop animations on all meshes
@@ -206,6 +226,14 @@ async function stopAnims(scene, loadedResults) {
     // If you need to stop animation groups as well
     loadedResults.animationGroups.forEach(animationGroup => {
         animationGroup.stop();  // Stops the animation group from playing
+        // For each animation in the group stop it as well
+        animationGroup.targetedAnimations.forEach(targetedAnimation => {
+            scene.stopAnimation(targetedAnimation.target);
+        });
+    });
+
+    scene.animationGroups.forEach(animationGroup => {
+        animationGroup.stop();  // Stops the animation group from playing
     });
 
     console.log("All animations have been stopped.");
@@ -214,10 +242,15 @@ async function stopAnims(scene, loadedResults) {
 
 
 async function preloadAndInitializeAnimations(basePath, scene, loaded, animations) {
+    if (animations === null || animations.length === 0) {
+        console.error("No animations to preload.");
+        return false;
+    }
+
     for (let animName of animations) {
         console.log(`Preloading animation: ${animName}`);
         //add animName to modal 
-        $('#errorModalLabel').append(`<p>${animName}</p>`)
+        $('#errorModalLabel').append(`<p>${animName}</p>`);
         let result = await getAnims(basePath, scene, loaded, animName);
         if (!result) {
             console.error(`Failed to preload animation: ${animName}`);
