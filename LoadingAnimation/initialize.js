@@ -141,7 +141,7 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
-    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="scene.glb");
+    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb");
 
     // for all meshes in disable frustum culling
     loadedMesh.fetched.meshes.forEach(mesh => {

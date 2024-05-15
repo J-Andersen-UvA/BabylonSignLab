@@ -1,21 +1,21 @@
 //Play the animation that is currently loaded
-function playLoadedAnims(scene, loaded) {
+async function playLoadedAnims(scene, loaded) {
     if (scene && loaded) {
         // Initialize animation with standard vars, start frame + 30 frames, end frame - 30 frames
-        initializeAnimationGroups(loaded);
+        await initializeAnimationGroups(loaded);
 
         if (keepAnimating) {
-            playAnimationForever(scene, loaded);
+            await playAnimationForever(scene, loaded);
         } else {
-            playAnims(scene, loaded, 0);
+            await playAnims(scene, loaded, 0);
         }
     } else {
         console.error("Scene or loaded variables are not set.");
     }
 }
 
-function playAnimationForever(scene, loaded) {
-    playAnims(scene, loaded, 0) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
+async function playAnimationForever(scene, loaded) {
+    await playAnims(scene, loaded, 0) // 1 comes from loaded animation of gloss, 0 comes from baked-in animation of avatar.glb
         .then(animationPlayed => {
             if (animationPlayed) {
                 // Replay the animation after 1 second timeout and after it stopped
@@ -176,20 +176,21 @@ async function playAnims(scene, loadedResults, animationIndex) {
             });
 
             // Listen to the animation frame advance
-            scene.onBeforeRenderObservable.add((eventData, eventState) => {
-                animationGroup.targetedAnimations.forEach(targetedAnimation => {
-                    // if null skip
-                    if (!targetedAnimation.target) { return; }
-
-                    const target = targetedAnimation.target;
-                    if (target && target.rotationQuaternion) {
-                        target.rotationQuaternion.normalize(); // Normalize the quaternion every frame
-                    }
-                });
-            });
+            // scene.onBeforeRenderObservable.add((eventData, eventState) => {
+            //     animationGroup.targetedAnimations.forEach(targetedAnimation => {
+            //         // if null skip
+            //         if (targetedAnimation.target) { 
+            //             const target = targetedAnimation.target;
+            //             if (target && target.rotationQuaternion) {
+            //                 target.rotationQuaternion.normalize(); // Normalize the quaternion every frame
+            //             }
+            //         }
+            //     });
+            // });
 
             // Play the animation
-            animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+            // animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+            animationGroup.start();
         });
     } else {
         console.error("Invalid animation index:", animationIndex, "for loadedResults.animationGroups.length:", loadedResults.animationGroups.length, "animations.");
@@ -257,7 +258,7 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
             return false;
         }
     }
-    initializeAnimationGroups(loaded);  // Initialize all at once after loading
+    await initializeAnimationGroups(loaded);  // Initialize all at once after loading
 
     return true;
 }
