@@ -145,7 +145,12 @@
     // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
     // const basePath = "/gebarenoverleg_media/fbx/"; 
     const basePath = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/"
-    const basePathMesh = "http://localhost:8080/MeshesAndAnims/"
+
+    let basePathMesh = "http://localhost:8080/MeshesAndAnims/";
+if (window.location.hostname === "leffe.science.uva.nl") {
+    basePathMesh = "./MeshesAndAnims/";
+}
+    
     // const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
     // const basePathMesh = "./MeshesAndAnims/"
 
@@ -153,12 +158,12 @@
     var animAsset;
     // var animationGroupFrom;
     // var animationGroupTo;
-    // var animations = [];
     var zinArray = []
     var recordingMethod;
     var recordingFile;
     let keepAnimating = true;
     // let continueLoop = true;
+    var animations = []
 
     // URL params for gloss, thema, cameraAngle, movingCamera (followed by an example comment)
     var urlParams = new URLSearchParams(window.location.search);

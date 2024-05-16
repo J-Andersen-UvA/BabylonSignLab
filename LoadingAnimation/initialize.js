@@ -5,7 +5,7 @@ const ParamsManager = {
     glos: null,
     zin: null,
     gltf: null,
-    animations: null,
+    animations: [],
 
     setParams(local, play, limit, glos, zin, gltf, recording) {
         // No babylon database storage when testing locally
@@ -32,10 +32,9 @@ const ParamsManager = {
             AnimationSequencer.setFrom(30);
             AnimationSequencer.setTo(30);
 
-            this.animations = loadSignCollectLabels(this.local, thema, this.limit, []).then((animations) => {
+            console.log(loadSignCollectLabels(this.local, thema, this.limit, this.animations).then((animations) => {
                 console.log("Animations loaded:", animations);
-                return animations;
-            });
+            }));
         }
 
         this.gltf = gltf;
@@ -166,7 +165,7 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     // CameraController.setCameraOnBone(scene, loadedMesh.root, loadedMesh.skeletons[0], boneIndex=boneLock);
     CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=true, setLocalAxis=true);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
-    createPineapple(scene, basePath, loadedMesh.root);
+    createPineapple(scene, basePathMesh, loadedMesh.root);
 
     // Run the render loop
     engine.runRenderLoop(function () {
