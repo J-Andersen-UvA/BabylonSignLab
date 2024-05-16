@@ -60,7 +60,7 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
 
         // Add animations to the loadedResults's animation group
         loadedResults.animationGroups = result.animationGroups;
-        console.log("Animations loaded for " + glos);
+        console.log("Animations loaded for " + (fullPath ? basePath : glos));
 
         return result;
     } catch (error) {

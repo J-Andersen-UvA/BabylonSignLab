@@ -22,7 +22,7 @@ async function createScene(canvas) {
     return [scene, engine];
 };
 
-var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/", fileName="Nemu.glb") {
+var loadAssetMesh = async function (scene, path = "http://localhost:8080/MeshesAndAnims/Nemu/", fileName = "Nemu.glb", bugger = true) {
     console.log("Loading mesh from: " + path + fileName + "...");
 
     // TODO: When clicking the button twice, the animation first frame loads
@@ -32,9 +32,15 @@ var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/
         }
     });
 
+    if (bugger) {
+        scene.debugLayer.show({
+            embedMode: true
+        });
+    }
+
     const asset = {
         fetched: await BABYLON.SceneLoader.ImportMeshAsync(null, path, fileName, scene),
-        mainMesh: null,
+        root: null,
         faceMesh: null,
         teethMesh: null,
         eyeMesh: null,
@@ -50,8 +56,10 @@ var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/
 
     // Find the root mesh and the face mesh for its morph target manager
     for (mesh of asset.fetched.meshes) {
+        mesh.position = new BABYLON.Vector3(0,0,0);
+
         if (mesh.name === "__root__") {
-            asset.mainMesh = mesh;
+            asset.root = mesh;
         } else if (mesh.name === "newNeutral_primitive0") {
             asset.eyeMesh = mesh;
         } else if (mesh.name === "newNeutral_primitive1") {
@@ -75,6 +83,12 @@ var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/
 
 var rotateMesh180 = function (mesh) {
     mesh.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(0), BABYLON.Tools.ToRadians(180), BABYLON.Tools.ToRadians(0));
+
+    // WE SHOULD ROT LIKE THIS:
+    // loadedMesh.fetched.meshes.forEach(mesh => {
+    //     mesh.rotate(BABYLON.Axis.X, Math.PI/4, BABYLON.Space.WORLD);
+    //     console.log("rotted");
+    // });
 };
 
 
@@ -84,7 +98,7 @@ var setLightOnMesh = function (scene, mesh) {
     topLight.intensity = 1; // Set light intensity
 }
 
-//Local Axes
+// Local Axes function, made for debugging purposes. We can view the local axes of a mesh.
 function localAxes(size, mesh, scene) {
     var pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
@@ -110,6 +124,16 @@ function localAxes(size, mesh, scene) {
     pilot_local_axisX.parent = mesh;
     pilot_local_axisY.parent = mesh;
     pilot_local_axisZ.parent = mesh;
+}
+
+function hipsFrontAxes(size, mesh, scene) {
+    var localHipsAxis = BABYLON.Mesh.CreateLines("localHipsAxis", [
+        new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, -size, 0), new BABYLON.Vector3(-0.05 * size, -size * 0.95, 0),
+        new BABYLON.Vector3(0, -size, 0), new BABYLON.Vector3(0.05 * size, -size * 0.95, 0)
+    ], scene);
+    localHipsAxis.color = new BABYLON.Color3(0, 1, 1);
+
+    localHipsAxis.parent = mesh;
 }
 
 function generateKey(frame, value) {
@@ -241,4 +265,4 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
 };
 
 // For testing purposes
-module.exports = { createScene, loadAssetMesh, rotateMesh180, setLightOnMesh, localAxes, generateKey, createPineapple };
+module.exports = { createScene, loadAssetMesh, rotateMesh180, setLightOnMesh, localAxes, hipsFrontAxes, generateKey, createPineapple };

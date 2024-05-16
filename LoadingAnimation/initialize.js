@@ -141,22 +141,32 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
-    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb");
+    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb", bugger=true);
+    // loadedMesh = await loadAssetMesh(scene);
 
     // for all meshes in disable frustum culling
     loadedMesh.fetched.meshes.forEach(mesh => {
         mesh.alwaysSelectAsActiveMesh = true;
     });
 
-    rotateMesh180(loadedMesh.mainMesh);
+    // console.log(loadedMesh);
+
+    // console.log("BAAAAAAAAAAAAA");
+    // rotateMesh180(loadedMesh.root);
+    // loadedMesh.fetched.meshes.forEach(mesh => {
+    //     mesh.rotate(BABYLON.Axis.X, Math.PI/2, BABYLON.Space.WORLD);
+    //     console.log("rotted");
+    // });
+
     if (!boneLock) { boneLock = 4; } // Make sure we have a boneLock
 
     // Create first camera, then access it through the singleton
     var camera = CameraController.getInstance();
     CameraController.setNearPlane(0.1);
-    CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
+    // CameraController.setCameraOnBone(scene, loadedMesh.root, loadedMesh.skeletons[0], boneIndex=boneLock);
+    CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=true, setLocalAxis=true);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
-    createPineapple(scene, basePath, loadedMesh.mainMesh);
+    createPineapple(scene, basePath, loadedMesh.root);
 
     // Run the render loop
     engine.runRenderLoop(function () {
