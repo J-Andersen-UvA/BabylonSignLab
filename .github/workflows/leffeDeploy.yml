@@ -22,6 +22,7 @@ jobs:
       env:
         SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
+        echo $SSHPASS
         sshpass -e scp -o stricthostkeychecking=no -P 8022 -r . jari@leffe.science.uva.nl:/web/jari/BabylonSignLab
 
     - name: SSH and Deploy using sshpass
