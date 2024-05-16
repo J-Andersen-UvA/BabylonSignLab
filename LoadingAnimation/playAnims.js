@@ -35,6 +35,7 @@ const AnimationSequencer = (function () {
     let notSequencing = false;
     let animationGroupFrom = 80;
     let animationGroupTo = 100;
+    let blending = true;
 
     async function startAnimationLoop(basePath, scene, loadedMesh, animations, recording=false, recordingMethod="", keepPlaying=false) {
         continueLoop = true;
@@ -85,6 +86,14 @@ const AnimationSequencer = (function () {
         continueLoop = false;
     }
 
+    function setBlending(value) {
+        blending = value;
+    }
+
+    function getBlending() {
+        return blending;
+    }
+
     function setAnimationGroupFrom(value) {
         animationGroupFrom = value;
     }
@@ -117,7 +126,9 @@ const AnimationSequencer = (function () {
         getFrom: getAnimationGroupFrom,
         getTo: getAnimationGroupTo,
         getSequencing: sequencing,
-        setSequencing: setSequencing
+        setSequencing: setSequencing,
+        getBlending: getBlending,
+        setBlending: setBlending
     };
 })();
 
@@ -157,10 +168,10 @@ async function playAnims(scene, loadedResults, animationIndex) {
         console.error(loadedResults.animationGroups);
 
         // Only blend if there are more than one animation groups
-        if (animationIndex + 1 != loadedResults.animationGroups.length) {
+        if (animationIndex + 1 != loadedResults.animationGroups.length && EngineController.blending) {
             animationGroup.enableBlending = true;
         }
-        // animationGroup.normalize = true;
+        animationGroup.normalize = true;
 
         if (!animationGroup.targetedAnimations || animationGroup.targetedAnimations.some(ta => ta.target === null)) {
             console.error("Animation target missing for some animations in the group:", animationGroup.name);
@@ -169,7 +180,7 @@ async function playAnims(scene, loadedResults, animationIndex) {
 
         return new Promise((resolve) => {
             animationGroup.onAnimationEndObservable.addOnce(() => {
-                console.log("Animation has ended.");
+                console.log(`Animation ${animationGroup.name} has ended.`);
                 scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
                 resolve(true);
             });
@@ -188,8 +199,8 @@ async function playAnims(scene, loadedResults, animationIndex) {
             // });
 
             // Play the animation
-            // animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
-            animationGroup.start();
+            animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+            // animationGroup.start();
         });
     } else {
         console.error("Invalid animation index:", animationIndex, "for loadedResults.animationGroups.length:", loadedResults.animationGroups.length, "animations.");
