@@ -80,7 +80,8 @@
     </div>
   </div>
 
-  <div class="modal fade" id="glossModal" tabindex="-1" role="dialog" aria-labelledby="glossModalLabel" aria-hidden="true">
+  <div class="modal fade" id="glossModal" tabindex="-1" role="dialog" aria-labelledby="glossModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -88,12 +89,14 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="text" id="glossInput" class="form-control" placeholder="Enter gloss" value="http://localhost:8080/MeshesAndAnims/HeadTwist3NPM.glb">
+          <input type="text" id="glossInput" class="form-control" placeholder="Enter gloss"
+            value="http://localhost:8080/MeshesAndAnims/HeadTwist3NPM.glb">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" onclick="stopLoadAndPlayAnimation(document.getElementById('glossInput').value)">Submit</button>
-          </div>
+          <button type="button" class="btn btn-primary"
+            onclick="stopLoadAndPlayAnimation(document.getElementById('glossInput').value)">Submit</button>
+        </div>
       </div>
     </div>
   </div>
@@ -138,10 +141,12 @@
     var loadedMesh;
 
     // Directory vars (differentiated between a path for animations and a path for meshes)
-    const basePath = "http://localhost:8080/MeshesAndAnims/";
+    // const basePath = "http://localhost:8080/MeshesAndAnims/";
     // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
-    // const basePath = "/gebarenoverleg_media/fbx/";
-    const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
+    // const basePath = "/gebarenoverleg_media/fbx/"; 
+    const basePath = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/"
+    const basePathMesh = "http://localhost:8080/MeshesAndAnims/"
+    // const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
     // const basePathMesh = "./MeshesAndAnims/"
 
     // Animation vars
@@ -168,7 +173,7 @@
     var limit = urlParams.get("limit") // limit=50, if you want to limit the amount of animations
     var gltf = urlParams.get("gltf") // gltf=1, if you want to load animations with gltf extension
     var local = urlParams.get("local") // local=1, if you want to load animations from local folder
-  
+
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
       Then play the animation if the play parameter is not set to "no"
@@ -220,6 +225,8 @@
           .catch(error => {
             console.error('Failed to load animations:', error);
           });
+
+        console.log(loadedMesh);
       }
     });
 
@@ -236,24 +243,28 @@
 
       if (frame == "blend") {
         //we want to adjust frames
-        AnimationSequencer.SetFrom(60);
-        AnimationSequencer.SetTo(60);
+        AnimationSequencer.setFrom(60);
+        AnimationSequencer.setTo(60);
       }
       else {
         //we want to adjust frames
-        AnimationSequencer.SetFrom(30);
-        AnimationSequencer.SetTo(30);
+        AnimationSequencer.setFrom(30);
+        AnimationSequencer.setTo(30);
       }
       keepAnimating = false;
 
       console.log(recording)
 
-      //waiting modal 
+      // waiting modal
       await showModal();
       // Stop any current animations
-      if (await stopAnims(scene, loadedMesh)) {
-        if (await removeAnims(scene, loadedMesh)) {
-          await AnimationSequencer.start(basePath, scene, loadedMesh, ParamsManager.animations);
+      if (stopAnims(EngineController.scene, EngineController.loadedMesh)) {
+        // check if animation is stopped
+        
+        if (removeAnims(EngineController.scene, EngineController.loadedMesh) && removeAnims(EngineController.scene, EngineController.scene)) {
+          // await hideModal();
+          // await new Promise(resolve => setTimeout(resolve, 3000));
+          await AnimationSequencer.start(basePath, EngineController.scene, EngineController.loadedMesh, ParamsManager.animations);
         }
       }
     }
