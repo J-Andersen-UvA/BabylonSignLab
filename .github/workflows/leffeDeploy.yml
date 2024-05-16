@@ -23,8 +23,11 @@ jobs:
           environment: SSH_PASSWORD
           SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        echo $SSHPASS
-        sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl "echo 'SSH connection successful'"
+        sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl << 'EOF'
+          echo 'SSH connection successful'
+          # Add your commands here
           cd /web/jari/
           /web/jari/executeUpdate.sh
+          # Additional commands can be added here
+        EOF
 
