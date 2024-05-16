@@ -24,4 +24,7 @@ jobs:
           SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
         echo $SSHPASS
-        sshpass -e scp -o stricthostkeychecking=no -P 8022 -r /home/runner/work/BabylonSignLab/BabylonSignLab jari@leffe.science.uva.nl:/web/jari/BabylonSignLab
+        sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl "echo 'SSH connection successful'"
+          cd /web/jari/
+          /web/jari/executeUpdate.sh
+
