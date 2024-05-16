@@ -12,6 +12,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+
+    - name: Add SSH key to known hosts
+      run: |
+        ssh-keyscan -p 8022 leffe.science.uva.nl >> ~/.ssh/known_hosts
+
+        
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
