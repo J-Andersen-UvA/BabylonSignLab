@@ -20,7 +20,8 @@ jobs:
 
     - name: Copy files via SSH using sshpass
       env:
-        SSHPASS: ${{ secrets.SSH_PASSWORD }}
+          environment: SSH_PASSWORD
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
         echo $SSHPASS
         sshpass -e scp -o stricthostkeychecking=no -P 8022 -r . jari@leffe.science.uva.nl:/web/jari/BabylonSignLab
