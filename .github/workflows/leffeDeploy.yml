@@ -8,29 +8,26 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-
-    - name: Add SSH key to known hosts
+    - name: Install sshpass
       run: |
-        ssh-keyscan -p 8022 leffe.science.uva.nl >> ~/.ssh/known_hosts
+        sudo apt-get update
+        sudo apt-get install -y sshpass
 
-        
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Copy files via SSH
+    - name: Copy files via SSH using sshpass
+      env:
+        SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        scp -P 8022 -r . jari@leffe.science.uva.nl:/web/jari/BabylonSignLab
+        sshpass -e scp -o stricthostkeychecking=no -P 8022 -r . jari@leffe.science.uva.nl:/web/jari/BabylonSignLab
 
-    - name: SSH and Deploy
+    - name: SSH and Deploy using sshpass
+      env:
+        SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        ssh -p 8022 jari@leffe.science.uva.nl << 'EOF'
+        sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl << 'EOF'
           cd /web/jari/BabylonSignLab
-          npm install
-          pm2 restart all  # assuming you use PM2 to manage your Node.js process
         EOF
