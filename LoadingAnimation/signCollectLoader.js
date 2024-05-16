@@ -23,19 +23,21 @@ async function loadSignCollectLabels(local, thema, limit, animations) {
 
     try {
         if (!thema) {
-            thema = "oline" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
+            thema = "_MOCAP" //when no thema, automatically set to oline, it contains 200 NGT glosses taken in april 2024 👌
         }
         var sCArray = await signCollectLoader(thema, "themaFilter", limit); //if you want to know thema names, go to signcollect website and ask Gomer for login
         console.log("loadedMesh animations:", animations);
 
         for (let i = 0; i < sCArray.length; i++) {
+            //
             animations[i] = sCArray[i].glos;
         }
         console.log("Updated animations:", animations);
 
-        return animations;
     } catch (error) {
         // Supress error if we are locally testing
         console.error("Error while loading animations:", error);
     }
+
+    return animations;
 }
