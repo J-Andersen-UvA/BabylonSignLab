@@ -137,7 +137,7 @@ const EngineController = (function () {
 //     return [local, play, limit, glos, zin, gltf, animations];
 // }
 
-async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4) {
+async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4, blending=false) {
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
@@ -177,6 +177,8 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     window.addEventListener("resize", function () {
         engine.resize();
     });
+
+    AnimationSequencer.setBlending(blending);
 
     return [scene, engine, loadedMesh];
 }

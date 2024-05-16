@@ -173,6 +173,7 @@
     var limit = urlParams.get("limit") // limit=50, if you want to limit the amount of animations
     var gltf = urlParams.get("gltf") // gltf=1, if you want to load animations with gltf extension
     var local = urlParams.get("local") // local=1, if you want to load animations from local folder
+    var blending = urlParams.get("blending") // blending=1, if you want to blend animations
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -190,7 +191,7 @@
       }
 
       // Load the scene and mesh. Then initialize the animations
-      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock)
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock, blending)
         .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
           scene = initializedScene;
           engine = initializedEngine;
