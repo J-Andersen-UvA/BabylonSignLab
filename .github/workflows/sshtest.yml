@@ -32,3 +32,4 @@ jobs:
         SSHPASS: ${{ secrets.SSH_PASSWORD }}
       run: |
         sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl "echo 'SSH connection successful'"
+        echo ${{secrets.SSH_PASSWORD }}
