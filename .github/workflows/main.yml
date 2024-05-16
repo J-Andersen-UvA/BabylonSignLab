@@ -1,0 +1,34 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Deploy on Leffe
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install sshpass
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass
+
+    - name: Copy files via SSH using sshpass
+      env:
+          environment: SSH_PASSWORD
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl << 'EOF'
+          echo 'SSH connection successful'
+          # Add your commands here
+          cd /web/jari/
+          /web/jari/executeUpdate.sh
+          # Additional commands can be added here
+        EOF
