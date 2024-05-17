@@ -5,9 +5,10 @@ const ParamsManager = {
     glos: null,
     zin: null,
     gltf: null,
-    animations: null,
+    animations: [],
+    debug: false,
 
-    setParams(local, play, limit, glos, zin, gltf, recording) {
+    setParams(local, play, limit, glos, zin, gltf, debug) {
         // No babylon database storage when testing locally
         if (local !== 1) {
             BABYLON.Database.IDBStorageEnabled = true;
@@ -18,6 +19,8 @@ const ParamsManager = {
         this.limit = limit !== null ? limit : 5; // Set limit if we have limit, else default to 5
         this.glos = glos !== null ? glos : "ERROR-SC"; // Set glos if we have glos, else default to "ERROR-SC"
         this.zin = zin;
+        this.gltf = gltf;
+        this.debug = debug === undefined ? false : ((debug === "1" || debug === "true") ? true : false);
 
         if (zin) {
             // We want to adjust frame from and to for blending
@@ -32,10 +35,9 @@ const ParamsManager = {
             AnimationSequencer.setFrom(30);
             AnimationSequencer.setTo(30);
 
-            this.animations = loadSignCollectLabels(this.local, thema, this.limit, []).then((animations) => {
+            console.log(loadSignCollectLabels(this.local, thema, this.limit, this.animations).then((animations) => {
                 console.log("Animations loaded:", animations);
-                return animations;
-            });
+            }));
         }
 
         this.gltf = gltf;
@@ -141,7 +143,9 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
-    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb", bugger=true);
+
+    console.log("paramsmanager.debug", ParamsManager.debug);
+    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb", bugger=ParamsManager.debug);
     // loadedMesh = await loadAssetMesh(scene);
 
     // for all meshes in disable frustum culling
@@ -164,9 +168,9 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     var camera = CameraController.getInstance();
     CameraController.setNearPlane(0.1);
     // CameraController.setCameraOnBone(scene, loadedMesh.root, loadedMesh.skeletons[0], boneIndex=boneLock);
-    CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=true, setLocalAxis=true);
+    CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=ParamsManager.debug, setLocalAxis=ParamsManager.debug);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
-    createPineapple(scene, basePath, loadedMesh.root);
+    createPineapple(scene, basePathMesh, loadedMesh.root);
 
     // Run the render loop
     engine.runRenderLoop(function () {

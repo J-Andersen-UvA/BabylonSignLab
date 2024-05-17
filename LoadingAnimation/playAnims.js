@@ -258,6 +258,7 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
         return false;
     }
 
+    console.log(animations)
     for (let animName of animations) {
         console.log(`Preloading animation: ${animName}`);
         //add animName to modal 

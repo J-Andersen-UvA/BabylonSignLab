@@ -159,12 +159,12 @@
     var animAsset;
     // var animationGroupFrom;
     // var animationGroupTo;
-    // var animations = [];
     var zinArray = []
     var recordingMethod;
     var recordingFile;
     let keepAnimating = true;
     // let continueLoop = true;
+    var animations = []
 
     // URL params for gloss, thema, cameraAngle, movingCamera (followed by an example comment)
     var urlParams = new URLSearchParams(window.location.search);
@@ -180,6 +180,7 @@
     var gltf = urlParams.get("gltf") // gltf=1, if you want to load animations with gltf extension
     var local = urlParams.get("local") // local=1, if you want to load animations from local folder
     var blending = urlParams.get("blending") // blending=1, if you want to blend animations
+    var debug = urlParams.get("debug") // debug=1, if you want to see debug terminal
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -188,7 +189,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
       // [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
-      ParamsManager.setParams(local, play, limit, glos, zin, gltf);
+      ParamsManager.setParams(local, play, limit, glos, zin, gltf, debug);
 
 
       canvas = document.getElementById("renderCanvas");

@@ -22,7 +22,7 @@ async function createScene(canvas) {
     return [scene, engine];
 };
 
-var loadAssetMesh = async function (scene, path = "http://localhost:8080/MeshesAndAnims/Nemu/", fileName = "Nemu.glb", bugger = true) {
+var loadAssetMesh = async function (scene, path = basePathMesh+"Nemu/", fileName = "Nemu.glb", bugger = false) {
     console.log("Loading mesh from: " + path + fileName + "...");
 
     // TODO: When clicking the button twice, the animation first frame loads
@@ -142,11 +142,11 @@ function generateKey(frame, value) {
         value: value
     };
 };
-
+var pineappleResult = "";
 var createPineapple = async function (scene, basePathMesh, targetMesh) {
     console.log("Creating pineapple...");
     //🍍
-    const pineappleResult = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "pineapple.glb", scene);
+     pineappleResult = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "pineapple.glb", scene);
 
     if (pineappleResult.meshes.length > 0) {
         const pineappleMesh = pineappleResult.meshes[0]; // Get the first mesh from the imported meshes
@@ -198,7 +198,7 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
                 var bounceHeightY = 5;  // Maximum height of the bounce on y-axis
 
                 //get z and y position of the first mesh (the actor)
-                var actorMesh = targetMesh.meshes[0];
+                var actorMesh = pineappleResult.meshes[0];
                 var actorPositionZ = actorMesh.position.z;
                 var actorPositionY = actorMesh.position.y;
 

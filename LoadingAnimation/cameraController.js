@@ -129,13 +129,13 @@ var CameraController = (function() {
         sphere.position = new BABYLON.Vector3(0, 0, 0); // Adjust according to your needs
         sphere.rotation = new BABYLON.Vector3(0, 0, 0); // Adjust according to your needs
 
-        var sphere2 = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
-        sphere2.scaling = new BABYLON.Vector3(0.4, 0.4, 0.4);
-        localAxes(4, sphere2, scene);
-
+        
         // Debugging funcs
         sphere.setEnabled(visualizeSphere);
         if (setLocalAxis) {
+            var sphere2 = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+            sphere2.scaling = new BABYLON.Vector3(0.4, 0.4, 0.4);
+            localAxes(4, sphere2, scene);
             localAxes(4, sphere, scene);
             hipsFrontAxes(4, sphere, scene);
             forwardVec = sphere.getChildren()[3];
