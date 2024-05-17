@@ -122,6 +122,12 @@ var CameraController = (function() {
         var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
         sphere.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
         sphere.attachToBone(skeleton.bones[boneIndex], targetMesh);
+        console.log("Sphere attached to bone: ", skeleton.bones[boneIndex].name);
+        console.log("Target mesh: ", targetMesh.name);
+
+        // Set the position and rotation of the sphere relative to the bone
+        sphere.position = new BABYLON.Vector3(0, 0, 0); // Adjust according to your needs
+        sphere.rotation = new BABYLON.Vector3(0, 0, 0); // Adjust according to your needs
 
         var sphere2 = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
         sphere2.scaling = new BABYLON.Vector3(0.4, 0.4, 0.4);

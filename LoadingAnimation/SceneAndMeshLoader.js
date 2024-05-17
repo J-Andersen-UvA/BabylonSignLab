@@ -22,7 +22,7 @@ async function createScene(canvas) {
     return [scene, engine];
 };
 
-var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/", fileName="Nemu.glb") {
+var loadAssetMesh = async function (scene, path = "http://localhost:8080/MeshesAndAnims/Nemu/", fileName = "Nemu.glb", bugger = true) {
     console.log("Loading mesh from: " + path + fileName + "...");
 
     // TODO: When clicking the button twice, the animation first frame loads
@@ -32,9 +32,15 @@ var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/
         }
     });
 
+    if (bugger) {
+        scene.debugLayer.show({
+            embedMode: true
+        });
+    }
+
     const asset = {
         fetched: await BABYLON.SceneLoader.ImportMeshAsync(null, path, fileName, scene),
-        mainMesh: null,
+        root: null,
         faceMesh: null,
         teethMesh: null,
         eyeMesh: null,
@@ -50,8 +56,10 @@ var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/
 
     // Find the root mesh and the face mesh for its morph target manager
     for (mesh of asset.fetched.meshes) {
+        mesh.position = new BABYLON.Vector3(0,0,0);
+
         if (mesh.name === "__root__") {
-            asset.mainMesh = mesh;
+            asset.root = mesh;
         } else if (mesh.name === "newNeutral_primitive0") {
             asset.eyeMesh = mesh;
         } else if (mesh.name === "newNeutral_primitive1") {
@@ -75,6 +83,12 @@ var loadAssetMesh = async function (scene, path = "http://localhost:8081/meshes/
 
 var rotateMesh180 = function (mesh) {
     mesh.rotation = new BABYLON.Vector3(BABYLON.Tools.ToRadians(0), BABYLON.Tools.ToRadians(180), BABYLON.Tools.ToRadians(0));
+
+    // WE SHOULD ROT LIKE THIS:
+    // loadedMesh.fetched.meshes.forEach(mesh => {
+    //     mesh.rotate(BABYLON.Axis.X, Math.PI/4, BABYLON.Space.WORLD);
+    //     console.log("rotted");
+    // });
 };
 
 
@@ -118,7 +132,7 @@ function hipsFrontAxes(size, mesh, scene) {
         new BABYLON.Vector3(0, -size, 0), new BABYLON.Vector3(0.05 * size, -size * 0.95, 0)
     ], scene);
     localHipsAxis.color = new BABYLON.Color3(0, 1, 1);
-    
+
     localHipsAxis.parent = mesh;
 }
 

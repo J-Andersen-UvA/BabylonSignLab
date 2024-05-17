@@ -7,7 +7,7 @@ const ParamsManager = {
     gltf: null,
     animations: null,
 
-    setParams(local, play, limit, glos, zin, gltf) {
+    setParams(local, play, limit, glos, zin, gltf, recording) {
         // No babylon database storage when testing locally
         if (local !== 1) {
             BABYLON.Database.IDBStorageEnabled = true;
@@ -15,7 +15,7 @@ const ParamsManager = {
 
         this.local = local;
         this.play = play !== undefined ? play : true; // Set play if we have play, else default to true
-        this.limit = limit !== undefined ? limit : 5; // Set limit if we have limit, else default to 5
+        this.limit = limit !== null ? limit : 5; // Set limit if we have limit, else default to 5
         this.glos = glos !== null ? glos : "ERROR-SC"; // Set glos if we have glos, else default to "ERROR-SC"
         this.zin = zin;
 
@@ -26,12 +26,16 @@ const ParamsManager = {
 
             // Split zin with , and return as array
             this.animations = zin.split(",");
+            console.log("Animations zin loaded:", this.animations);
         } else {
             // We want to adjust frame from and to for blending
             AnimationSequencer.setFrom(30);
             AnimationSequencer.setTo(30);
 
-            this.animations = loadSignCollectLabels(ParamsManager.local, thema, [], ParamsManager.limit);
+            this.animations = loadSignCollectLabels(this.local, thema, this.limit, []).then((animations) => {
+                console.log("Animations loaded:", animations);
+                return animations;
+            });
         }
 
         this.gltf = gltf;
@@ -133,27 +137,36 @@ const EngineController = (function () {
 //     return [local, play, limit, glos, zin, gltf, animations];
 // }
 
-async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4) {
+async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4, blending=false) {
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
-    loadedMesh = await loadAssetMesh(scene, basePathMesh);
+    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb", bugger=true);
+    // loadedMesh = await loadAssetMesh(scene);
 
     // for all meshes in disable frustum culling
     loadedMesh.fetched.meshes.forEach(mesh => {
         mesh.alwaysSelectAsActiveMesh = true;
     });
 
-    rotateMesh180(loadedMesh.mainMesh);
+    // console.log(loadedMesh);
+
+    // console.log("BAAAAAAAAAAAAA");
+    // rotateMesh180(loadedMesh.root);
+    // loadedMesh.fetched.meshes.forEach(mesh => {
+    //     mesh.rotate(BABYLON.Axis.X, Math.PI/2, BABYLON.Space.WORLD);
+    //     console.log("rotted");
+    // });
+
     if (!boneLock) { boneLock = 4; } // Make sure we have a boneLock
 
     // Create first camera, then access it through the singleton
     var camera = CameraController.getInstance();
     CameraController.setNearPlane(0.1);
-    // CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock);
-    CameraController.setCameraOnBone(scene, loadedMesh.mainMesh, loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=true, setLocalAxis=true);
+    // CameraController.setCameraOnBone(scene, loadedMesh.root, loadedMesh.skeletons[0], boneIndex=boneLock);
+    CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=true, setLocalAxis=true);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
-    createPineapple(scene, basePath, loadedMesh.mainMesh);
+    createPineapple(scene, basePath, loadedMesh.root);
 
     // Run the render loop
     engine.runRenderLoop(function () {
@@ -164,6 +177,8 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     window.addEventListener("resize", function () {
         engine.resize();
     });
+
+    AnimationSequencer.setBlending(blending);
 
     return [scene, engine, loadedMesh];
 }
