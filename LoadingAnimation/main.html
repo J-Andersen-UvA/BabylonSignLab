@@ -138,10 +138,18 @@
     var loadedMesh;
 
     // Directory vars (differentiated between a path for animations and a path for meshes)
-    const basePath = "http://localhost:8080/MeshesAndAnims/";
     // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
-    // const basePath = "/gebarenoverleg_media/fbx/";
-    const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
+    // const basePath = "/gebarenoverleg_media/fbx/"; 
+    let basePath = "http://localhost:8080/MeshesAndAnims/";
+    let basePathMesh = "http://localhost:8080/MeshesAndAnims/";
+
+
+    if (window.location.hostname === "leffe.science.uva.nl") {
+      basePath = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/"
+      basePathMesh = "./MeshesAndAnims/";
+    }
+
+    // const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
     // const basePathMesh = "./MeshesAndAnims/"
 
     // Animation vars
@@ -251,9 +259,13 @@
       //waiting modal 
       await showModal();
       // Stop any current animations
-      if (await stopAnims(scene, loadedMesh)) {
-        if (await removeAnims(scene, loadedMesh)) {
-          await AnimationSequencer.start(basePath, scene, loadedMesh, ParamsManager.animations);
+      if (stopAnims(EngineController.scene, EngineController.loadedMesh)) {
+        // check if animation is stopped
+
+        if (removeAnims(EngineController.scene, EngineController.loadedMesh) && removeAnims(EngineController.scene, EngineController.scene)) {
+          // await hideModal();
+          // await new Promise(resolve => setTimeout(resolve, 3000));
+          await AnimationSequencer.start(basePath, EngineController.scene, EngineController.loadedMesh, ParamsManager.animations);
         }
       }
     }
