@@ -17,6 +17,9 @@ async function createScene(canvas) {
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+	// light.diffuse = new BABYLON.Color3(1, 0.98, 0.82);
+	// light.specular = new BABYLON.Color3(0.23, 0.23, 0.23);
+	// light.groundColor = new BABYLON.Color3(0, 0, 0);
 
     console.log("Scene and mesh loaded successfully.");
     return [scene, engine];
@@ -285,9 +288,9 @@ var createPineapple = async function (scene, basePathMesh, targetMesh) {
         });
     }
 
-    var pineappleLight = new BABYLON.PointLight("pineappleLight", pineappleResult.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
-    pineappleLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
-    pineappleLight.intensity = 1; // Set light intensity
+    // var pineappleLight = new BABYLON.PointLight("pineappleLight", pineappleResult.meshes[0].getAbsolutePosition().add(new BABYLON.Vector3(0, 4, 0)), scene);
+    // pineappleLight.diffuse = new BABYLON.Color3(1, 1, 1); // Set light color
+    // pineappleLight.intensity = 1; // Set light intensity
     //🍍
 };
 

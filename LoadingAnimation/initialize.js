@@ -147,7 +147,7 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     );
 
     console.log("paramsmanager.debug", ParamsManager.debug);
-    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuy.glb", bugger=ParamsManager.debug);
+    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb", bugger=ParamsManager.debug);
     // loadedMesh = await loadAssetMesh(scene);
 
     // for all meshes in disable frustum culling
