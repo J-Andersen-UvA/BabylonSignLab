@@ -50,6 +50,8 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
                             key.value.y = 0;
                             key.value.z = 1;
                           });
+
+                          console.log("Hips rotation disabled.");
                         }
                       }
                     }
