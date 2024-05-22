@@ -224,10 +224,6 @@
             animAsset = anim;
             animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
 
-            if (ParamsManager.lockRot === true) {
-              animAsset.lockRotHips();
-            }
-
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
             if (ParamsManager.play != "no") {
               playLoadedAnims(scene, loadedMesh);
