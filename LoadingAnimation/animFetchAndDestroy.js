@@ -40,7 +40,7 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
             lockRotHips: function() {
             // for the anim, disable the hips rotationQuaternion animation and rotate the mesh 180 degrees
               this.animationGroups.forEach(group => {
-                if (group !== null && group.name === "anim") {
+                if (group !== null) {
                   group.targetedAnimations.forEach(targetedAnim => {
                     if (targetedAnim.target !== null && targetedAnim.animation !== null) {
                       if (targetedAnim.target.name === "Hips") {
