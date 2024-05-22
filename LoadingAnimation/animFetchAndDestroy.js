@@ -36,7 +36,27 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
                 false,
                 BABYLON.SceneLoaderAnimationGroupLoadingMode.NoSync,
                 null),
-            animationGroups: []
+            animationGroups: [],
+            lockRotHips: function() {
+            // for the anim, disable the hips rotationQuaternion animation and rotate the mesh 180 degrees
+              this.animationGroups.forEach(group => {
+                if (group !== null && group.name === "anim") {
+                  group.targetedAnimations.forEach(targetedAnim => {
+                    if (targetedAnim.target !== null && targetedAnim.animation !== null) {
+                      if (targetedAnim.target.name === "Hips") {
+                        if (targetedAnim.animation.targetProperty === "rotationQuaternion") {
+                          targetedAnim.animation._keys.forEach(key => {
+                            key.value.x = 0;
+                            key.value.y = 0;
+                            key.value.z = 1;
+                          });
+                        }
+                      }
+                    }
+                  });
+                }
+              });
+            }
         };
 
         if (!result.fetched || !result.fetched.animationGroups || result.fetched.animationGroups.length === 0) {
