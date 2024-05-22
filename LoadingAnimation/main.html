@@ -111,8 +111,6 @@
   <button onclick="signFetcher()">New Gloss</button>
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="getAngle()">get angle</button>
-  <button onclick="CameraController.reFocusCamera(loadedMesh)">set angle</button>
-
 
   <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
@@ -181,6 +179,7 @@
     var local = urlParams.get("local") // local=1, if you want to load animations from local folder
     var blending = urlParams.get("blending") // blending=1, if you want to blend animations
     var debug = urlParams.get("debug") // debug=1, if you want to see debug terminal
+    var lockRot = urlParams.get("lockRot") // debug=1, if you want to see debug terminal
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -189,7 +188,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
       // [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
-      ParamsManager.setParams(local, play, limit, glos, zin, gltf, debug);
+      ParamsManager.setParams(local, play, limit, glos, zin, gltf, debug, lockRot);
 
 
       canvas = document.getElementById("renderCanvas");
@@ -224,7 +223,11 @@
           .then(anim => {
             animAsset = anim;
             animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
-            console.log(animAsset.animationGroups);
+
+            if (ParamsManager.lockRot === true) {
+              animAsset.lockRotHips();
+            }
+
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
             if (ParamsManager.play != "no") {
               playLoadedAnims(scene, loadedMesh);
@@ -233,8 +236,6 @@
           .catch(error => {
             console.error('Failed to load animations:', error);
           });
-
-        console.log(loadedMesh);
       }
     });
 

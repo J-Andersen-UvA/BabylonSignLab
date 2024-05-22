@@ -4,6 +4,7 @@ var CameraController = (function() {
     var focusSphere;
     var targetHips;
     var forwardVec;
+    var distance;
     
     function setNearPlane(value) {
         camera.minZ = value;
@@ -25,65 +26,8 @@ var CameraController = (function() {
         return BABYLON.Tools.ToDegrees(camera.beta);
     }
 
-    function logTargetHipsAngles() {
-        console.log("camAlpha = ", (getAngleAlpha()));
-        console.log("camBeta = ", (getAngleBeta()));
-        // console.log("targetHips y: ", BABYLON.Tools.ToDegrees(targetHips.rotation.y)+180);
-        // console.log("targetHips z: ", BABYLON.Tools.ToDegrees(targetHips.rotation.z));
-    }
-
-    function closestRotLog() {
-        // console.log("Closest y: ", closestRotation(BABYLON.Tools.ToDegrees(targetHips.rotation.y)+180));
-        // console.log("Closest z: ", closestRotation(BABYLON.Tools.ToDegrees(targetHips.rotation.z)));
-        var vec = forwardVec.absoluteRotationQuaternion.toEulerAngles();
-        console.log("forwardVec y: ", BABYLON.Tools.ToDegrees(vec.y));
-        console.log("forwardVec x: ", BABYLON.Tools.ToDegrees(vec.x));
-        console.log("forwardVec z: ", BABYLON.Tools.ToDegrees(vec.z));
-    }
-
-    BABYLON.ArcRotateCamera.prototype.spinTo = function (nameAnim, whichprop, targetval, speed) {
-        var ease = new BABYLON.CubicEase();
-        ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-        BABYLON.Animation.CreateAndStartAnimation(nameAnim, this, whichprop, speed, 120, this[whichprop], targetval, 0, ease);
-    }
-
-    function closestRotation(value) {
-        // Calculate the absolute differences between the value and each target
-        const differences = [0, 90, 180, 270, 360].map(targetValue => Math.abs(targetValue - Math.abs(value)));
-        
-        // Find the index of the smallest difference
-        const closestIndex = differences.indexOf(Math.min(...differences));
-        // console.log("Closest: ", [0, 90, 180, 270, 360][closestIndex]);
-        // Return the closest target value
-        return [0, 90, 180, 270, 360][closestIndex];
-    }
-
-    
-    // Align the camera with the focusSphere local axis
-    function reFocusCamera(loadedMesh) {
-        console.log("Re-focusing camera...");
-        logTargetHipsAngles();
-        // console.log(loadedMesh.fetched.transformNodes[3]);
-        // console.log(focusSphere.rotation);
-        // const worldMatrix = targetHips.getWorldMatrix();
-        // const rotationMatrix = new BABYLON.Matrix();
-        // worldMatrix.decompose(undefined, rotationMatrix, undefined); 
-        // const rotationQuaternion = BABYLON.Quaternion.FromRotationMatrix(rotationMatrix);
-        // const rotationEulerAngles = rotationQuaternion.toEulerAngles();
-        // console.log("Rotation: ", rotationEulerAngles, rotationQuaternion);
-
-        // console.log("targetHips y: ", targetHips.rotation.y);
-        // console.log("targetHips z: ", targetHips.rotation.z);
-        // console.log("targetHips x: ", targetHips.rotation.x);
-        // var a = (-90 - targetHips.rotation.y);
-        // var b = (90 + targetHips.rotation.z);
-        // setAngleBeta(closestRotation(a));
-        // setAngleAlpha(closestRotation(b));
-        // setAngleAlpha(a);
-        // setAngleBeta(b);
-        // setAngleAlpha(-90);
-        // setAngleBeta(90);
-
+    function getFocusSphere() {
+        return focusSphere;
     }
 
     function setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera) {
@@ -133,8 +77,9 @@ var CameraController = (function() {
         // Debugging funcs
         sphere.setEnabled(visualizeSphere);
         if (setLocalAxis) {
-            var sphere2 = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+            var sphere2 = BABYLON.Mesh.CreateSphere("sphere2", 16, 2, scene);
             sphere2.scaling = new BABYLON.Vector3(0.4, 0.4, 0.4);
+            console.log("Sphere2: ", sphere2.forward);
             localAxes(4, sphere2, scene);
             localAxes(4, sphere, scene);
             hipsFrontAxes(4, sphere, scene);
@@ -198,10 +143,10 @@ var CameraController = (function() {
         getAngleAlpha: getAngleAlpha,
         getAngleBeta: getAngleBeta,
         setNearPlane: setNearPlane,
-        reFocusCamera: reFocusCamera,
-        logTargetHipsAngles: logTargetHipsAngles,
-        closest: closestRotLog,
+        getFocusSphere: getFocusSphere,
         getInstance: function(scene, canvas, distance=5) {
+            CameraController.distance = distance;
+
             if (!camera) {
                 console.log("Initializing camera instance...");
                 camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, distance, new BABYLON.Vector3(0, 0, 0), scene);

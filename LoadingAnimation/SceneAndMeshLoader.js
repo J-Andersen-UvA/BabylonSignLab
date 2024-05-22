@@ -22,7 +22,7 @@ async function createScene(canvas) {
     return [scene, engine];
 };
 
-var loadAssetMesh = async function (scene, path = basePathMesh+"Nemu/", fileName = "Nemu.glb", bugger = false) {
+var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileName = "Nemu.glb", bugger = false) {
     console.log("Loading mesh from: " + path + fileName + "...");
 
     // TODO: When clicking the button twice, the animation first frame loads
@@ -46,7 +46,34 @@ var loadAssetMesh = async function (scene, path = basePathMesh+"Nemu/", fileName
         eyeMesh: null,
         morphTargetManagers: [],
         skeletons: [],
-        animationGroups: []
+        animationGroups: [],
+        // fetchForward: function () {
+        //     function rotAroundX(vec, fac = 1) {
+        //         // Create a rotation matrix for 90 degrees around the x-axis
+        //         let rotationMatrixX = BABYLON.Matrix.RotationX(BABYLON.Tools.ToRadians(fac * 90));
+
+        //         // Rotate the normal vector
+        //         let rotatedVectorX = BABYLON.Vector3.TransformCoordinates(vec, rotationMatrixX);
+
+        //         return rotatedVectorX;
+        //     }
+
+        //     return rotAroundX(CameraController.getFocusSphere().forward, fac = 1);
+        // },
+        // alignOnX: function () {
+        //     // create red sphere at position end
+        //     const end = new BABYLON.Vector3(0, 1, 0);
+        //     const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+        //     sphere.position = end;
+        //     sphere.material = new BABYLON.StandardMaterial("sphereMat", scene);
+        //     sphere.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+
+        //     this.fetched.meshes.forEach(mesh => {
+        //         mesh.lookAt(end, 0);
+        //     });
+
+        //     console.log(this.fetched);
+        // }
     };
 
     // Find all animation groups
@@ -56,7 +83,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh+"Nemu/", fileName
 
     // Find the root mesh and the face mesh for its morph target manager
     for (mesh of asset.fetched.meshes) {
-        mesh.position = new BABYLON.Vector3(0,0,0);
+        mesh.position = new BABYLON.Vector3(0, 0, 0);
 
         if (mesh.name === "__root__") {
             asset.root = mesh;
@@ -146,7 +173,7 @@ var pineappleResult = "";
 var createPineapple = async function (scene, basePathMesh, targetMesh) {
     console.log("Creating pineapple...");
     //🍍
-     pineappleResult = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "pineapple.glb", scene);
+    pineappleResult = await BABYLON.SceneLoader.ImportMeshAsync(null, basePathMesh, "pineapple.glb", scene);
 
     if (pineappleResult.meshes.length > 0) {
         const pineappleMesh = pineappleResult.meshes[0]; // Get the first mesh from the imported meshes
