@@ -84,6 +84,10 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
         loadedResults.animationGroups = result.animationGroups;
         console.log("Animations loaded for " + (fullPath ? basePath : glos));
 
+        if (ParamsManager.lockRot === true) {
+            result.lockRotHips();
+        }
+
         return result;
     } catch (error) {
         console.error("Failed to load animations:", error);
