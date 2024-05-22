@@ -37,27 +37,27 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
                 BABYLON.SceneLoaderAnimationGroupLoadingMode.NoSync,
                 null),
             animationGroups: [],
-            lockRotHips: function() {
-            // for the anim, disable the hips rotationQuaternion animation and rotate the mesh 180 degrees
-              this.animationGroups.forEach(group => {
-                if (group !== null) {
-                  group.targetedAnimations.forEach(targetedAnim => {
-                    if (targetedAnim.target !== null && targetedAnim.animation !== null) {
-                      if (targetedAnim.target.name === "Hips") {
-                        if (targetedAnim.animation.targetProperty === "rotationQuaternion") {
-                          targetedAnim.animation._keys.forEach(key => {
-                            key.value.x = 0;
-                            key.value.y = 0;
-                            key.value.z = 1;
-                          });
+            lockRotHips: function () {
+                // for the anim, disable the hips rotationQuaternion animation and rotate the mesh 180 degrees
+                this.animationGroups.forEach(group => {
+                    if (group !== null) {
+                        group.targetedAnimations.forEach(targetedAnim => {
+                            if (targetedAnim.target !== null && targetedAnim.animation !== null) {
+                                if (targetedAnim.target.name === "Hips") {
+                                    if (targetedAnim.animation.targetProperty === "rotationQuaternion") {
+                                        targetedAnim.animation._keys.forEach(key => {
+                                            key.value.x = 0;
+                                            key.value.y = 0;
+                                            key.value.z = 1;
+                                        });
 
-                          console.log("Hips rotation disabled.");
-                        }
-                      }
+                                        console.log("Hips rotation disabled.");
+                                    }
+                                }
+                            }
+                        });
                     }
-                  });
-                }
-              });
+                });
             }
         };
 
