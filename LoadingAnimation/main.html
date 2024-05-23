@@ -105,7 +105,7 @@
   <canvas id="renderCanvas"></canvas>
 
   <!-- Define clickable buttons for user to interact with the website -->
-  <button onclick="animationSequencing('glos'); recordingMethod=''">Load Animation sequence and Record them</button>
+  <button onclick="animationSequencing(true); recordingMethod=''">Load Animation sequence and Record them</button>
   <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
   <button onclick="signBuilder()">Sign Builder</button>
   <button onclick="signFetcher()">New Gloss</button>
@@ -259,8 +259,6 @@
       }
       keepAnimating = false;
 
-      console.log(recording)
-
       // waiting modal
       await showModal();
       // Stop any current animations
@@ -269,7 +267,8 @@
         if (removeAnims(EngineController.scene, EngineController.loadedMesh) && removeAnims(EngineController.scene, EngineController.scene)) {
           // await hideModal();
           // await new Promise(resolve => setTimeout(resolve, 3000));
-          await AnimationSequencer.start(basePath, EngineController.scene, EngineController.loadedMesh, ParamsManager.animations);
+          console.log("play animations, recording=" + recording);
+          await AnimationSequencer.start(basePath, EngineController.scene, EngineController.loadedMesh, ParamsManager.animations, recording=recording);
         }
       }
     }

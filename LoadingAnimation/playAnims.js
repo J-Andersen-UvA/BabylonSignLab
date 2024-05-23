@@ -39,6 +39,7 @@ const AnimationSequencer = (function () {
 
     async function startAnimationLoop(basePath, scene, loadedMesh, animations, recording=false, recordingMethod="", keepPlaying=false) {
         continueLoop = true;
+        console.log("recording: ", recording);
 
         // Load and initialize animations
         if (await preloadAndInitializeAnimations(basePath, scene, loadedMesh, animations)) {
@@ -53,12 +54,16 @@ const AnimationSequencer = (function () {
 
                 glos = loadedMesh.animationGroups[i].name;
 
-                if (recording && recordingMethod != "zin") await startRecording('renderCanvas', glos); // Start recording;
+                if (recording && recordingMethod != "zin") {
+                    console.log("recording with method: ", recording, recordingMethod, glos);
+                    await startRecording('renderCanvas', glos); // Start recording;
+                }
 
                 console.log(`Now playing: ${glos}`);
                 if (await playAnims(scene, loadedMesh, i)) {
                     console.log(`Playing complete: ${glos}`);
-                    if (recording == "glos") { stopRecording(); }
+                    // if (recording == "glos") { stopRecording(); }
+                    if (recording != "zin") { stopRecording(); }
                 } else {
                     console.log(`Failed to play animation: ${glos}`);
                 }
