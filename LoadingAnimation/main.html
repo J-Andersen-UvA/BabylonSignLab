@@ -223,9 +223,10 @@
         getAnims(basePath, scene, loadedMesh, ParamsManager.glos, ParamsManager.gltf)
           .then(anim => {
             animAsset = anim;
-            animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+            animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset, "anim"));
 
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
+
             if (ParamsManager.play != "no") {
               playLoadedAnims(scene, loadedMesh);
             }

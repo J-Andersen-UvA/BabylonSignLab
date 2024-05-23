@@ -1,3 +1,5 @@
+const { Skeleton } = require("babylonjs");
+
 // Import animations for BabylonJS
 async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = false) {
     if (!scene) {
@@ -36,6 +38,7 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
                 false,
                 BABYLON.SceneLoaderAnimationGroupLoadingMode.NoSync,
                 null),
+            skeleton: null,
             animationGroups: [],
             lockRotHips: function () {
                 // for the anim, disable the hips rotationQuaternion animation and rotate the mesh 180 degrees
@@ -71,6 +74,10 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
             result.animationGroups.push(animGroup);
         }
 
+        if (result.fetched.skeletons.length > 0) {
+            result.skeleton = result.fetched.skeletons[0];
+        }
+
         // make name of last fetched group the glos name
         const lastIndex = result.animationGroups.length - 1;
         result.animationGroups[lastIndex].name = glos;
@@ -85,6 +92,7 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
         console.log("Animations loaded for " + (fullPath ? basePath : glos));
 
         if (ParamsManager.lockRot === true) {
+            console.log("Locking hips rotation...");
             result.lockRotHips();
         }
 

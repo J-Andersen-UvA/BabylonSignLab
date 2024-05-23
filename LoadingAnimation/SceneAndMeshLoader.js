@@ -25,7 +25,7 @@ async function createScene(canvas) {
     return [scene, engine];
 };
 
-var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileName = "Nemu.glb", bugger = false) {
+var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileName = "Nemu.glb") {
     console.log("Loading mesh from: " + path + fileName + "...");
 
     // TODO: When clicking the button twice, the animation first frame loads
@@ -35,7 +35,8 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         }
     });
 
-    if (bugger) {
+    if (ParamsManager.debug) {
+        console.log("Enabling debug layer...");
         scene.debugLayer.show({
             embedMode: true
         });
