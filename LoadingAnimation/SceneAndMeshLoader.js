@@ -42,7 +42,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         });
     }
 
-    const asset = {
+    var asset = {
         fetched: await BABYLON.SceneLoader.ImportMeshAsync(null, path, fileName, scene),
         root: null,
         faceMesh: null,

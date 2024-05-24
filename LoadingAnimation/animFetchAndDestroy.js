@@ -122,11 +122,13 @@ function keepOnlyAnimationGroup(scene, animAsset, loadedMesh, groupName = "anim"
     iterateAndDestroyAnimationGroups(scene.animationGroups);
     iterateAndDestroyAnimationGroups(animAsset.animationGroups);
     iterateAndDestroyAnimationGroups(loadedMesh.animationGroups);
+    iterateAndDestroyAnimationGroups(loadedMesh.fetched.animationGroups);
 
     // After removing references, make sure that the array is cleaned up
     scene.animationGroups = scene.animationGroups.filter((obj) => obj !== null);
     animAsset.animationGroups = animAsset.animationGroups.filter((obj) => obj !== null);
     loadedMesh.animationGroups = loadedMesh.animationGroups.filter((obj) => obj !== null);
+    loadedMesh.fetched.animationGroups = loadedMesh.fetched.animationGroups.filter((obj) => obj !== null);
 }
 
 function removeAnims(scene, animHolder) {

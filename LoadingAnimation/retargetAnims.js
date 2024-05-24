@@ -68,7 +68,7 @@ function calcProportionInfo(sourceSkeleton, targetSkeleton) {
  *  @param {object} animGroup - The animation group to retarget.
  *  @param {string} cloneName - The name of the cloned animation group.
 
- *  @returns {void} - The animation group will be retargeted to the target mesh. And we are able to play this animation group on the target mesh through the scene object.
+ *  @returns {object} clone - The animation group will be retargeted to the target mesh and this function returns a clone.
 */
 function retargetAnimWithBlendshapes(targetMeshAsset, animAsset, cloneName = "anim") {
     console.log("Retargeting animation to target mesh...");
@@ -85,6 +85,8 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animAsset, cloneName = "an
             console.log("No target.");
             return null;
         }
+
+        console.log("Retargeting to target: ", target.name);
 
         // First set all bone targets to the linkedTransformNode
         let idx = targetMeshAsset.skeletons[0].getBoneIndexByName(target.name);
