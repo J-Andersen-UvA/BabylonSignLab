@@ -21,11 +21,11 @@ function getScaleFactor(sourcePosition1, sourcePosition2, targetPosition1, targe
  */
 function calcProportionInfo(sourceSkeleton, targetSkeleton) {
     const proportionMappingSource = Object.fromEntries(
-        sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": 1}])
+        sourceSkeleton.bones.map((bone, index) => [bone.name, { "Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": 1 }])
     );
 
     const proportionMappingTarget = Object.fromEntries(
-        targetSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": 1}])
+        targetSkeleton.bones.map((bone, index) => [bone.name, { "Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": 1 }])
     );
 
     // Fetch and apply the scaling factor to the maps
@@ -59,22 +59,16 @@ function calcProportionInfo(sourceSkeleton, targetSkeleton) {
     return proportionMappingTarget;
 }
 
-/*
-    Function: retargetAnimWithBlendshapes
+/**
+ *  This function takes a target mesh and an animation group and retargets the animation group
+ *  to the target mesh. Most importantly, it will also retarget the animation group to the blendshapes
+ *  which babylon does not do by default.
 
-    Description:
-    This function takes a target mesh and an animation group and retargets the animation group
-    to the target mesh. Most importantly, it will also retarget the animation group to the blendshapes
-    which babylon does not do by default.
+ *  @param {object} targetMeshAsset - The mesh to retarget the animation to.
+ *  @param {object} animGroup - The animation group to retarget.
+ *  @param {string} cloneName - The name of the cloned animation group.
 
-    Parameters:
-    - targetMeshAsset: The mesh to retarget the animation to.
-    - animGroup: The animation group to retarget.
-    - cloneName: The name of the cloned animation group.
-
-    Returns:
-    Void, but the animation group will be retargeted to the target mesh.
-    And we are able to play this animation group on the target mesh through the scene object.
+ *  @returns {void} - The animation group will be retargeted to the target mesh. And we are able to play this animation group on the target mesh through the scene object.
 */
 function retargetAnimWithBlendshapes(targetMeshAsset, animAsset, cloneName = "anim") {
     console.log("Retargeting animation to target mesh...");

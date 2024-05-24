@@ -250,7 +250,10 @@
       console.error("test button pressed");
       const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
 
-      calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0]);
+      EngineController.loadedMesh.retargetMappings.push({"glassesGuyNew": calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0])});
+      console.log(EngineController.loadedMesh.retargetMappings);
+
+      // Todo: add animation from glassesGuyNew and apply it to loadedMesh with a retarget using retargetMappings
     }
 
     function testMove(obj, amount=-9e-8) {
