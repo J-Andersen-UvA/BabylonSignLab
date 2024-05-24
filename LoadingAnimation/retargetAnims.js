@@ -1,21 +1,22 @@
 function calcProportionInfo(sourceSkeleton, targetSkeleton) {
     console.error(sourceSkeleton);
+    console.error(sourceSkeleton === targetSkeleton);
 
     const proportionMappingSource = Object.fromEntries(
-        sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone.getTransformNode().position.clone(), "Rotation": bone._localRotation, "Scale": bone._localScaling}])
+        // sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone.getTransformNode().position.clone(), "Rotation": bone._localRotation, "Scale": bone._localScaling}])
+        sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": bone._localScaling}])
     );
 
     const proportionMappingTarget = Object.fromEntries(
-        targetSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone.getTransformNode().position.clone(), "Rotation": bone._localRotation, "Scale": bone._localScaling}])
+        targetSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": bone._localScaling}])
     );
 
     // for each entry in proportionMappingSource, calculate the difference between the source and target positions to get the scale
     for (const [boneName, proportionInfo] of Object.entries(proportionMappingSource)) {
         const sourcePosition = proportionInfo.Position;
         const targetPosition = proportionMappingTarget[boneName].Position;
-        console.log(sourcePosition === targetPosition);
         const scale = sourcePosition.subtract(targetPosition);
-        console.log(`Position difference for ${boneName}:`, scale);
+        // console.log(`Position difference for ${boneName}:`, scale);
         proportionMappingTarget[boneName].Scale = scale;
     }
 
@@ -53,7 +54,7 @@ function calcProportionInfo(sourceSkeleton, targetSkeleton) {
 */
 function retargetAnimWithBlendshapes(targetMeshAsset, animAsset, cloneName = "anim") {
     console.log("Retargeting animation to target mesh...");
-    calcProportionInfo(animAsset.skeleton, targetMeshAsset.skeletons[0]);
+    // calcProportionInfo(animAsset.skeleton, targetMeshAsset.skeletons[0]);
 
     var animGroup = animAsset.animationGroups[0];
     var morphName = null;

@@ -111,6 +111,8 @@
   <button onclick="signFetcher()">New Gloss</button>
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="getAngle()">get angle</button>
+  <button onclick="testAndFetch()">test button</button>
+  
 
   <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
@@ -242,6 +244,22 @@
       Functions for buttons start here.
     */
     // Function to play animations sequentially
+    async function testAndFetch() {
+      console.error("test button pressed");
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb");
+      // const nemu = await loadAssetMesh(scene);
+      console.log(scene.skeletons);
+      stopAnims(EngineController.scene, EngineController.loadedMesh);
+      
+      // Remove the currently loaded animation
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+
+      EngineController.loadedMesh.skeletons[0].returnToRest();
+      glasses.skeletons[0].returnToRest();
+      calcProportionInfo(EngineController.loadedMesh.skeletons[0], glasses.skeletons[0]);
+    }
+
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
       // Stop any ongoing animation loops
       // continueLoop = false
