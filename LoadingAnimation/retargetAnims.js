@@ -1,38 +1,62 @@
-function calcProportionInfo(sourceSkeleton, targetSkeleton) {
-    console.error(sourceSkeleton);
-    console.error(sourceSkeleton === targetSkeleton);
+/**
+ * Calculates the scale factor between two sets of positions.
+ * @param {BABYLON.Vector3} sourcePosition1 - The first position in the source skeleton.
+ * @param {BABYLON.Vector3} sourcePosition2 - The second position in the source skeleton.
+ * @param {BABYLON.Vector3} targetPosition1 - The first position in the target skeleton.
+ * @param {BABYLON.Vector3} targetPosition2 - The second position in the target skeleton.
+ * @returns {number} The scale factor between the two sets of positions.
+ */
+function getScaleFactor(sourcePosition1, sourcePosition2, targetPosition1, targetPosition2) {
+    let distance1 = BABYLON.Vector3.Distance(sourcePosition1, sourcePosition2);
+    let distance2 = BABYLON.Vector3.Distance(targetPosition1, targetPosition2);
 
+    return distance2 / distance1;
+}
+
+/**
+ * Calculates proportion information for retargeting animations from a source skeleton to a target skeleton.
+ * @param {object} sourceSkeleton - The source skeleton containing bone information.
+ * @param {object} targetSkeleton - The target skeleton containing bone information.
+ * @returns {object} A mapping of bone names to proportion information including position, rotation, and scale offsets.
+ */
+function calcProportionInfo(sourceSkeleton, targetSkeleton) {
     const proportionMappingSource = Object.fromEntries(
-        // sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone.getTransformNode().position.clone(), "Rotation": bone._localRotation, "Scale": bone._localScaling}])
-        sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": bone._localScaling}])
+        sourceSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": 1}])
     );
 
     const proportionMappingTarget = Object.fromEntries(
-        targetSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": bone._localScaling}])
+        targetSkeleton.bones.map((bone, index) => [bone.name, {"Position": bone._localPosition, "Rotation": bone._localRotation, "Scale": 1}])
     );
 
-    // for each entry in proportionMappingSource, calculate the difference between the source and target positions to get the scale
-    for (const [boneName, proportionInfo] of Object.entries(proportionMappingSource)) {
-        const sourcePosition = proportionInfo.Position;
-        const targetPosition = proportionMappingTarget[boneName].Position;
-        const scale = sourcePosition.subtract(targetPosition);
-        // console.log(`Position difference for ${boneName}:`, scale);
-        proportionMappingTarget[boneName].Scale = scale;
+    // Fetch and apply the scaling factor to the maps
+    let scalingFactor = getScaleFactor(proportionMappingSource["Hips"]["Position"], proportionMappingSource["LeftShoulder"]["Position"], proportionMappingTarget["Hips"]["Position"], proportionMappingTarget["LeftShoulder"]["Position"]);
+    for (const [boneName, proportionInfo] of Object.entries(proportionMappingTarget)) {
+        proportionInfo.Scale = scalingFactor;
     }
-
     console.log(proportionMappingTarget);
 
-    // if (scalingFactor.x > 0 || scalingFactor.y > 0 || scalingFactor.z > 0) {
-    //     console.log("testA");
-    //     // mod = 
-    // }
-    // else {
-    //     console.log("testB");
-    // }
+    /* Alter the position to be the Offset */
+    for (const [boneName, proportionInfo] of Object.entries(proportionMappingTarget)) {
+        var newPos = proportionInfo.Position.subtract(proportionMappingSource[boneName]["Position"].multiplyByFloats(scalingFactor, scalingFactor, scalingFactor));
+        proportionInfo.Position = newPos;
+    }
 
-    // console.log("Scaling factor:", scalingFactor);
-    // var test = proportionMappingSource["Spine1"]["Position"].subtract(proportionMappingTarget["Spine1"]["Position"]);
-    // console.log(test);
+
+    /* Alter the rotation to be the Offset */
+    for (const [boneName, proportionInfo] of Object.entries(proportionMappingTarget)) {
+        var rotationOffsetQuaternion = BABYLON.Quaternion.Inverse(proportionInfo.Rotation).multiply(proportionMappingSource[boneName]["Rotation"]).normalize();
+        proportionInfo.Rotation = proportionInfo.Rotation = rotationOffsetQuaternion;
+    }
+
+    /* Rename the Position to PositionOffset and Rotation to RotationOffset */
+    for (const [boneName, proportionInfo] of Object.entries(proportionMappingTarget)) {
+        proportionInfo.PositionOffset = proportionInfo.Position;
+        proportionInfo.RotationOffset = proportionInfo.Rotation;
+        delete proportionInfo.Position;
+        delete proportionInfo.Rotation;
+    }
+
+    return proportionMappingTarget;
 }
 
 /*

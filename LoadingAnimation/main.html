@@ -111,7 +111,9 @@
   <button onclick="signFetcher()">New Gloss</button>
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="getAngle()">get angle</button>
+  <button onclick="stopAnimsAndReturnToRest()">stopAnims return to rest</button>
   <button onclick="testAndFetch()">test button</button>
+  <button onclick="testMove(EngineController.loadedMesh.root)">test move</button>
   
 
   <!-- Fetch all scripts that we use -->
@@ -246,18 +248,23 @@
     // Function to play animations sequentially
     async function testAndFetch() {
       console.error("test button pressed");
-      const glasses = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb");
-      // const nemu = await loadAssetMesh(scene);
-      console.log(scene.skeletons);
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+
+      calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0]);
+    }
+
+    function testMove(obj, amount=-9e-8) {
+      obj.position.y += amount;
+    }
+
+    function stopAnimsAndReturnToRest() {
       stopAnims(EngineController.scene, EngineController.loadedMesh);
-      
+
       // Remove the currently loaded animation
       removeAnims(EngineController.scene, EngineController.loadedMesh);
       removeAnims(EngineController.scene, scene);
 
       EngineController.loadedMesh.skeletons[0].returnToRest();
-      glasses.skeletons[0].returnToRest();
-      calcProportionInfo(EngineController.loadedMesh.skeletons[0], glasses.skeletons[0]);
     }
 
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
@@ -287,7 +294,7 @@
           // await hideModal();
           // await new Promise(resolve => setTimeout(resolve, 3000));
           console.log("play animations, recording=" + recording);
-          await AnimationSequencer.start(basePath, EngineController.scene, EngineController.loadedMesh, ParamsManager.animations, recording=recording);
+          await AnimationSequencer.start(basePath, EngineController.scene, EngineController.loadedMesh, ParamsManager.animations, recording = recording);
         }
       }
     }
