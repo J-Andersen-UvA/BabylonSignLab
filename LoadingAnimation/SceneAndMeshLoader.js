@@ -51,7 +51,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         morphTargetManagers: [],
         skeletons: [],
         animationGroups: [],
-        retargetMappings: [],
+        retargetMappings: new Map(),
         // fetchForward: function () {
         //     function rotAroundX(vec, fac = 1) {
         //         // Create a rotation matrix for 90 degrees around the x-axis

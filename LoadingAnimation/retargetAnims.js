@@ -139,28 +139,31 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
         }
 
         // Apply the offset to the position
-        if (map[target].PositionOffset) {
+        if (map[target].PositionOffset && clone.targetedAnimations[i].animation.targetProperty === "position") {
             var posOffset = map[target].PositionOffset;
             clone.targetedAnimations[i].animation._keys.forEach(key => {
-                key.value = key.value.add(posOffset);
+                key.value.x += posOffset.x;
+                key.value.y += posOffset.y;
+                key.value.z += posOffset.z;
             });
         }
 
         // Apply the offset to the rotation
-        if (map[target].RotationOffset) {
-            var rotOffset = map[target].RotationOffset;
-            clone.targetedAnimations[i].animation._keys.forEach(key => {
-                key.value = rotOffset.multiply(key.value).normalize();
-            });
-        }
+        // if (map[target].RotationOffset && clone.targetedAnimations[i].animation.targetProperty === "rotationQuaternion") {
+        //     var rotOffset = map[target].RotationOffset;
+        //     clone.targetedAnimations[i].animation._keys.forEach(key => {
+        //         key.value = rotOffset.multiply(key.value).normalize();
+        //         console.log("Rotated: ", key.value.toString());
+        //     });
+        // }
 
-        // Apply the offset to the scale
-        if (map[target].Scale) {
-            var scaleOffset = map[target].Scale;
-            clone.targetedAnimations[i].animation._keys.forEach(key => {
-                key.value = key.value.multiplyByFloats(scaleOffset, scaleOffset, scaleOffset);
-            });
-        }
+        // // Apply the offset to the scale
+        // if (map[target].Scale && clone.targetedAnimations[i].animation.targetProperty === "scaling") {
+        //     var scaleOffset = map[target].Scale;
+        //     clone.targetedAnimations[i].animation._keys.forEach(key => {
+        //         key.value = key.value.multiplyByFloats(scaleOffset, scaleOffset, scaleOffset);
+        //     });
+        // }
     }
 
     return clone;
