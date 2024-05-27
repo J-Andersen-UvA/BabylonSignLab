@@ -298,7 +298,7 @@ function stopLoadAndPlayAnimation(path) {
     getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullPath = true)
         .then(anim => {
             console.log("getAnims returned: ", anim);
-            anim.animationGroups.push(retargetAnimWithBlendshapes(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
+            anim.animationGroups.push(retargetAnim(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
             // console.log(anim.animationGroups);
             keepOnlyAnimationGroup(EngineController.scene, anim, EngineController.loadedMesh, "freshAnim");
             EngineController.loadedMesh.animationGroups = anim.animationGroups;

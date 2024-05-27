@@ -41,7 +41,6 @@ function calcProportionInfo(sourceSkeleton, targetSkeleton) {
         proportionInfo.Position = newPos;
     }
 
-
     /* Alter the rotation to be the Offset */
     for (const [boneName, proportionInfo] of Object.entries(proportionMappingTarget)) {
         var rotationOffsetQuaternion = BABYLON.Quaternion.Inverse(proportionInfo.Rotation).multiply(proportionMappingSource[boneName]["Rotation"]).normalize();
@@ -70,23 +69,13 @@ function calcProportionInfo(sourceSkeleton, targetSkeleton) {
 
  *  @returns {object} clone - The animation group will be retargeted to the target mesh and this function returns a clone.
 */
-function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "anim", map = null) {
+function retargetAnim(targetMeshAsset, animGroup, cloneName = "anim", map = null) {
     console.log("Retargeting animation to target mesh...");
 
     var morphName = null;
     var curMTM = 0;
     var morphIndex = 0;
     var mtm;
-
-
-    // console.error("AMOUNT: "+ animGroup.targetedAnimations.length);
-    // // print all targets from animgroup
-    // for (var i = 0; i < animGroup.targetedAnimations.length; i++) {
-    //     // if the target name doesnt start with morphTarget, print it
-    //     if (!animGroup.targetedAnimations[i].target.name.startsWith("morphTarget")) {
-    //         console.log(animGroup.targetedAnimations[i].target.name);
-    //     }
-    // }
 
     var clone = animGroup.clone(cloneName, (target) => {
         if (!target) {
@@ -126,6 +115,7 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
         return mtm;
     });
 
+    // If we aren't requested to retarget the animation, return the clone
     if (!map) { return clone; }
 
     // Now do the retargeting by looping over the animation keys in the group and adding the offsets from the map
@@ -134,7 +124,6 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
 
         // If the target is not in the map, skip it
         if (!map[target]) {
-            console.log("Target not found in map: ", target);
             continue;
         }
 
@@ -148,22 +137,27 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "an
             });
         }
 
+        // if target is spine, dont apply rotation
+        if (target.startsWith("Spine") || target.startsWith("Neck") || target.startsWith("Head")) {
+            continue;
+        }
+
         // Apply the offset to the rotation
-        // if (map[target].RotationOffset && clone.targetedAnimations[i].animation.targetProperty === "rotationQuaternion") {
-        //     var rotOffset = map[target].RotationOffset;
-        //     clone.targetedAnimations[i].animation._keys.forEach(key => {
-        //         key.value = rotOffset.multiply(key.value).normalize();
-        //         console.log("Rotated: ", key.value.toString());
-        //     });
-        // }
+        if (map[target].RotationOffset && clone.targetedAnimations[i].animation.targetProperty === "rotationQuaternion") {
+            var rotOffset = map[target].RotationOffset;
+            clone.targetedAnimations[i].animation._keys.forEach(key => {
+                key.value = rotOffset.multiply(key.value).normalize();
+            });
+        }
 
         // // Apply the offset to the scale
-        // if (map[target].Scale && clone.targetedAnimations[i].animation.targetProperty === "scaling") {
-        //     var scaleOffset = map[target].Scale;
-        //     clone.targetedAnimations[i].animation._keys.forEach(key => {
-        //         key.value = key.value.multiplyByFloats(scaleOffset, scaleOffset, scaleOffset);
-        //     });
-        // }
+        if (map[target].Scale && clone.targetedAnimations[i].animation.targetProperty === "scaling") {
+            var scaleOffset = map[target].Scale;
+            clone.targetedAnimations[i].animation._keys.forEach(key => {
+                console.log("ScalingFactor: ", scaleOffset);
+                key.value = key.value.multiplyByFloats(scaleOffset, scaleOffset, scaleOffset);
+            });
+        }
     }
 
     return clone;
@@ -366,4 +360,4 @@ function getMorphTargetIndex(morphTargetManager, targetName) {
 //         };
 //     }
 
-module.exports = { retargetAnimWithBlendshapes, getMorphTargetIndex };
+module.exports = { retargetAnim, getMorphTargetIndex };
