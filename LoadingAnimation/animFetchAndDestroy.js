@@ -111,7 +111,7 @@ function keepOnlyAnimationGroup(scene, animAsset, loadedMesh, groupName = "anim"
         for (let i = 0; i < animationGroups.length; i++) {
             if (animationGroups[i] == null) { continue; }
 
-            if (animationGroups[i].name !== groupName) {
+            if (animationGroups[i].name !== groupName && animationGroups[i].name !== undefined) {
                 console.log("Removing animation group: " + animationGroups[i].name);
                 animationGroups[i].dispose();
                 animationGroups[i] = null;

@@ -70,23 +70,31 @@ function calcProportionInfo(sourceSkeleton, targetSkeleton) {
 
  *  @returns {object} clone - The animation group will be retargeted to the target mesh and this function returns a clone.
 */
-function retargetAnimWithBlendshapes(targetMeshAsset, animAsset, cloneName = "anim") {
+function retargetAnimWithBlendshapes(targetMeshAsset, animGroup, cloneName = "anim", map = null) {
     console.log("Retargeting animation to target mesh...");
-    // calcProportionInfo(animAsset.skeleton, targetMeshAsset.skeletons[0]);
 
-    var animGroup = animAsset.animationGroups[0];
     var morphName = null;
     var curMTM = 0;
     var morphIndex = 0;
     var mtm;
 
-    return animGroup.clone(cloneName, (target) => {
+
+    // console.error("AMOUNT: "+ animGroup.targetedAnimations.length);
+    // // print all targets from animgroup
+    // for (var i = 0; i < animGroup.targetedAnimations.length; i++) {
+    //     // if the target name doesnt start with morphTarget, print it
+    //     if (!animGroup.targetedAnimations[i].target.name.startsWith("morphTarget")) {
+    //         console.log(animGroup.targetedAnimations[i].target.name);
+    //     }
+    // }
+
+    var clone = animGroup.clone(cloneName, (target) => {
         if (!target) {
             console.log("No target.");
             return null;
         }
 
-        console.log("Retargeting to target: ", target.name);
+        // console.log("Retargeting to target: ", target.name);
 
         // First set all bone targets to the linkedTransformNode
         let idx = targetMeshAsset.skeletons[0].getBoneIndexByName(target.name);
@@ -117,6 +125,45 @@ function retargetAnimWithBlendshapes(targetMeshAsset, animAsset, cloneName = "an
 
         return mtm;
     });
+
+    if (!map) { return clone; }
+
+    // Now do the retargeting by looping over the animation keys in the group and adding the offsets from the map
+    for (var i = 0; i < clone.targetedAnimations.length; i++) {
+        var target = clone.targetedAnimations[i].target.name;
+
+        // If the target is not in the map, skip it
+        if (!map[target]) {
+            console.log("Target not found in map: ", target);
+            continue;
+        }
+
+        // Apply the offset to the position
+        if (map[target].PositionOffset) {
+            var posOffset = map[target].PositionOffset;
+            clone.targetedAnimations[i].animation._keys.forEach(key => {
+                key.value = key.value.add(posOffset);
+            });
+        }
+
+        // Apply the offset to the rotation
+        if (map[target].RotationOffset) {
+            var rotOffset = map[target].RotationOffset;
+            clone.targetedAnimations[i].animation._keys.forEach(key => {
+                key.value = rotOffset.multiply(key.value).normalize();
+            });
+        }
+
+        // Apply the offset to the scale
+        if (map[target].Scale) {
+            var scaleOffset = map[target].Scale;
+            clone.targetedAnimations[i].animation._keys.forEach(key => {
+                key.value = key.value.multiplyByFloats(scaleOffset, scaleOffset, scaleOffset);
+            });
+        }
+    }
+
+    return clone;
 }
 
 // Helper function to get the morph target index, since babylon only provides

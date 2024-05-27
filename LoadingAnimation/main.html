@@ -227,7 +227,7 @@
         getAnims(basePath, scene, loadedMesh, ParamsManager.glos, ParamsManager.gltf)
           .then(anim => {
             animAsset = anim;
-            animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset, "anim"));
+            animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
 
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
 
@@ -247,22 +247,25 @@
     */
     async function testAndFetch() {
       console.error("test button pressed");
-      // const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+      removeAnims(EngineController.scene, glasses.fetched);
 
-      // EngineController.loadedMesh.retargetMappings.push({ "glassesGuyNew": calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0]) });
-      console.log(EngineController.loadedMesh.retargetMappings);
+      EngineController.loadedMesh.retargetMappings.push({ "glassesGuyNew": calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0]) });
+      glasses.root.dispose();
 
       // Todo: add animation from glassesGuyNew and apply it to loadedMesh with a retarget using retargetMappings
       getAnims(basePath, scene, EngineController.loadedMesh, "ALLEMAAL-A", ParamsManager.gltf)
         .then(z => {
-          const newAnim = retargetAnimWithBlendshapes(EngineController.loadedMesh, z, "z");
-          z.animationGroups.push(newAnim);
+          console.log(z.animationGroups);
+          const newAnim = retargetAnimWithBlendshapes(EngineController.loadedMesh, z.animationGroups[0], "z", EngineController.loadedMesh.retargetMappings["glassesGuyNew"]);
+          console.log("newAnim", newAnim);
           EngineController.loadedMesh.fetched.animationGroups.push(newAnim);
-          console.log(EngineController.loadedMesh.fetched);
           keepOnlyAnimationGroup(scene, z, EngineController.loadedMesh, "z");
 
           if (ParamsManager.play != "no") {
-            playAnims(scene, EngineController.loadedMesh, 0);
+            playAnims(scene, EngineController.loadedMesh.fetched, 0);
           }
         })
         .catch(error => {
