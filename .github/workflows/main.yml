@@ -12,26 +12,5 @@ jobs:
     - name: Echo something
       run: echo something
 
-    # - name: Checkout code
-    #   uses: actions/checkout@v2
-#     - name: Install sshpass
-#       run: |
-#         sudo apt-get update
-#         sudo apt-get install -y sshpass
-
-#     - name: Copy files via SSH using sshpass
-#       env:
-#         SSHPASS: ${{ secrets.SSH_PASSWORD }}
-#       run: |
-#         sshpass -e ssh -o StrictHostKeyChecking=no -p 8022 jari@leffe.science.uva.nl << 'EOF'
-#           echo 'SSH connection successful'
-#           cd /web/jari/BabylonSignLab
-#           /web/jari/executeUpdate.sh
-#           EXIT_CODE=$?
-#           if [ $EXIT_CODE -ne 0 ]; then
-#             echo "Deployment failed."
-#             exit $EXIT_CODE
-#           else
-#             echo "Deployment succeeded."
-#           fi
-#         EOF
+    - name: Send URL call to Leffe
+      run: curl -X GET https://leffe.science.uva.nl:8043/githubCli/
