@@ -13,4 +13,4 @@ jobs:
       run: echo something
 
     - name: Send URL call to Leffe
-      run: curl -X GET --insecure https://leffe.science.uva.nl:8043/githubCli/
+      run: curl -X GET --insecure https://leffe.science.uva.nl:8043/githubCli/update
