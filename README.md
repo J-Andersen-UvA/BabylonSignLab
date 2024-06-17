@@ -1,4 +1,4 @@
-![CI status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![Deploy on Leffe](https://github.com/J-Andersen-UvA/BabylonSignLab/actions/workflows/main.yml/badge.svg)
 
 # LoadingAnimation Implementation
 
