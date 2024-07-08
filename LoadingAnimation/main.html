@@ -240,6 +240,79 @@
     /*
       Functions for buttons start here.
     */
+    async function testAndFetch() {
+      console.error("test button pressed");
+      keepAnimating = true;
+
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+      removeAnims(EngineController.scene, glasses.fetched);
+
+
+      console.log(EngineController.loadedMesh.fetched.skeletons[0].bones[0].getTransformNode());
+      glasses.fetched.skeletons[0].bones[0].getTransformNode().position = BABYLON.Vector3.Zero();
+      EngineController.loadedMesh.fetched.skeletons[0].bones[0].getTransformNode().position = BABYLON.Vector3.Zero();
+
+      EngineController.loadedMesh.retargetMappings.set("glassesGuyNew", calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0]));
+      glasses.root.dispose();
+
+      // Todo: add animation from glassesGuyNew and apply it to loadedMesh with a retarget using retargetMappings
+      getAnims(basePath, scene, EngineController.loadedMesh, "APPEL", ParamsManager.gltf)
+        .then(z => {
+          console.log(z.animationGroups);
+          const newAnim = retargetAnim(EngineController.loadedMesh, z.animationGroups[0], "z", EngineController.loadedMesh.retargetMappings.get("glassesGuyNew"));
+          console.log("newAnim", newAnim);
+          EngineController.loadedMesh.fetched.animationGroups.push(newAnim);
+          keepOnlyAnimationGroup(scene, z, EngineController.loadedMesh, "z");
+
+          if (ParamsManager.play != "no") {
+            playLoadedAnims(scene, EngineController.loadedMesh.fetched);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to load animations:', error);
+        });
+    }
+
+    async function testMove(obj, amount = -9e-8) {
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+      removeAnims(EngineController.scene, glasses.fetched);
+
+      // dispose of original mesh
+      EngineController.loadedMesh.root.dispose();
+
+      // set camera to neck bone of glasses
+      CameraController.setCameraOnBone(scene, glasses.fetched.meshes[1], glasses.fetched.skeletons[0]);
+
+      getAnims(basePath, scene, glasses.fetched, "APPEL", ParamsManager.gltf)
+        .then(z => {
+          glasses.fetched.animationGroups.push(z.animationGroups[0]);
+          keepOnlyAnimationGroup(scene, z, glasses, "APPEL");
+
+          if (ParamsManager.play != "no") {
+            playLoadedAnims(scene, glasses.fetched);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to load animations:', error);
+        });
+    }
+
+    function stopAnimsAndReturnToRest() {
+      stopAnims(EngineController.scene, EngineController.loadedMesh);
+
+      // Remove the currently loaded animation
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+
+      EngineController.loadedMesh.skeletons[0].returnToRest();
+
+      keepAnimating = false;
+    }
+
     // Function to play animations sequentially
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
       // Stop any ongoing animation loops
