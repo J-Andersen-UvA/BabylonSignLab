@@ -111,6 +111,10 @@
   <button onclick="signFetcher()">New Gloss</button>
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="getAngle()">get angle</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEMesh('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx')">Send source and rig</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEMesh('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx')">TODO:Send target and rig</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEAnimRetarget('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx')">TODO:Send anim and retarget</button>
+
 
   <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
@@ -123,6 +127,7 @@
   <script src="signBuilder.js"></script>
   <script src="retargetAnims.js"></script>
   <script src="initialize.js"></script>
+  <script src="messageUEServer.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -151,8 +156,12 @@
       basePathMesh = "./MeshesAndAnims/";
     }
 
-    // const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
     // const basePathMesh = "./MeshesAndAnims/"
+    
+    // TESTING retarget locally
+    basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
+    const retargetServerHost = "localhost";
+    const retargetServerPort = "8069";
 
     // Animation vars
     var animAsset;
