@@ -111,6 +111,15 @@
   <button onclick="signFetcher()">New Gloss</button>
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="getAngle()">get angle</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEMesh('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx')">Send source</button>
+  <!-- <button type="button" class="btn btn-primary" onclick="sendCommandUEMesh('http://host.docker.internal:8080/MeshesAndAnims/Nemu/Neutral.fbx')">Send target</button> -->
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEMesh('http://localhost:8080/MeshesAndAnims/Nemu/Neutral.fbx')">Send target</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEAnim('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/AAP.fbx', '/Game/SkeletalMeshes/ERROR-SC/ERROR-SC')">SendAnim</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEAnimRetargetSend('/Game/SkeletalMeshes/ERROR-SC/ERROR-SC', '/Game/SkeletalMeshes/ERROR-SC/ERROR-SC', '/Game/ImportedAssets/AAP', 'http://localhost:5000/upload')">TEST:Send anim and retarget source source</button>
+  <button type="button" class="btn btn-primary" onclick="sendCommandUEAnimRetargetSend('/Game/SkeletalMeshes/ERROR-SC/ERROR-SC', '/Game/SkeletalMeshes/Neutral/Neutral', '/Game/ImportedAssets/AAP', 'http://localhost:5000/upload')">TODO:Send anim and retarget</button>
+  <button type="button" class="btn btn-primary" onclick="retargetUE('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/AAP.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/APPEL.fbx', 'http://localhost:5000/upload')">test retargetUE</button>
+  <!-- <button type="button" class="btn btn-primary" onclick="sendCommandUEAnimRetargetSend('/Game/SkeletalMeshes/ERROR-SC/ERROR-SC', '/Game/SkeletalMeshes/Neutral/Neutral', '/Game/ImportedAssets/BABY', 'http://host.docker.internal:5000/upload')">TODO:Send anim and retarget</button> -->
+
 
   <!-- Fetch all scripts that we use -->
   <script src="SceneAndMeshLoader.js"></script>
@@ -123,6 +132,7 @@
   <script src="signBuilder.js"></script>
   <script src="retargetAnims.js"></script>
   <script src="initialize.js"></script>
+  <script src="messageUEServer.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -151,9 +161,13 @@
       basePathMesh = "./MeshesAndAnims/";
     }
 
-    // const basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
     // const basePathMesh = "./MeshesAndAnims/"
-
+    
+    // TESTING retarget locally
+    // basePathMesh = "http://localhost:8080/MeshesAndAnims/Nemu/"
+    const retargetServerHost = "localhost";
+    const retargetServerPort = "8069";
+    
     // Animation vars
     var animAsset;
     // var animationGroupFrom;
@@ -240,6 +254,79 @@
     /*
       Functions for buttons start here.
     */
+    async function testAndFetch() {
+      console.error("test button pressed");
+      keepAnimating = true;
+
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+      removeAnims(EngineController.scene, glasses.fetched);
+
+
+      console.log(EngineController.loadedMesh.fetched.skeletons[0].bones[0].getTransformNode());
+      glasses.fetched.skeletons[0].bones[0].getTransformNode().position = BABYLON.Vector3.Zero();
+      EngineController.loadedMesh.fetched.skeletons[0].bones[0].getTransformNode().position = BABYLON.Vector3.Zero();
+
+      EngineController.loadedMesh.retargetMappings.set("glassesGuyNew", calcProportionInfo(glasses.skeletons[0], EngineController.loadedMesh.skeletons[0]));
+      glasses.root.dispose();
+
+      // Todo: add animation from glassesGuyNew and apply it to loadedMesh with a retarget using retargetMappings
+      getAnims(basePath, scene, EngineController.loadedMesh, "APPEL", ParamsManager.gltf)
+        .then(z => {
+          console.log(z.animationGroups);
+          const newAnim = retargetAnim(EngineController.loadedMesh, z.animationGroups[0], "z", EngineController.loadedMesh.retargetMappings.get("glassesGuyNew"));
+          console.log("newAnim", newAnim);
+          EngineController.loadedMesh.fetched.animationGroups.push(newAnim);
+          keepOnlyAnimationGroup(scene, z, EngineController.loadedMesh, "z");
+
+          if (ParamsManager.play != "no") {
+            playLoadedAnims(scene, EngineController.loadedMesh.fetched);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to load animations:', error);
+        });
+    }
+
+    async function testMove(obj, amount = -9e-8) {
+      const glasses = await loadAssetMesh(scene, basePathMesh, filename = "glassesGuyNew.glb");
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+      removeAnims(EngineController.scene, glasses.fetched);
+
+      // dispose of original mesh
+      EngineController.loadedMesh.root.dispose();
+
+      // set camera to neck bone of glasses
+      CameraController.setCameraOnBone(scene, glasses.fetched.meshes[1], glasses.fetched.skeletons[0]);
+
+      getAnims(basePath, scene, glasses.fetched, "APPEL", ParamsManager.gltf)
+        .then(z => {
+          glasses.fetched.animationGroups.push(z.animationGroups[0]);
+          keepOnlyAnimationGroup(scene, z, glasses, "APPEL");
+
+          if (ParamsManager.play != "no") {
+            playLoadedAnims(scene, glasses.fetched);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to load animations:', error);
+        });
+    }
+
+    function stopAnimsAndReturnToRest() {
+      stopAnims(EngineController.scene, EngineController.loadedMesh);
+
+      // Remove the currently loaded animation
+      removeAnims(EngineController.scene, EngineController.loadedMesh);
+      removeAnims(EngineController.scene, scene);
+
+      EngineController.loadedMesh.skeletons[0].returnToRest();
+
+      keepAnimating = false;
+    }
+
     // Function to play animations sequentially
     async function animationSequencing(recording = false, keepPlaying = true, frame) {
       // Stop any ongoing animation loops
