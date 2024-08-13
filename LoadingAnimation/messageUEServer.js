@@ -1,14 +1,15 @@
 function sendMessageUEProxy(messageType, messageContent) {
     return new Promise((resolve, reject) => {
         // Construct the POST request to the Flask server
+        console.log(`Sending message: ${JSON.stringify({ messageType, messageContent })}`);
         fetch('/proxy_retarget', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                messageType: messageType,
-                messageContent: messageContent
+            messageType: messageType,
+            messageContent: messageContent
             })
         })
         .then(response => response.json())
