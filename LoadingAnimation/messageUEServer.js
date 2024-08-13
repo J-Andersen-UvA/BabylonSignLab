@@ -1,3 +1,33 @@
+function sendMessageUEProxy(messageType, messageContent) {
+    return new Promise((resolve, reject) => {
+        // Construct the POST request to the Flask server
+        fetch('/proxy_retarget', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messageType: messageType,
+                messageContent: messageContent
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log(`Received from Flask: ${data.response}`);
+                resolve(data.response);
+            } else {
+                console.error(`Error from Flask: ${data.message}`);
+                reject(new Error(data.message));
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            reject(new Error('Fetch error: ' + error.message));
+        });
+    });
+}
+
 function sendMessageUE(messageType, messageContent, host = retargetServerHost, port = retargetServerPort) {
     return new Promise((resolve, reject) => {
         // WebSocket connection
@@ -45,7 +75,7 @@ function sendMessageUE(messageType, messageContent, host = retargetServerHost, p
 function sendCommandUEMesh(meshURL) {
     const meshName = meshURL.split('/').pop().split('.')[0];
 
-    return sendMessageUE('import_fbx_from_url', meshURL)
+    return sendMessageUEProxy('import_fbx_from_url', meshURL)
         .then(meshPath => {
             if (!meshPath.includes("path")) {
                 throw new Error("Invalid response, meshPath does not contain 'path'\tResponse: " + meshPath);
@@ -55,7 +85,7 @@ function sendCommandUEMesh(meshURL) {
             meshPath = meshPath.split(' ').pop().slice(0, -2);
             // Remove path( from the beginning
             meshPath = meshPath.slice(5);
-            return sendMessageUE('import_fbx', meshPath);
+            return sendMessageUEProxy('import_fbx', meshPath);
         })
         .then(meshPathUE => {
             return true;
@@ -70,7 +100,7 @@ function sendCommandUEAnim(animURL, skeletonPath = null) {
     const animName = animURL.split('/').pop().split('.')[0].replace('.fbx', '');
     const UEDestPath = `/Game/ImportedAssets/`;
 
-    return sendMessageUE('import_fbx_from_url', animURL)
+    return sendMessageUEProxy('import_fbx_from_url', animURL)
         .then(animPath => {
             console.log("animPath:", animPath)
             // Response form "File downloaded successfully path(/usr/src/your_project/imports/ERROR-SC.fbx)." Only the path is needed
@@ -78,10 +108,10 @@ function sendCommandUEAnim(animURL, skeletonPath = null) {
             // Remove path( from the beginning
             animPath = animPath.slice(5);
             if (skeletonPath) {
-                return sendMessageUE('import_fbx_animation', animPath + "," + UEDestPath + "," + animName + "," + skeletonPath);
+                return sendMessageUEProxy('import_fbx_animation', animPath + "," + UEDestPath + "," + animName + "," + skeletonPath);
             }
 
-            return sendMessageUE('import_fbx_animation', animPath + "," + UEDestPath + "," + animName);
+            return sendMessageUEProxy('import_fbx_animation', animPath + "," + UEDestPath + "," + animName);
         })
         .then(res => {
             return true;
@@ -99,7 +129,7 @@ function sendCommandUEAnimRetargetSend(sourceMeshPath, targetMeshPath, animPath,
         return Promise.reject(new Error("animPath must be a string containing /Game/ImportedAssets/"));
     }
 
-    return sendMessageUE('rig_retarget_send', sourceMeshPath + "," + targetMeshPath + "," + animPath + "," + sendPath)
+    return sendMessageUEProxy('rig_retarget_send', sourceMeshPath + "," + targetMeshPath + "," + animPath + "," + sendPath)
         .then(sourceMeshPathUE => {
             return true;
         })
