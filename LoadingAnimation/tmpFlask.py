@@ -6,9 +6,9 @@ app = Flask(__name__)
 def serve_html():
     return send_from_directory('.', 'main.html')
 
-# Serve static files
 @app.route('/<path:filename>')
 def serve_static(filename):
+    print(f"Serving file: {filename}")  # Debug line
     return send_from_directory('.', filename)
 
 if __name__ == '__main__':
