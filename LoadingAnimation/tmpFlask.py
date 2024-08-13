@@ -1,6 +1,5 @@
 from flask import Flask, send_from_directory, request, jsonify
 import websocket
-import json
 
 app = Flask(__name__)
 
@@ -10,7 +9,7 @@ def serve_html():
 
 @app.route('/<path:filename>')
 def serve_static(filename):
-    print(f"Serving file: {filename}")  # Debug line
+    print(f"Serving file: {filename}")
     return send_from_directory('.', filename)
 
 # New endpoint to handle WebSocket proxying
@@ -24,12 +23,8 @@ def proxy_retarget():
         # Construct the WebSocket request URL
         ws_url = f"ws://retarget_server:8069"
 
-        # Use a WebSocket client library (like websocket-client or requests) to send the message to Docker R
-        import websocket
-
         # Create WebSocket connection
-        ws = websocket.WebSocket()
-        ws.connect(ws_url)
+        ws = websocket.create_connection(ws_url)
 
         # Send the message
         ws.send(f"{message_type}:{message_content}")
@@ -45,6 +40,6 @@ def proxy_retarget():
     except Exception as e:
         print(f"Error during WebSocket communication: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
