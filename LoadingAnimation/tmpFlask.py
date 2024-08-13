@@ -24,21 +24,35 @@ def proxy_retarget():
         ws_url = f"ws://retarget_server:8069"
 
         # Create WebSocket connection
-        ws = websocket.create_connection(ws_url)
+        ws = websocket.WebSocket()
+        ws.connect(ws_url)
 
         # Send the message
         ws.send(f"{message_type}:{message_content}")
-        
-        # Wait for response
-        response = ws.recv()
+        print(f"Sent message: {message_type}:{message_content}")
+
+        response = None
+
+        # Listen for messages from the server
+        while True:
+            result = ws.recv()
+            if result:
+                print(f"Received: {result}")
+                response = result
+                break
 
         # Close the WebSocket connection
         ws.close()
+        print("Connection closed")
 
         return jsonify({'status': 'success', 'response': response})
-    
+
+    except websocket.WebSocketException as e:
+        print(f"WebSocket error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
     except Exception as e:
-        print(f"Error during WebSocket communication: {e}")
+        print(f"General error: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
