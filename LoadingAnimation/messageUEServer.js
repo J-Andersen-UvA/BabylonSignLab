@@ -1,6 +1,7 @@
 function sendMessageUE(messageType, messageContent, host = retargetServerHost, port = retargetServerPort) {
     return new Promise((resolve, reject) => {
         // WebSocket connection
+        console.log(`Connecting to ws://${host}:${port}`);
         const socket = new WebSocket(`ws://${host}:${port}`);
         var response = null;
 
