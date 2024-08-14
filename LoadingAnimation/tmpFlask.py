@@ -26,13 +26,9 @@ def proxy_retarget():
         ws = websocket.WebSocket()
         ws.connect(ws_url)
 
-        # Check if the WebSocket connection is open
-        if ws.sock and ws.sock.connected:
-            # Send the message
-            ws.send(f"{message_type}:{message_content}")
-            print(f"Sent message: {message_type}:{message_content}")
-        else:
-            raise websocket.WebSocketException("WebSocket connection is not open")
+        # Send the message
+        ws.send(f"{message_type}:{message_content}")
+        print(f"Sent message: {message_type}:{message_content}")
 
         response = []
 
@@ -45,11 +41,12 @@ def proxy_retarget():
                     response.append(result)
         except websocket.WebSocketConnectionClosedException:
             print("WebSocket connection was closed by the server.")
+        except websocket.WebSocketTimeoutException:
+            print("WebSocket connection timed out.")
         finally:
-            # Make sure the connection is closed
-            if ws.sock and ws.sock.connected:
-                ws.close()
-                print("WebSocket connection closed")
+            # Close the WebSocket connection
+            ws.close()
+            print("WebSocket connection closed")
 
         return jsonify({'status': 'success', 'response': response[-1]})
 
