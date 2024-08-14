@@ -12,7 +12,6 @@ def serve_static(filename):
     print(f"Serving file: {filename}")
     return send_from_directory('.', filename)
 
-# New endpoint to handle WebSocket proxying
 @app.route('/proxy_retarget', methods=['POST'])
 def proxy_retarget():
     try:
@@ -27,25 +26,32 @@ def proxy_retarget():
         ws = websocket.WebSocket()
         ws.connect(ws_url)
 
-        # Send the message
-        ws.send(f"{message_type}:{message_content}")
-        print(f"Sent message: {message_type}:{message_content}")
+        # Check if the WebSocket connection is open
+        if ws.sock and ws.sock.connected:
+            # Send the message
+            ws.send(f"{message_type}:{message_content}")
+            print(f"Sent message: {message_type}:{message_content}")
+        else:
+            raise websocket.WebSocketException("WebSocket connection is not open")
 
-        response = None
+        response = []
 
-        # Listen for messages from the server
-        while True:
-            result = ws.recv()
-            if result:
-                print(f"Received: {result}")
-                response = result
-                break
+        # Listen for messages from the server until the connection is closed
+        try:
+            while True:
+                result = ws.recv()  # This will block until a message is received
+                if result:
+                    print(f"Received: {result}")
+                    response.append(result)
+        except websocket.WebSocketConnectionClosedException:
+            print("WebSocket connection was closed by the server.")
+        finally:
+            # Make sure the connection is closed
+            if ws.sock and ws.sock.connected:
+                ws.close()
+                print("WebSocket connection closed")
 
-        # Close the WebSocket connection
-        ws.close()
-        print("Connection closed")
-
-        return jsonify({'status': 'success', 'response': response})
+        return jsonify({'status': 'success', 'response': response[-1]})
 
     except websocket.WebSocketException as e:
         print(f"WebSocket error: {e}")
