@@ -297,6 +297,27 @@ function stopLoadAndPlayAnimation(path) {
     // Fetch the new animation and play
     getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullPath = true)
         .then(anim => {
+            // Get the initial rotation of the hips of the first frame of the animation
+            let animHipsRotation = anim.animationGroups[0].targetedAnimations[1].animation;
+            let initialRotation = animHipsRotation.getKeys()[0].value;
+            console.log("Initial rotation of the hips (in Euler angles): ", initialRotation.toEulerAngles().scale(180/Math.PI));
+
+            // Now rotate the mesh along the y-axis to face the z-axis
+
+            // Adjust the root rotation of the __root__ node with the adjusted rotation
+            EngineController.loadedMesh.root.rotationQuaternion = initialRotation;
+
+            // Add the extra rotation towards the camera to this rotation
+            // let extraRotation = BABYLON.Quaternion.FromEulerAngles(-Math.PI/2, 2*Math.PI/2, Math.PI/2);
+
+            // Combine the local rotation and extra rotation using quaternion multiplication
+            // let combinedRotation = extraRotation.multiply(localRotation);
+            // let combinedRotation = localRotation.multiply(extraRotation);
+            // let combinedRotation = localRotation;
+
+            // Adjust the root rotation of the __root__ node to face the camera
+            // EngineController.loadedMesh.root.rotationQuaternion = combinedRotation;
+
             console.log("getAnims returned: ", anim);
             anim.animationGroups.push(retargetAnimWithBlendshapes(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
             // console.log(anim.animationGroups);
@@ -304,7 +325,9 @@ function stopLoadAndPlayAnimation(path) {
             EngineController.loadedMesh.animationGroups = anim.animationGroups;
             EngineController.scene.animationGroups = anim.animationGroups;
 
+
             playAnims(EngineController.scene, EngineController.loadedMesh, 0, true);
+
             
             // wait for the EngineController.loadedMesh.animationGroups[0].isPlaying to start playing then refocus camera
             new Promise(resolve => {
@@ -314,10 +337,10 @@ function stopLoadAndPlayAnimation(path) {
                         resolve();
                     }
                 }, 1000);
-            }).then(() => {
+            }).then(() => {            
                 // Code to execute after the animation starts playing
                 // Refocus the camera
-                CameraController.reFocusCamera();
+                // CameraController.reFocusCamera();
             });
 
         })
@@ -325,6 +348,56 @@ function stopLoadAndPlayAnimation(path) {
             console.error('Failed to load animations:', error);
         });
 }
+
+// function getClosestAxis(quat) {
+//     if (!quat) {
+//         console.error("Invalid quaternion passed to getClosestAxis.");
+//         return BABYLON.Quaternion.Identity(); // Return a default identity quaternion
+//     }
+
+//     // Apply the initial rotation to the world up vector (0, 1, 0)
+//     let transformedUp;
+//     try {
+//         console.log("A");
+
+//         transformedUp = BABYLON.Vector3.TransformCoordinates(BABYLON.Vector3.Up(), quat);
+//     } catch (error) {
+//         console.log("B");
+
+//         console.error("Failed to transform coordinates:", error);
+//         return BABYLON.Quaternion.Identity();
+//     }
+
+//     // Find the axis with the largest component in the transformed up vector
+//     let absX = Math.abs(transformedUp.x);
+//     let absY = Math.abs(transformedUp.y);
+//     let absZ = Math.abs(transformedUp.z);
+
+//     // Identify the closest world axis
+//     let closestAxis;
+//     if (absY >= absX && absY >= absZ) {
+//         // Closest to Y-axis
+//         closestAxis = BABYLON.Axis.Y;
+//     } else if (absX >= absY && absX >= absZ) {
+//         // Closest to X-axis
+//         closestAxis = BABYLON.Axis.X;
+//     } else {
+//         // Closest to Z-axis
+//         closestAxis = BABYLON.Axis.Z;
+//     }
+
+//     // Create a quaternion that represents alignment with the closest axis
+//     let alignedQuat = BABYLON.Quaternion.Identity();
+//     if (closestAxis === BABYLON.Axis.X) {
+//         alignedQuat = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.X, Math.PI / 2);
+//     } else if (closestAxis === BABYLON.Axis.Y) {
+//         alignedQuat = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, 0); // Identity already represents this
+//     } else if (closestAxis === BABYLON.Axis.Z) {
+//         alignedQuat = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Z, Math.PI / 2);
+//     }
+
+//     return alignedQuat;
+// }
 
 /*
 The following functions are deprecated and should not be used.

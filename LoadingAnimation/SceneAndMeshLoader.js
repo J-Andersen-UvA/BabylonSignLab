@@ -46,6 +46,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         root: null,
         faceMesh: null,
         teethMesh: null,
+        hips: null,
         eyeMesh: null,
         morphTargetManagers: [],
         skeletons: [],
@@ -106,6 +107,13 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
     // Find all skeletons
     for (skeleton of asset.fetched.skeletons) {
         asset.skeletons.push(skeleton);
+    }
+
+    // Find the hips transform node
+    for (transformNode of asset.fetched.transformNodes) {
+        if (transformNode.name === "Hips") {
+            asset.hips = transformNode;
+        }
     }
 
     return asset;
