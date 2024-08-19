@@ -185,9 +185,70 @@ async function playAnims(scene, loadedResults, animationIndex) {
 
         return new Promise((resolve) => {
             animationGroup.onAnimationEndObservable.addOnce(() => {
-                console.log(`Animation ${animationGroup.name} has ended.`);
+                console.log(`Animation in ${animationGroup.name} has ended.`);
                 scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
                 resolve(true);
+            });
+
+            animationGroup.onAnimationGroupEndObservable.addOnce(() => {
+                console.log(`AnimationGROUP ${animationGroup.name} has ended.`);
+                EngineController.loadedMesh.hips.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.skeletons[0].returnToRest();
+                // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
+            });
+
+            animationGroup.onAnimationGroupPlayObservable.addOnce(() => {
+                console.log(`AnimationGROUP ${animationGroup.name} has started.`);
+                EngineController.loadedMesh.hips.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
+
+                // In animationGroup.targetedAnimations get target Hips
+                let animHipsRotation;
+                animationGroup.targetedAnimations.every(x => {
+                    if (x.target.name === "Hips" && x.animation.targetProperty === "rotationQuaternion") {
+                        animHipsRotation = x.animation;
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
+                let initialRotation = animHipsRotation.getKeys().at(0).value;
+                const inverse = initialRotation.negateInPlace();
+                EngineController.loadedMesh.papa.rotationQuaternion = inverse;
+
+                // Flip the papa object around the z axis
+                let tmp = EngineController.loadedMesh.papa.rotationQuaternion;
+                EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
+
+                // wait 0.1 seconds for the animation to start playing then rotate opa or not TODO: change this to a better solution without a wait
+                new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 100);
+                }).then(() => {
+                    // Refocus the camera
+                    // Check coordinate system by looking if hips are pointing forward
+                    const hips = EngineController.loadedMesh.hips.rotationQuaternion;
+                    // Check y rotation of hips
+                    const hipsEuler = hips.toEulerAngles();
+                    console.log(hips);
+                    console.log("Hips rotation in degrees: ", hipsEuler.scale(180/Math.PI).y);
+                    // Floor the y rotation to the nearest 90 degrees
+                    let yRotation = Math.abs(Math.round(hipsEuler.y * 2 / Math.PI) * Math.PI / 2);
+                    console.log("Floored y rotation in degrees: ", yRotation * 180 / Math.PI);
+                    // Check if the y rotation is close to 180 degrees, if so rotate opa 180 degrees over the y axis
+                    if (Math.abs(yRotation - Math.PI) < 0.1) {
+                        console.log("Rotating opa 180 degrees.");
+                        EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI);
+                    }
+
+                });
             });
 
             // Listen to the animation frame advance
@@ -297,27 +358,6 @@ function stopLoadAndPlayAnimation(path) {
     // Fetch the new animation and play
     getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullPath = true)
         .then(anim => {
-            // Get the initial rotation of the hips of the first frame of the animation
-            let animHipsRotation = anim.animationGroups[0].targetedAnimations[1].animation;
-            let initialRotation = animHipsRotation.getKeys()[0].value;
-            console.log("Initial rotation of the hips (in Euler angles): ", initialRotation.toEulerAngles().scale(180/Math.PI));
-
-            // Now rotate the mesh along the y-axis to face the z-axis
-
-            // Adjust the root rotation of the __root__ node with the adjusted rotation
-            EngineController.loadedMesh.root.rotationQuaternion = initialRotation;
-
-            // Add the extra rotation towards the camera to this rotation
-            // let extraRotation = BABYLON.Quaternion.FromEulerAngles(-Math.PI/2, 2*Math.PI/2, Math.PI/2);
-
-            // Combine the local rotation and extra rotation using quaternion multiplication
-            // let combinedRotation = extraRotation.multiply(localRotation);
-            // let combinedRotation = localRotation.multiply(extraRotation);
-            // let combinedRotation = localRotation;
-
-            // Adjust the root rotation of the __root__ node to face the camera
-            // EngineController.loadedMesh.root.rotationQuaternion = combinedRotation;
-
             console.log("getAnims returned: ", anim);
             anim.animationGroups.push(retargetAnimWithBlendshapes(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
             // console.log(anim.animationGroups);
