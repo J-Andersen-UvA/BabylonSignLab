@@ -5,6 +5,7 @@ var CameraController = (function() {
     var targetHips;
     var forwardVec;
     var distance;
+    var position = {x: null, y: null, z: null};
     
     function setNearPlane(value) {
         camera.minZ = value;
@@ -28,6 +29,17 @@ var CameraController = (function() {
 
     function getFocusSphere() {
         return focusSphere;
+    }
+
+    function setPositionValues(x, y, z) {
+        position.x = x;
+        position.y = y;
+        position.z = z;
+    }
+
+    function getPosition() {
+        console.log("Camera position: ", position);
+        return position;
     }
 
     function setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera) {
@@ -144,14 +156,32 @@ var CameraController = (function() {
         getAngleBeta: getAngleBeta,
         setNearPlane: setNearPlane,
         getFocusSphere: getFocusSphere,
+        setPositionValues: setPositionValues,
+        getPosition: getPosition,
         getInstance: function(scene, canvas, distance=5) {
             CameraController.distance = distance;
 
             if (!camera) {
                 console.log("Initializing camera instance...");
+                // Parameters: name, alpha, beta, radius, target position, scene
                 camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, distance, new BABYLON.Vector3(0, 0, 0), scene);
                 camera.attachControl(canvas, true);
                 camera.wheelPrecision = 50; //Mouse wheel speed
+
+                // Set the camera's position
+                const alpha = camera.alpha;
+                const beta = camera.beta;
+                const radius = camera.radius;
+                const target = camera.target;
+
+                // Calculate camera position in world space
+                const x = target.x + radius * Math.cos(beta) * Math.sin(alpha);
+                const y = target.y + radius * Math.sin(beta);
+                const z = target.z + radius * Math.cos(beta) * Math.cos(alpha);
+
+                const cameraPosition = new BABYLON.Vector3(x, y, z);
+
+                setPositionValues(cameraPosition.x, cameraPosition.y, cameraPosition.z);
             }
 
             return camera;

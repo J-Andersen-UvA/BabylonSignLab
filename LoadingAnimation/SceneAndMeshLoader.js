@@ -46,10 +46,13 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         root: null,
         faceMesh: null,
         teethMesh: null,
+        hips: null,
         eyeMesh: null,
         morphTargetManagers: [],
         skeletons: [],
         animationGroups: [],
+        papa: null,
+        opa: null,
         // fetchForward: function () {
         //     function rotAroundX(vec, fac = 1) {
         //         // Create a rotation matrix for 90 degrees around the x-axis
@@ -103,9 +106,24 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         }
     }
 
+    // Put the root mesh node in an empty transform node
+    var rootTransformNode = new BABYLON.TransformNode("papa");
+    asset.root.parent = rootTransformNode;
+    asset.papa = rootTransformNode;
+    var papaTransformNode = new BABYLON.TransformNode("opa");
+    asset.papa.parent = papaTransformNode;
+    asset.opa = papaTransformNode;
+
     // Find all skeletons
     for (skeleton of asset.fetched.skeletons) {
         asset.skeletons.push(skeleton);
+    }
+
+    // Find the hips transform node
+    for (transformNode of asset.fetched.transformNodes) {
+        if (transformNode.name === "Hips") {
+            asset.hips = transformNode;
+        }
     }
 
     return asset;

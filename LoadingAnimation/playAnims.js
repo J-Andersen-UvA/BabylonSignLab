@@ -185,9 +185,70 @@ async function playAnims(scene, loadedResults, animationIndex) {
 
         return new Promise((resolve) => {
             animationGroup.onAnimationEndObservable.addOnce(() => {
-                console.log(`Animation ${animationGroup.name} has ended.`);
+                console.log(`Animation in ${animationGroup.name} has ended.`);
                 scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
                 resolve(true);
+            });
+
+            animationGroup.onAnimationGroupEndObservable.addOnce(() => {
+                console.log(`AnimationGROUP ${animationGroup.name} has ended.`);
+                EngineController.loadedMesh.hips.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.skeletons[0].returnToRest();
+                // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
+            });
+
+            animationGroup.onAnimationGroupPlayObservable.addOnce(() => {
+                console.log(`AnimationGROUP ${animationGroup.name} has started.`);
+                EngineController.loadedMesh.hips.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
+
+                // In animationGroup.targetedAnimations get target Hips
+                let animHipsRotation;
+                animationGroup.targetedAnimations.every(x => {
+                    if (x.target.name === "Hips" && x.animation.targetProperty === "rotationQuaternion") {
+                        animHipsRotation = x.animation;
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
+                let initialRotation = animHipsRotation.getKeys().at(0).value;
+                const inverse = initialRotation.negateInPlace();
+                EngineController.loadedMesh.papa.rotationQuaternion = inverse;
+
+                // Flip the papa object around the z axis
+                let tmp = EngineController.loadedMesh.papa.rotationQuaternion;
+                EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
+
+                // wait 0.1 seconds for the animation to start playing then rotate opa or not TODO: change this to a better solution without a wait
+                new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 100);
+                }).then(() => {
+                    // Refocus the camera
+                    // Check coordinate system by looking if hips are pointing forward
+                    const hips = EngineController.loadedMesh.hips.rotationQuaternion;
+                    // Check y rotation of hips
+                    const hipsEuler = hips.toEulerAngles();
+                    console.log(hips);
+                    console.log("Hips rotation in degrees: ", hipsEuler.scale(180/Math.PI).y);
+                    // Floor the y rotation to the nearest 90 degrees
+                    let yRotation = Math.abs(Math.round(hipsEuler.y * 2 / Math.PI) * Math.PI / 2);
+                    console.log("Floored y rotation in degrees: ", yRotation * 180 / Math.PI);
+                    // Check if the y rotation is close to 180 degrees, if so rotate opa 180 degrees over the y axis
+                    if (Math.abs(yRotation - Math.PI) < 0.1) {
+                        console.log("Rotating opa 180 degrees.");
+                        EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI);
+                    }
+
+                });
             });
 
             // Listen to the animation frame advance
@@ -304,7 +365,9 @@ function stopLoadAndPlayAnimation(path) {
             EngineController.loadedMesh.animationGroups = anim.animationGroups;
             EngineController.scene.animationGroups = anim.animationGroups;
 
+
             playAnims(EngineController.scene, EngineController.loadedMesh, 0, true);
+
             
             // wait for the EngineController.loadedMesh.animationGroups[0].isPlaying to start playing then refocus camera
             new Promise(resolve => {
@@ -314,10 +377,10 @@ function stopLoadAndPlayAnimation(path) {
                         resolve();
                     }
                 }, 1000);
-            }).then(() => {
+            }).then(() => {            
                 // Code to execute after the animation starts playing
                 // Refocus the camera
-                CameraController.reFocusCamera();
+                // CameraController.reFocusCamera();
             });
 
         })
@@ -325,6 +388,56 @@ function stopLoadAndPlayAnimation(path) {
             console.error('Failed to load animations:', error);
         });
 }
+
+// function getClosestAxis(quat) {
+//     if (!quat) {
+//         console.error("Invalid quaternion passed to getClosestAxis.");
+//         return BABYLON.Quaternion.Identity(); // Return a default identity quaternion
+//     }
+
+//     // Apply the initial rotation to the world up vector (0, 1, 0)
+//     let transformedUp;
+//     try {
+//         console.log("A");
+
+//         transformedUp = BABYLON.Vector3.TransformCoordinates(BABYLON.Vector3.Up(), quat);
+//     } catch (error) {
+//         console.log("B");
+
+//         console.error("Failed to transform coordinates:", error);
+//         return BABYLON.Quaternion.Identity();
+//     }
+
+//     // Find the axis with the largest component in the transformed up vector
+//     let absX = Math.abs(transformedUp.x);
+//     let absY = Math.abs(transformedUp.y);
+//     let absZ = Math.abs(transformedUp.z);
+
+//     // Identify the closest world axis
+//     let closestAxis;
+//     if (absY >= absX && absY >= absZ) {
+//         // Closest to Y-axis
+//         closestAxis = BABYLON.Axis.Y;
+//     } else if (absX >= absY && absX >= absZ) {
+//         // Closest to X-axis
+//         closestAxis = BABYLON.Axis.X;
+//     } else {
+//         // Closest to Z-axis
+//         closestAxis = BABYLON.Axis.Z;
+//     }
+
+//     // Create a quaternion that represents alignment with the closest axis
+//     let alignedQuat = BABYLON.Quaternion.Identity();
+//     if (closestAxis === BABYLON.Axis.X) {
+//         alignedQuat = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.X, Math.PI / 2);
+//     } else if (closestAxis === BABYLON.Axis.Y) {
+//         alignedQuat = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, 0); // Identity already represents this
+//     } else if (closestAxis === BABYLON.Axis.Z) {
+//         alignedQuat = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Z, Math.PI / 2);
+//     }
+
+//     return alignedQuat;
+// }
 
 /*
 The following functions are deprecated and should not be used.
