@@ -177,10 +177,10 @@ async function playAnims(scene, loadedResults, animationIndex) {
             animationGroup.enableBlending = true;
         }
         animationGroup.normalize = true;
-
         if (!animationGroup.targetedAnimations || animationGroup.targetedAnimations.some(ta => ta.target === null)) {
             console.error("Animation target missing for some animations in the group:", animationGroup.name);
-            // return false;
+            console.log("Removing targeted animations with missing targets.");
+            animationGroup.targetedAnimations = animationGroup.targetedAnimations.filter(ta => ta.target !== null);
         }
 
         return new Promise((resolve) => {
@@ -195,6 +195,7 @@ async function playAnims(scene, loadedResults, animationIndex) {
                 EngineController.loadedMesh.hips.rotationQuaternion = BABYLON.Quaternion.Identity();
                 EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.Identity();
                 EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.resetMorphs();
                 EngineController.loadedMesh.skeletons[0].returnToRest();
                 // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
             });
@@ -204,6 +205,8 @@ async function playAnims(scene, loadedResults, animationIndex) {
                 EngineController.loadedMesh.hips.rotationQuaternion = BABYLON.Quaternion.Identity();
                 EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.Identity();
                 EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.Identity();
+                EngineController.loadedMesh.resetMorphs();
+                console.error(EngineController.loadedMesh.morphTargetManagers);
                 // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
 
                 // In animationGroup.targetedAnimations get target Hips
@@ -251,21 +254,14 @@ async function playAnims(scene, loadedResults, animationIndex) {
                 });
             });
 
-            // Listen to the animation frame advance
-            // scene.onBeforeRenderObservable.add((eventData, eventState) => {
-            //     animationGroup.targetedAnimations.forEach(targetedAnimation => {
-            //         // if null skip
-            //         if (targetedAnimation.target) { 
-            //             const target = targetedAnimation.target;
-            //             if (target && target.rotationQuaternion) {
-            //                 target.rotationQuaternion.normalize(); // Normalize the quaternion every frame
-            //             }
-            //         }
-            //     });
-            // });
-
             // Play the animation
-            animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+            if (animationGroup === null) { 
+                console.error("Animation group is null.");
+            } else if (animationGroup.from === null || animationGroup.to === null) {
+                animationGroup.start(false, 1.0);
+            } else {
+                animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+            }
             // animationGroup.start();
         });
     } else {
