@@ -53,33 +53,24 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         animationGroups: [],
         papa: null,
         opa: null,
-        // fetchForward: function () {
-        //     function rotAroundX(vec, fac = 1) {
-        //         // Create a rotation matrix for 90 degrees around the x-axis
-        //         let rotationMatrixX = BABYLON.Matrix.RotationX(BABYLON.Tools.ToRadians(fac * 90));
-
-        //         // Rotate the normal vector
-        //         let rotatedVectorX = BABYLON.Vector3.TransformCoordinates(vec, rotationMatrixX);
-
-        //         return rotatedVectorX;
-        //     }
-
-        //     return rotAroundX(CameraController.getFocusSphere().forward, fac = 1);
-        // },
-        // alignOnX: function () {
-        //     // create red sphere at position end
-        //     const end = new BABYLON.Vector3(0, 1, 0);
-        //     const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
-        //     sphere.position = end;
-        //     sphere.material = new BABYLON.StandardMaterial("sphereMat", scene);
-        //     sphere.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-
-        //     this.fetched.meshes.forEach(mesh => {
-        //         mesh.lookAt(end, 0);
-        //     });
-
-        //     console.log(this.fetched);
-        // }
+        resetMorphs: function resetMorphTargets() {
+            // Loop through all the meshes in the scene
+            this.fetched.meshes.forEach(mesh => {
+                // Check if the mesh has a MorphTargetManager
+                if (mesh.morphTargetManager) {
+                    // Get the MorphTargetManager
+                    let morphTargetManager = mesh.morphTargetManager;
+        
+                    // Loop through each morph target in the MorphTargetManager
+                    for (let i = 0; i < morphTargetManager.numTargets; i++) {
+                        let morphTarget = morphTargetManager.getTarget(i);
+        
+                        // Set the influence (value) of the morph target to 0
+                        morphTarget.influence = 0;
+                    }
+                }
+            });
+        },
     };
 
     // Find all animation groups
