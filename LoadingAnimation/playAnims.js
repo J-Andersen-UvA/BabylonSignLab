@@ -159,7 +159,7 @@ async function initializeAnimationGroups(loadedResults) {
     return true;
 }
 
-async function playAnims(scene, loadedResults, animationIndex) {
+async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
         console.error("Invalid input. Unable to play animations.");
@@ -220,14 +220,16 @@ async function playAnims(scene, loadedResults, animationIndex) {
                     return true;
                 });
 
-                // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
-                let initialRotation = animHipsRotation.getKeys().at(0).value;
-                const inverse = initialRotation.negateInPlace();
-                EngineController.loadedMesh.papa.rotationQuaternion = inverse;
+                if (!noRotation) {
+                    // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
+                    let initialRotation = animHipsRotation.getKeys().at(0).value;
+                    const inverse = initialRotation.negateInPlace();
+                    EngineController.loadedMesh.papa.rotationQuaternion = inverse;
 
-                // Flip the papa object around the z axis
-                let tmp = EngineController.loadedMesh.papa.rotationQuaternion;
-                EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
+                    // Flip the papa object around the z axis
+                    let tmp = EngineController.loadedMesh.papa.rotationQuaternion;
+                    EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
+                }
 
                 // wait 0.1 seconds for the animation to start playing then rotate opa or not TODO: change this to a better solution without a wait
                 new Promise(resolve => {
@@ -243,14 +245,14 @@ async function playAnims(scene, loadedResults, animationIndex) {
                     console.log(hips);
                     console.log("Hips rotation in degrees: ", hipsEuler.scale(180/Math.PI).y);
                     // Floor the y rotation to the nearest 90 degrees
-                    let yRotation = Math.abs(Math.round(hipsEuler.y * 2 / Math.PI) * Math.PI / 2);
-                    console.log("Floored y rotation in degrees: ", yRotation * 180 / Math.PI);
+                    let zRotation = Math.abs(Math.round(hipsEuler.z * 2 / Math.PI) * Math.PI / 2);
+                    console.log("Floored z rotation in degrees: ", zRotation * 180 / Math.PI);
                     // Check if the y rotation is close to 180 degrees, if so rotate opa 180 degrees over the y axis
-                    if (Math.abs(yRotation - Math.PI) < 0.1) {
+                    if (Math.abs(zRotation - Math.PI) >= 0.1) {
                         console.log("Rotating opa 180 degrees.");
                         EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI);
                     }
-
+                    console.error("zRotation: ", zRotation);
                 });
             });
 
@@ -258,9 +260,11 @@ async function playAnims(scene, loadedResults, animationIndex) {
             if (animationGroup === null) { 
                 console.error("Animation group is null.");
             } else if (animationGroup.from === null || animationGroup.to === null) {
-                animationGroup.start(false, 1.0);
+                // animationGroup.start(false, 1.0, loop=loop);
+                animationGroup.play(loop);
             } else {
-                animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to);
+                // animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to, loop=loop);
+                animationGroup.play(loop);
             }
             // animationGroup.start();
         });
@@ -340,7 +344,7 @@ function signFetcher() {
     $("#glossModal").modal("show")
 }
 
-function stopLoadAndPlayAnimation(path) {
+function stopLoadAndPlayAnimation(path, loop = false) {
     console.log(path);
     console.log(EngineController.scene);
 
@@ -362,7 +366,7 @@ function stopLoadAndPlayAnimation(path) {
             EngineController.scene.animationGroups = anim.animationGroups;
 
 
-            playAnims(EngineController.scene, EngineController.loadedMesh, 0, true);
+            playAnims(EngineController.scene, EngineController.loadedMesh, 0, loop);
 
             
             // wait for the EngineController.loadedMesh.animationGroups[0].isPlaying to start playing then refocus camera
