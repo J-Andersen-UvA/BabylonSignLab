@@ -18,7 +18,7 @@ const ParamsManager = {
         this.local = local;
         this.play = play !== undefined ? play : true; // Set play if we have play, else default to true
         this.limit = limit !== null ? limit : 5; // Set limit if we have limit, else default to 5
-        this.glos = glos !== null ? glos : "ERROR-SC"; // Set glos if we have glos, else default to "ERROR-SC"
+        this.glos = glos !== null ? glos : "idle"; // Set glos if we have glos, else default to "ERROR-SC"
         this.zin = zin;
         this.gltf = gltf;
         this.debug = debug === undefined ? false : ((debug === "1" || debug === "true") ? true : false);

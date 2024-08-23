@@ -90,12 +90,18 @@
         </div>
         <div class="modal-body">
           <input type="text" id="glossInput" class="form-control" placeholder="Enter gloss"
-            value="http://localhost:8080/MeshesAndAnims/HeadTwist3NPM.glb">
+            value="http://127.0.0.1:5000/MeshesAndAnims/HeadTwist3NPM.glb">
+          <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="loopCheckbox">
+            <label class="form-check-label" for="loopCheckbox">
+              Loop Animation
+            </label>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary"
-            onclick="stopLoadAndPlayAnimation(document.getElementById('glossInput').value)">Submit</button>
+            onclick="stopLoadAndPlayAnimation(document.getElementById('glossInput').value, document.getElementById('loopCheckbox').checked)">Submit</button>
         </div>
       </div>
     </div>
@@ -146,9 +152,9 @@
     // Directory vars (differentiated between a path for animations and a path for meshes)
     // const basePath = "http://localhost:8080/MeshesAndAnims/olines_anims/";
     // const basePath = "/gebarenoverleg_media/fbx/"; 
-    let basePath = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/";
-    // let basePath = "http://localhost:8080/MeshesAndAnims/";
-    let basePathMesh = "http://localhost:8080/MeshesAndAnims/";
+    // let basePath = "https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/";
+    let basePath = "http://127.0.0.1:5000/MeshesAndAnims/";
+    let basePathMesh = "http://127.0.0.1:5000/MeshesAndAnims/";
 
 
     if (window.location.hostname === "leffe.science.uva.nl") {
@@ -236,11 +242,27 @@
 
             keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
             if (ParamsManager.play != "no") {
-              playLoadedAnims(scene, loadedMesh);
+              // playLoadedAnims(scene, loadedMesh);
+              playAnims(scene, loadedMesh, 0, loop=true, noRotation=true);
             }
           })
           .catch(error => {
             console.error('Failed to load animations:', error);
+            console.error("retrying for https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx");
+            getAnims(basePath, scene, loadedMesh, "ERROR-SC", ParamsManager.gltf)
+              .then(anim => {
+                animAsset = anim;
+                animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+
+                keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
+                if (ParamsManager.play != "no") {
+                  // playLoadedAnims(scene, loadedMesh);
+                  playAnims(scene, loadedMesh, 0, loop=false, noRotation=false);
+                }
+              })
+              .catch(error => {
+                console.error('Failed to load animations:', error);
+              });
           });
       }
     });
