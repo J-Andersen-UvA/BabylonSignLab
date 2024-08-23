@@ -196,6 +196,7 @@
     var blending = urlParams.get("blending") // blending=1, if you want to blend animations
     var debug = urlParams.get("debug") // debug=1, if you want to see debug terminal
     var lockRot = urlParams.get("lockRot") // debug=1, if you want to see debug terminal
+    var externalAnim = urlParams.get("externalAnim") // externalAnim="https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/appel.glb", if you want to load animations from external source
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -234,36 +235,41 @@
         });
 
       function initAnims() {
-        // Load the animation
-        getAnims(basePath, scene, loadedMesh, ParamsManager.glos, ParamsManager.gltf)
-          .then(anim => {
-            animAsset = anim;
-            animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+        if (externalAnim) {
+          stopLoadAndPlayAnimation(externalAnim, loop=true);
+        }
+        else {
+          // Load the animation
+          getAnims(basePath, scene, loadedMesh, ParamsManager.glos, ParamsManager.gltf)
+            .then(anim => {
+              animAsset = anim;
+              animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
 
-            keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
-            if (ParamsManager.play != "no") {
-              // playLoadedAnims(scene, loadedMesh);
-              playAnims(scene, loadedMesh, 0, loop=true, noRotation=true);
-            }
-          })
-          .catch(error => {
-            console.error('Failed to load animations:', error);
-            console.error("retrying for https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx");
-            getAnims(basePath, scene, loadedMesh, "ERROR-SC", ParamsManager.gltf)
-              .then(anim => {
-                animAsset = anim;
-                animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+              keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
+              if (ParamsManager.play != "no") {
+                // playLoadedAnims(scene, loadedMesh);
+                playAnims(scene, loadedMesh, 0, loop=true, noRotation=true);
+              }
+            })
+            .catch(error => {
+              console.error('Failed to load animations:', error);
+              console.error("retrying for https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx");
+              getAnims(basePath, scene, loadedMesh, "ERROR-SC", ParamsManager.gltf)
+                .then(anim => {
+                  animAsset = anim;
+                  animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
 
-                keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
-                if (ParamsManager.play != "no") {
-                  // playLoadedAnims(scene, loadedMesh);
-                  playAnims(scene, loadedMesh, 0, loop=false, noRotation=false);
-                }
-              })
-              .catch(error => {
-                console.error('Failed to load animations:', error);
-              });
+                  keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
+                  if (ParamsManager.play != "no") {
+                    // playLoadedAnims(scene, loadedMesh);
+                    playAnims(scene, loadedMesh, 0, loop=false, noRotation=false);
+                  }
+                })
+                .catch(error => {
+                  console.error('Failed to load animations:', error);
+                });
           });
+        }
       }
     });
 
