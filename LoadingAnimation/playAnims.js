@@ -159,7 +159,7 @@ async function initializeAnimationGroups(loadedResults) {
     return true;
 }
 
-async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false, addSlider = false) {
+async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
         console.error("Invalid input. Unable to play animations.");
@@ -185,6 +185,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
 
         if (ParamsManager.showGui) {
             animSlider(animationGroup, rootContainer, scene);
+            pausePlayButton(animationGroup);
             hideShowGui(rootContainer, true);
         }
 
