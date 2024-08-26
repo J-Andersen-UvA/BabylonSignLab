@@ -8,6 +8,7 @@ const ParamsManager = {
     animations: [],
     debug: false,
     lockRot: false,
+    showGui: true,
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot) {
         // No babylon database storage when testing locally

@@ -159,7 +159,7 @@ async function initializeAnimationGroups(loadedResults) {
     return true;
 }
 
-async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false) {
+async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false, addSlider = false) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
         console.error("Invalid input. Unable to play animations.");
@@ -183,6 +183,11 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
             animationGroup.targetedAnimations = animationGroup.targetedAnimations.filter(ta => ta.target !== null);
         }
 
+        if (ParamsManager.showGui) {
+            animSlider(animationGroup, rootContainer, scene);
+            hideShowGui(rootContainer, true);
+        }
+
         return new Promise((resolve) => {
             animationGroup.onAnimationEndObservable.addOnce(() => {
                 console.log(`Animation in ${animationGroup.name} has ended.`);
@@ -198,6 +203,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                 EngineController.loadedMesh.resetMorphs();
                 EngineController.loadedMesh.skeletons[0].returnToRest();
                 // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
+                hideShowGui(rootContainer, false);
             });
 
             animationGroup.onAnimationGroupPlayObservable.addOnce(() => {

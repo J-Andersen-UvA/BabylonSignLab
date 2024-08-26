@@ -7,6 +7,7 @@
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
 
 
 
@@ -118,6 +119,9 @@
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="setRootAngle()">set root angle</button>
   <button onclick="CameraController.getPosition()">get pos cam</button>
+  <!-- <button onclick="var gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, scene);createRootContainer(gui);">get gui</button> -->
+
+
   <button type="button" class="btn btn-primary" onclick="retargetUE('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/AAP.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/APPEL.fbx', 'http://localhost:5000/upload')">test retargetUE</button>
 
 
@@ -133,7 +137,7 @@
   <script src="retargetAnims.js"></script>
   <script src="initialize.js"></script>
   <script src="messageUEServer.js"></script>
-  <script src="test.js"></script>
+  <script src="playerControls.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -179,6 +183,8 @@
     let keepAnimating = true;
     // let continueLoop = true;
     var animations = []
+    var gui;
+    var rootContainer;
 
     // URL params for gloss, thema, cameraAngle, movingCamera (followed by an example comment)
     var urlParams = new URLSearchParams(window.location.search);
@@ -225,6 +231,8 @@
           EngineController.loadedMesh = loadedMesh;
           // EngineController.setScene(scene);
           // EngineController.setLoadedMesh(loadedMesh);
+          gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, scene)
+          rootContainer = createRootContainer(gui);
 
           removeAnims(scene, loadedMesh);
           removeAnims(scene, scene);
@@ -248,7 +256,7 @@
               keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
               if (ParamsManager.play != "no") {
                 // playLoadedAnims(scene, loadedMesh);
-                playAnims(scene, loadedMesh, 0, loop=true, noRotation=true);
+                playAnims(scene, loadedMesh, 0, loop=true, noRotation=true, addSlider=true);
               }
             })
             .catch(error => {
