@@ -143,7 +143,7 @@ const EngineController = (function () {
 //     return [local, play, limit, glos, zin, gltf, animations];
 // }
 
-async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4, blending=false) {
+async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock=4, blending=false, animRotation=null) {
     [scene, engine] = await createScene(
         document.getElementById("renderCanvas")
     );
@@ -200,6 +200,14 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     });
 
     AnimationSequencer.setBlending(blending);
+
+    if (animRotation !== null) {
+        // Convert the rotation from degrees to radians
+        let rotationY = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, BABYLON.Tools.ToRadians(animRotation));
+        
+        // Apply the rotation quaternion to the mesh
+        loadedMesh.god.rotationQuaternion = rotationY;
+    }
 
     return [scene, engine, loadedMesh];
 }

@@ -204,6 +204,7 @@
     var lockRot = urlParams.get("lockRot") // debug=1, if you want to see debug terminal
     var externalAnim = urlParams.get("externalAnim") // externalAnim="https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/appel.glb", if you want to load animations from external source
     var noGui = urlParams.get("noGui") // noGui=1, if you don't want to see the GUI
+    var meshRotation = urlParams.get("meshRotation") // meshRotation=0-360, if you want to rotate the mesh container y-rotation
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -222,7 +223,7 @@
       canvas.responsive = true;
 
       // Load the scene and mesh. Then initialize the animations
-      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock, blending)
+      initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock, blending, meshRotation)
         .then(([initializedScene, initializedEngine, initializedLoadedMesh]) => {
           scene = initializedScene;
           engine = initializedEngine;
