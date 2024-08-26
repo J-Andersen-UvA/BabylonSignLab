@@ -3,10 +3,13 @@ window.addEventListener("resize", () => {
     gui.scaleTo(engine.getRenderWidth(), engine.getRenderHeight());
     if (engine.getRenderHeight() >= 580) {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "2%";
+        gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-3%";
     } else if (engine.getRenderHeight() < 220) {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "8%";
+        gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-7%";
     } else {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "5%";
+        gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-5%";
     }
 
     var percentage = window.innerWidth * 0.03;
@@ -103,7 +106,13 @@ function pausePlayButton(animationGroup, rootContainer) {
     playBtn.width = percentage + "px";
     playBtn.height = percentage + "px";
     playBtn.left = "-20%";
-    playBtn.top = "-2.5%";
+    if (engine.getRenderHeight() >= 580) {
+        playBtn.top = "-3%";
+    } else if (engine.getRenderHeight() < 220) {
+        playBtn.top = "-7%";
+    } else {
+        playBtn.top = "-5%";
+    }
     playBtn.background = "transparent";
 
     // Create the ellipse to hold the button and set the color based on the current state of the animation
