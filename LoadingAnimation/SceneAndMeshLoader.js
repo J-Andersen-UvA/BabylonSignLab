@@ -53,6 +53,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         animationGroups: [],
         papa: null,
         opa: null,
+        god: null,
         resetMorphs: function resetMorphTargets() {
             // Loop through all the meshes in the scene
             this.fetched.meshes.forEach(mesh => {
@@ -104,6 +105,9 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
     var papaTransformNode = new BABYLON.TransformNode("opa");
     asset.papa.parent = papaTransformNode;
     asset.opa = papaTransformNode;
+    var opaTransformNode = new BABYLON.TransformNode("god");
+    asset.opa.parent = opaTransformNode;
+    asset.god = opaTransformNode;
 
     // Find all skeletons
     for (skeleton of asset.fetched.skeletons) {
