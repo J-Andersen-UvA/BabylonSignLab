@@ -1,5 +1,15 @@
 // import '@babylonjs/gui'
-window.addEventListener("resize", () => {
+// document.addEventListener("fullscreenchange", () => {
+//     console.error("fullscreenchange");
+//     resizeLogic();
+// });
+
+// window.addEventListener("resize", () => {
+//     console.error("resize");
+//     resizeLogic();
+// });
+
+function resizeLogic() {
     gui.scaleTo(engine.getRenderWidth(), engine.getRenderHeight());
     if (engine.getRenderHeight() >= 580) {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "2%";
@@ -15,7 +25,7 @@ window.addEventListener("resize", () => {
     var percentage = window.innerWidth * 0.03;
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").width = percentage + "px";
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").height = percentage + "px";
-});
+}
 
 function createRootContainer(gui) {
     var rootContainer = new BABYLON.GUI.Grid("grid");
@@ -94,7 +104,6 @@ function animSlider(animationGroup, rootContainer, scene) {
 }
 
 function pausePlayButton(animationGroup, rootContainer) {
-    // var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Header");
     var playColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
     var pauseColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
 
@@ -117,9 +126,8 @@ function pausePlayButton(animationGroup, rootContainer) {
 
     // Create the ellipse to hold the button and set the color based on the current state of the animation
     var ellipse = new BABYLON.GUI.Ellipse();
-    ellipse.width = "100%"
+    ellipse.width = "100%";
     ellipse.height = "100%";
-    // ellipse.background = pauseColor;
     ellipse.background = "transparent";
     ellipse.thickness = 0;
 
@@ -139,18 +147,30 @@ function pausePlayButton(animationGroup, rootContainer) {
     playImage.shadowOffsetY = 2.5;
     clickable.addControl(playImage);
 
-    // When the button is clicked, pause or play the animation based on the current state
-    clickable.onPointerClickObservable.add(() => {
+    // Function to handle play/pause logic
+    function togglePlayPause() {
         if (animationGroup.isPlaying) {
             animationGroup.pause();
             rootContainer.playing = false;
             playImage.source = "icons/play.svg";
-            // ellipse.background = playColor;
+            playImage.shadowColor = playColor;
         } else {
             animationGroup.play();
             rootContainer.playing = true;
             playImage.source = "icons/pause.svg";
-            // ellipse.background = pauseColor;
+            playImage.shadowColor = pauseColor;
+        }
+    }
+
+    // When the button is clicked, pause or play the animation based on the current state
+    clickable.onPointerClickObservable.add(togglePlayPause);
+
+    // Add event listener for the spacebar to toggle play/pause
+    window.addEventListener("keydown", function(event) {
+        if (event.code === "Space") {
+            togglePlayPause();
+            // Prevent default spacebar behavior (e.g., scrolling down)
+            event.preventDefault();
         }
     });
 
@@ -162,16 +182,13 @@ function pausePlayButton(animationGroup, rootContainer) {
     // Change the color of the button when the mouse leaves it
     clickable.pointerOutAnimation = () => {
         if (animationGroup.isPlaying) {
-            // ellipse.background = pauseColor;
             playImage.shadowColor = pauseColor;
         } else {
-            // ellipse.background = playColor;
             playImage.shadowColor = playColor;
         }
     }
 
     playBtn.addControl(ellipse); 
-    // advancedTexture.addControl(playBtn);
     rootContainer.addControl(playBtn);
 }
 

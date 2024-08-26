@@ -182,6 +182,16 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     // Run the render loop
     engine.runRenderLoop(function () {
         scene.render();
+        document.addEventListener("fullscreenchange", () => {
+            // console.error("fullscreenchange");
+            resizeLogic();
+        });
+        
+        window.addEventListener("resize", () => {
+            // console.error("resize");
+            resizeLogic();
+        });
+        
     });
 
     // Resize the canvas when the window is resized
