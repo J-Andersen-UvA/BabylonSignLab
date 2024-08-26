@@ -185,7 +185,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
 
         if (ParamsManager.showGui) {
             animSlider(animationGroup, rootContainer, scene);
-            pausePlayButton(animationGroup);
+            pausePlayButton(animationGroup, rootContainer);
             hideShowGui(rootContainer, true);
         }
 
