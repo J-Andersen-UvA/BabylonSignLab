@@ -201,12 +201,16 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
 
     AnimationSequencer.setBlending(blending);
 
-    if (animRotation !== null) {
-        // Convert the rotation from degrees to radians
-        let rotationY = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, BABYLON.Tools.ToRadians(animRotation));
-        
-        // Apply the rotation quaternion to the mesh
-        loadedMesh.god.rotationQuaternion = rotationY;
+    try {
+        if (animRotation !== null) {
+            // Convert the rotation from degrees to radians
+            let rotationY = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, BABYLON.Tools.ToRadians(animRotation));
+            
+            // Apply the rotation quaternion to the mesh
+            loadedMesh.god.rotationQuaternion = rotationY;
+        }
+    } catch (error) {
+        console.error("An error occurred while applying the rotation:", error);
     }
 
     return [scene, engine, loadedMesh];
