@@ -153,12 +153,10 @@ function pausePlayButton(animationGroup, rootContainer) {
             animationGroup.pause();
             rootContainer.playing = false;
             playImage.source = "icons/play.svg";
-            playImage.shadowColor = playColor;
         } else {
             animationGroup.play();
             rootContainer.playing = true;
             playImage.source = "icons/pause.svg";
-            playImage.shadowColor = pauseColor;
         }
     }
 
@@ -169,6 +167,11 @@ function pausePlayButton(animationGroup, rootContainer) {
     window.addEventListener("keydown", function(event) {
         if (event.code === "Space") {
             togglePlayPause();
+            if (animationGroup.isPlaying) {
+                playImage.shadowColor = pauseColor;
+            } else {
+                playImage.shadowColor = playColor;
+            }
             // Prevent default spacebar behavior (e.g., scrolling down)
             event.preventDefault();
         }
