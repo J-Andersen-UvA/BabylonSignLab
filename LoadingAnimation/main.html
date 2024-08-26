@@ -219,6 +219,7 @@
       if (!canvas) {
         throw new Error("The canvas element is not available.");
       }
+      canvas.responsive = true;
 
       // Load the scene and mesh. Then initialize the animations
       initialize(scene, engine, canvas, basePath, basePathMesh, loadedMesh, cameraAngle, cameraAngleBeta, movingCamera, boneLock, blending)

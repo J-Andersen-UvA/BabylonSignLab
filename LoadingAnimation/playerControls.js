@@ -1,4 +1,18 @@
 // import '@babylonjs/gui'
+window.addEventListener("resize", () => {
+    gui.scaleTo(engine.getRenderWidth(), engine.getRenderHeight());
+    if (engine.getRenderHeight() >= 580) {
+        gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "2%";
+    } else if (engine.getRenderHeight() < 220) {
+        gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "8%";
+    } else {
+        gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "5%";
+    }
+
+    var percentage = window.innerWidth * 0.03;
+    gui.rootContainer.getChildByName("grid").getChildByName("playPause").width = percentage + "px";
+    gui.rootContainer.getChildByName("grid").getChildByName("playPause").height = percentage + "px";
+});
 
 function createRootContainer(gui) {
     var rootContainer = new BABYLON.GUI.Grid("grid");
@@ -6,15 +20,15 @@ function createRootContainer(gui) {
     rootContainer.height = "100%";
     gui.addControl(rootContainer);
     
-    rootContainer.addRowDefinition(0.9);
-    rootContainer.addRowDefinition(0.2);
+    // rootContainer.addRowDefinition(0.9);
+    // rootContainer.addRowDefinition(0.2);
 
-    var animBtnsPanel = new BABYLON.GUI.StackPanel("animBtns");
-    animBtnsPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    animBtnsPanel.width = "30%";
-    animBtnsPanel.spacing = 10;
-    rootContainer.addControl(animBtnsPanel, 0);
-    rootContainer.animBtnsPanel = animBtnsPanel;
+    // var animBtnsPanel = new BABYLON.GUI.StackPanel("animBtns");
+    // animBtnsPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    // animBtnsPanel.width = "30%";
+    // animBtnsPanel.spacing = "2%"; // Use percentage for spacing
+    // rootContainer.addControl(animBtnsPanel, 0);
+    // rootContainer.animBtnsPanel = animBtnsPanel;
 
     return rootContainer;
 }
@@ -25,32 +39,26 @@ function animSlider(animationGroup, rootContainer, scene) {
     console.log("animationGroup: ", animationGroup);
 
     var currGroup = animationGroup;
-    var groupBtn = BABYLON.GUI.Button.CreateSimpleButton(currGroup.name, currGroup.name);
-    groupBtn.width = 0.9;
-    groupBtn.height = "60px";
-    groupBtn.color = "white";
-    groupBtn.cornerRadius = "10";
-    groupBtn.background = "Grey";
-    rootContainer.animBtnsPanel.addControl(groupBtn);
 
     // Add a slider to control the animation
     var slider = new BABYLON.GUI.Slider("animSlider");
-    slider.width = "30%";
-    slider.heightInPixels = 20;
+    slider.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    slider.width = "50%";
+    // Check if screen too small for slider 2% is minimum
+    if (engine.getRenderHeight() >= 580) {
+        slider.height = "2%";
+    } else if (engine.getRenderHeight() < 220) {
+        slider.height = "8%";
+    } else {
+        slider.height = "5%";
+    }
+    slider.top = "-5%";
     slider.color = "white";
-    slider.thumbWidth = "40px";
+    slider.thumbWidth = "0%"; // Use percentage for thumb width
     slider.isThumbCircle = true;
     rootContainer.addControl(slider, 1);
+    rootContainer.animSlider = slider;
     rootContainer.playing = true;
-    
-    // Code for frame display, im personally not a fan of it but its here if we need it
-    // var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Header");
-    // var header = new BABYLON.GUI.TextBlock();
-    // header.heightInPixels = 150;
-    // header.color = "white";
-    // header.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    // header.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-    // advancedTexture.addControl(header);
 
     slider.onValueChangedObservable.add(function (value) {
         // header.text = ((value) | 0);
@@ -80,63 +88,82 @@ function animSlider(animationGroup, rootContainer, scene) {
             }
         }
     });
-
-
-    // var panel = new BABYLON.GUI.StackPanel();
-    // panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    // panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-    // panel.isVertical = false;
-    // panel.height = "60px";
-    // advancedTexture.addControl(panel);
 }
 
-function pausePlayButton(animationGroup, scene) {
-    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Header");
-    var panel = new BABYLON.GUI.StackPanel();
-    panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-    panel.isVertical = false;
-    panel.height = "60px";
+function pausePlayButton(animationGroup, rootContainer) {
+    // var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Header");
     var playColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
     var pauseColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
 
-    //Continue button
-    var playBtn = BABYLON.GUI.Button.CreateImageOnlyButton("button1", "icons/pause.svg");
-    playBtn.width = '40px';
-    playBtn.height = "40px";
-    playBtn.color = "white";
-    playBtn.background = pauseColor;
-    playBtn.cornerRadius = "2";
-    playBtn.padding = "20px";
-    panel.addControl(playBtn);
+    // Create the button container and set the position of the button based on the window size
+    const playBtn = new BABYLON.GUI.Container("playPause");
+    playBtn.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    playBtn.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    var percentage = window.innerWidth * 0.03;
+    playBtn.width = percentage + "px";
+    playBtn.height = percentage + "px";
+    playBtn.left = "-20%";
+    playBtn.top = "-2.5%";
+    playBtn.background = "transparent";
 
-    playBtn.onPointerClickObservable.add(() => {
+    // Create the ellipse to hold the button and set the color based on the current state of the animation
+    var ellipse = new BABYLON.GUI.Ellipse();
+    ellipse.width = "100%"
+    ellipse.height = "100%";
+    // ellipse.background = pauseColor;
+    ellipse.background = "transparent";
+    ellipse.thickness = 0;
+
+    // Create the clickable button and add the play/pause image to it
+    var clickable = new BABYLON.GUI.Button('clickable');
+    clickable.width = "100%";
+    clickable.height = "100%";
+    clickable.background = "transparent";
+    clickable.thickness = 0;
+    ellipse.addControl(clickable); 
+    var playImage = new BABYLON.GUI.Image("playImage", "icons/pause.svg");
+    playImage.width = "60%";
+    playImage.height = "60%";
+    playImage.shadowColor = pauseColor;
+    playImage.shadowBlur = 1;
+    playImage.shadowOffsetX = 3;
+    playImage.shadowOffsetY = 2.5;
+    clickable.addControl(playImage);
+
+    // When the button is clicked, pause or play the animation based on the current state
+    clickable.onPointerClickObservable.add(() => {
         if (animationGroup.isPlaying) {
             animationGroup.pause();
             rootContainer.playing = false;
-            playBtn.image.source = "icons/play.svg";
-            playBtn.background = playColor;
+            playImage.source = "icons/play.svg";
+            // ellipse.background = playColor;
         } else {
             animationGroup.play();
             rootContainer.playing = true;
-            playBtn.image.source = "icons/pause.svg";
-            playBtn.background = pauseColor;
+            playImage.source = "icons/pause.svg";
+            // ellipse.background = pauseColor;
         }
     });
 
-    playBtn.pointerEnterAnimation = () => {
-        playBtn.background = "white";
+    // Change the color of the button when the mouse hovers over it
+    clickable.pointerEnterAnimation = () => {
+        playImage.shadowColor = "white";
     }
 
-    playBtn.pointerOutAnimation = () => {
+    // Change the color of the button when the mouse leaves it
+    clickable.pointerOutAnimation = () => {
         if (animationGroup.isPlaying) {
-            playBtn.background = pauseColor;
+            // ellipse.background = pauseColor;
+            playImage.shadowColor = pauseColor;
         } else {
-            playBtn.background = playColor;
+            // ellipse.background = playColor;
+            playImage.shadowColor = playColor;
         }
     }
 
-    advancedTexture.addControl(panel);
+    playBtn.addControl(ellipse); 
+    // advancedTexture.addControl(playBtn);
+    rootContainer.addControl(playBtn);
 }
 
 function hideShowGui(rootContainer, show) {
