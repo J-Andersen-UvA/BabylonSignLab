@@ -197,6 +197,20 @@ var CameraController = (function() {
                 setPositionValues(cameraPosition.x, cameraPosition.y, cameraPosition.z);
             }
 
+            // Attach pointer events to the scene, we dont want to interact with the gui when we are rotating the camera
+            if (scene) {
+                scene.onPointerDown = (e) => {
+                    rootContainer.isEnabled = false;
+                }
+        
+                scene.onPointerUp = (e) => {
+                    rootContainer.isEnabled = true;
+                }
+            } else {
+                console.error("Scene is not defined. Cannot attach pointer events.");
+            }
+
+            CameraController.camera = camera;
             return camera;
         }
     };

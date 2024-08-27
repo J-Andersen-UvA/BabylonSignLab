@@ -178,7 +178,7 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     ParamsManager.boneLock = boneLock;
 
     // Create first camera, then access it through the singleton
-    var camera = CameraController.getInstance();
+    var camera = CameraController.getInstance(scene, canvas);
     camera.lowerRadiusLimit = 0.5;
     camera.upperRadiusLimit = 6;
     CameraController.setNearPlane(0.1);
