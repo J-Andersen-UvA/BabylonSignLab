@@ -9,6 +9,8 @@ const ParamsManager = {
     debug: false,
     lockRot: false,
     showGui: true,
+    returnToIdle: true, // If for some reason later on we dont want to return to idle, we can set this to false
+    startingNewAnim: false, // If we are starting a new animation, we can set this to true (to prevent race conditions)
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui) {
         // No babylon database storage when testing locally
@@ -19,7 +21,7 @@ const ParamsManager = {
         this.local = local;
         this.play = play !== undefined ? play : true; // Set play if we have play, else default to true
         this.limit = limit !== null ? limit : 5; // Set limit if we have limit, else default to 5
-        this.glos = glos !== null ? glos : "idle"; // Set glos if we have glos, else default to "ERROR-SC"
+        this.glos = glos !== null ? glos : "idle"; // Set glos if we have glos, else default to "idle"
         this.zin = zin;
         this.gltf = gltf;
         this.debug = debug === undefined ? false : ((debug === "1" || debug === "true") ? true : false);

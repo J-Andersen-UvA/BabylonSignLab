@@ -8,7 +8,7 @@
             "type": "msedge",
             "request": "launch",
             "name": "Launch Edge against localhost",
-            "url": "file:///C:/Users/VICON/Desktop/Code/Babylon/LoadingAnimation/main.html?boneLock=4&glos=ALLEMAAL-A&lockRot=1",
+            "url": "http://127.0.0.1:5000/?debug=1&externalAnim=https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/APPEL.glb",
             "webRoot": "${workspaceFolder}"
         }
     ]

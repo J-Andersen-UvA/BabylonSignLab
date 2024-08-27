@@ -194,6 +194,9 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                 console.log(`Animation in ${animationGroup.name} has ended.`);
                 scene.onBeforeRenderObservable.clear();  // Remove the observer to clean up
                 resolve(true);
+                if (ParamsManager.returnToIdle && !ParamsManager.startingNewAnim) {
+                    stopLoadAndPlayAnimation(basePath + "idle.glb", loop=true, noRotation=true);
+                }
             });
 
             animationGroup.onAnimationGroupEndObservable.addOnce(() => {
@@ -351,9 +354,14 @@ function signFetcher() {
     $("#glossModal").modal("show")
 }
 
-function stopLoadAndPlayAnimation(path, loop = false) {
+function stopLoadAndPlayAnimation(path, loop = false, noRotation = false) {
     console.log(path);
     console.log(EngineController.scene);
+
+    // Check if the path ends with 'idle.glb'
+    if (!path.endsWith('idle.glb')) {
+        ParamsManager.startingNewAnim = true;
+    }
 
     // Stop the currently playing animation
     stopAnims(EngineController.scene, EngineController.loadedMesh);
@@ -373,8 +381,8 @@ function stopLoadAndPlayAnimation(path, loop = false) {
             EngineController.scene.animationGroups = anim.animationGroups;
 
 
-            playAnims(EngineController.scene, EngineController.loadedMesh, 0, loop);
-
+            playAnims(EngineController.scene, EngineController.loadedMesh, 0, loop, noRotation=noRotation);
+            ParamsManager.startingNewAnim = false;
             
             // wait for the EngineController.loadedMesh.animationGroups[0].isPlaying to start playing then refocus camera
             new Promise(resolve => {
