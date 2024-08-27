@@ -25,6 +25,10 @@ function resizeLogic() {
     var percentage = window.innerWidth * 0.03;
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").width = percentage + "px";
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").height = percentage + "px";
+
+    percentage = window.innerWidth * 0.06;
+    gui.rootContainer.getChildByName("grid").getChildByName("handTracking").width = percentage + "px";
+    gui.rootContainer.getChildByName("grid").getChildByName("handTracking").height = percentage / 2 + "px";
 }
 
 function createRootContainer(gui) {
@@ -32,16 +36,6 @@ function createRootContainer(gui) {
     rootContainer.width = "100%";
     rootContainer.height = "100%";
     gui.addControl(rootContainer);
-    
-    // rootContainer.addRowDefinition(0.9);
-    // rootContainer.addRowDefinition(0.2);
-
-    // var animBtnsPanel = new BABYLON.GUI.StackPanel("animBtns");
-    // animBtnsPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    // animBtnsPanel.width = "30%";
-    // animBtnsPanel.spacing = "2%"; // Use percentage for spacing
-    // rootContainer.addControl(animBtnsPanel, 0);
-    // rootContainer.animBtnsPanel = animBtnsPanel;
 
     return rootContainer;
 }
