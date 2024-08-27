@@ -401,6 +401,13 @@ function stopLoadAndPlayAnimation(path, loop = false, noRotation = false) {
         })
         .catch(error => {
             console.error('Failed to load animations:', error);
+            ParamsManager.startingNewAnim = false;
+            if (ParamsManager.returnToIdle) {
+                stopLoadAndPlayAnimation(basePath + "idle.glb", loop=true, noRotation=true);
+            }
+            $('#errorModal2 .modal-body').html(`<p>${error}</p>`);
+            $('#errorModal2').modal('show').css('z-index', 1065);
+            $('.modal-backdrop').css('z-index', 1064);
         });
 }
 
