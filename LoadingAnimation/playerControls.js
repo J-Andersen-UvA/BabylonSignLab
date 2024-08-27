@@ -25,6 +25,10 @@ function resizeLogic() {
     var percentage = window.innerWidth * 0.03;
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").width = percentage + "px";
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").height = percentage + "px";
+
+    percentage = window.innerWidth * 0.06;
+    gui.rootContainer.getChildByName("grid").getChildByName("handTracking").width = percentage + "px";
+    gui.rootContainer.getChildByName("grid").getChildByName("handTracking").height = percentage / 2 + "px";
 }
 
 function createRootContainer(gui) {
@@ -32,16 +36,6 @@ function createRootContainer(gui) {
     rootContainer.width = "100%";
     rootContainer.height = "100%";
     gui.addControl(rootContainer);
-    
-    // rootContainer.addRowDefinition(0.9);
-    // rootContainer.addRowDefinition(0.2);
-
-    // var animBtnsPanel = new BABYLON.GUI.StackPanel("animBtns");
-    // animBtnsPanel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    // animBtnsPanel.width = "30%";
-    // animBtnsPanel.spacing = "2%"; // Use percentage for spacing
-    // rootContainer.addControl(animBtnsPanel, 0);
-    // rootContainer.animBtnsPanel = animBtnsPanel;
 
     return rootContainer;
 }
@@ -195,10 +189,112 @@ function pausePlayButton(animationGroup, rootContainer) {
     rootContainer.addControl(playBtn);
 }
 
+function handTrackButtons(rootContainer) {
+    var handTrackColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
+    var selectedColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
+
+    const trackHandContainer = new BABYLON.GUI.Container("handTracking");
+    trackHandContainer.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    trackHandContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    var percentage = window.innerWidth * 0.06;
+    trackHandContainer.width = percentage + "px";
+    trackHandContainer.height = percentage / 2 + "px";
+    trackHandContainer.left = "-10%";
+
+    if (engine.getRenderHeight() >= 580) {
+        trackHandContainer.top = "-3%";
+    } else if (engine.getRenderHeight() < 220) {
+        trackHandContainer.top = "-7%";
+    } else {
+        trackHandContainer.top = "-5%";
+    }
+    trackHandContainer.background = "transparent";
+
+    function createClickableButton(name, alignment, boneIndex, letterText) {
+        var clickable = new BABYLON.GUI.Button(name);
+        clickable.width = "40%";
+        clickable.height = "80%";
+        clickable.background = "transparent";
+        clickable.horizontalAlignment = alignment;
+        clickable.thickness = 0;
+        trackHandContainer.addControl(clickable);
+
+        var handImage = new BABYLON.GUI.Image(name + "Image", "icons/hand.svg");
+        handImage.width = "100%";
+        handImage.height = "100%";
+        handImage.shadowColor = handTrackColor;
+        handImage.shadowBlur = 1;
+        handImage.shadowOffsetX = 3;
+        handImage.shadowOffsetY = 2.5;
+        clickable.addControl(handImage);
+
+        var letter = new BABYLON.GUI.TextBlock();
+        letter.text = letterText;
+        letter.color = "white";
+        letter.fontSize = "50%";
+        letter.resizeToFit = true;
+        letter.paddingRight = "10%";
+        letter.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        letter.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+        clickable.addControl(letter);
+
+        clickable.pointerEnterAnimation = () => {
+            handImage.shadowColor = "white";
+        }
+
+        clickable.pointerOutAnimation = () => {
+            handImage.shadowColor = (CameraController.trackingHand == boneIndex) ? selectedColor : handTrackColor;
+        }
+
+        clickable.onPointerClickObservable.add(() => {
+            // If already tracking, untrack the hand
+            if (CameraController.trackingHand == boneIndex) {
+                CameraController.trackingHand = null;
+                CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], ParamsManager.boneLock);
+                handImage.shadowColor = handTrackColor;
+                CameraController.resetZoom();
+                return;
+            }
+            // If tracking a different hand, switch to the new hand
+            else if (CameraController.trackingHand != null && CameraController.trackingHand != boneIndex) {
+                var otherHand = trackHandContainer.getChildByName(name == "clickableL" ? 'clickableR' : 'clickableL');
+                var otherHandImage = otherHand.getChildByName(name == "clickableL" ? 'clickableRImage' : 'clickableLImage');
+                otherHandImage.shadowColor = handTrackColor;
+            }
+            CameraController.trackingHand = boneIndex;
+            CameraController.setCameraOnBone(
+                scene, 
+                loadedMesh.fetched.meshes[1], 
+                loadedMesh.skeletons[0], 
+                CameraController.trackingHand ? boneIndex : ParamsManager.boneLock
+            );
+            CameraController.zoom(1.5);
+            handImage.shadowColor = selectedColor;
+        });
+    }
+
+    createClickableButton('clickableL', BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, 12, "L");
+    createClickableButton('clickableR', BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT, 36, "R");
+
+    rootContainer.addControl(trackHandContainer);
+}
+
 function hideShowGui(rootContainer, show) {
     if (show == null) {
         rootContainer.isVisible = !rootContainer.isVisible;
+
+        // If the GUI is now invisible, reset the camera to the original position
+        if (!rootContainer.isVisible) {
+            CameraController.trackingHand = null;
+            CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], ParamsManager.boneLock);
+        }
         return;
+    }
+
+    // If the GUI is now invisible, reset the camera to the original position
+    if (!show) {
+        CameraController.trackingHand = null;
+        CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], ParamsManager.boneLock);
     }
 
     rootContainer.isVisible = show;

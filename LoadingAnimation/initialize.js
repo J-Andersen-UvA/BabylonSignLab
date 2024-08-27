@@ -11,6 +11,7 @@ const ParamsManager = {
     showGui: true,
     returnToIdle: true, // If for some reason later on we dont want to return to idle, we can set this to false
     startingNewAnim: false, // If we are starting a new animation, we can set this to true (to prevent race conditions)
+    boneLock: 4,
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui) {
         // No babylon database storage when testing locally
@@ -169,7 +170,12 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     //     console.log("rotted");
     // });
 
-    if (!boneLock) { boneLock = 4; } // Make sure we have a boneLock
+    // Make sure we have a boneLock
+    if (!boneLock) { 
+        boneLock = 4;
+    }
+
+    ParamsManager.boneLock = boneLock;
 
     // Create first camera, then access it through the singleton
     var camera = CameraController.getInstance();

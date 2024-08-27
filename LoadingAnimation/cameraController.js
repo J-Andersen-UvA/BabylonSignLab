@@ -6,6 +6,7 @@ var CameraController = (function() {
     var forwardVec;
     var distance;
     var position = {x: null, y: null, z: null};
+    var trackingHand = null;
     
     function setNearPlane(value) {
         camera.minZ = value;
@@ -146,6 +147,16 @@ var CameraController = (function() {
         scene.beginAnimation(camera, 0, 600, true, 1);
     };
 
+    function zoom(distanceFromBone) {
+        camera.radius = distanceFromBone;
+    };
+
+    function resetZoom() {
+        camera.radius = CameraController.distance-1;
+        camera.beta = Math.PI/2.5;
+        camera.alpha = Math.PI / -2;
+    };
+
     // Public interface
     return {
         setCameraParams: setCameraParams,
@@ -158,6 +169,8 @@ var CameraController = (function() {
         getFocusSphere: getFocusSphere,
         setPositionValues: setPositionValues,
         getPosition: getPosition,
+        zoom: zoom,
+        resetZoom: resetZoom,
         getInstance: function(scene, canvas, distance=5) {
             CameraController.distance = distance;
 
