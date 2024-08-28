@@ -14,7 +14,7 @@ const ParamsManager = {
     boneLock: 4,
     onboard: true,
 
-    setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui) {
+    setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui, onboard) {
         // No babylon database storage when testing locally
         if (local !== 1) {
             BABYLON.Database.IDBStorageEnabled = true;
@@ -29,6 +29,7 @@ const ParamsManager = {
         this.debug = debug === undefined ? false : ((debug === "1" || debug === "true") ? true : false);
         this.lockRot = lockRot === undefined ? false : ((lockRot === "1" || lockRot === "true") ? true : false);
         this.showGui = noGui === undefined ? true : ((noGui === "1" || noGui === "true") ? false : true);
+        this.onboard = onboard === undefined ? true : ((onboard === "0" || onboard === "false") ? false : true);
 
         if (zin) {
             // We want to adjust frame from and to for blending

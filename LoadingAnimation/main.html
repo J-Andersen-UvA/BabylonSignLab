@@ -224,6 +224,7 @@
     var externalAnim = urlParams.get("externalAnim") // externalAnim="https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/appel.glb", if you want to load animations from external source
     var noGui = urlParams.get("noGui") // noGui=1, if you don't want to see the GUI
     var meshRotation = urlParams.get("meshRotation") // meshRotation=0-360, if you want to rotate the mesh container y-rotation
+    var onboard = urlParams.get("onboard") // onboard=0 or false, if you dont want to play the onboard animation
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -232,7 +233,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       // Set the parameters (im not sure if javascript is pass by reference or value, so i return the values and set them again)
       // [local, play, limit, glos, zin, gltf, animations] = setParams(local, play, limit, glos, zin, gltf, animations);
-      ParamsManager.setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui);
+      ParamsManager.setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui, onboard);
 
 
       canvas = document.getElementById("renderCanvas");
