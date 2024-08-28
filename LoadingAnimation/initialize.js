@@ -12,6 +12,7 @@ const ParamsManager = {
     returnToIdle: true, // If for some reason later on we dont want to return to idle, we can set this to false
     startingNewAnim: false, // If we are starting a new animation, we can set this to true (to prevent race conditions)
     boneLock: 4,
+    onboard: true,
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui) {
         // No babylon database storage when testing locally

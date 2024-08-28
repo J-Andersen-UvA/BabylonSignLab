@@ -136,6 +136,7 @@
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="setRootAngle()">set root angle</button>
   <button onclick="CameraController.getPosition()">get pos cam</button>
+  <button onclick="onboardAnimation()">onboardAnim</button>
   <!-- <button onclick="var gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, scene);createRootContainer(gui);">get gui</button> -->
 
 
@@ -155,6 +156,7 @@
   <script src="initialize.js"></script>
   <script src="messageUEServer.js"></script>
   <script src="playerControls.js"></script>
+  <script src="onboard.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -298,6 +300,11 @@
                 });
           });
         }
+      }
+
+      // Play the onboard animation after 2 seconds
+      if (ParamsManager.onboard) {
+        setTimeout(onboardAnimation, 2000);
       }
     });
 
