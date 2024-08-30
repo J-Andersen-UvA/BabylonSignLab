@@ -13,20 +13,18 @@ function resizeLogic() {
     gui.scaleTo(engine.getRenderWidth(), engine.getRenderHeight());
     if (engine.getRenderHeight() >= 580) {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "2%";
-        gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-3%";
+        // gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-3%";
     } else if (engine.getRenderHeight() < 220) {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "8%";
-        gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-7%";
+        // gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-7%";
     } else {
         gui.rootContainer.getChildByName("grid").getChildByName("animSlider").height = "5%";
-        gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-5%";
+        // gui.rootContainer.getChildByName("grid").getChildByName("playPause").top = "-5%";
     }
 
-    var percentage = window.innerWidth * 0.03;
+    var percentage = window.innerWidth * 0.06;
     gui.rootContainer.getChildByName("grid").getChildByName("playPause").width = percentage + "px";
-    gui.rootContainer.getChildByName("grid").getChildByName("playPause").height = percentage + "px";
-
-    percentage = window.innerWidth * 0.06;
+    gui.rootContainer.getChildByName("grid").getChildByName("playPause").height = percentage / 2 + "px";
     gui.rootContainer.getChildByName("grid").getChildByName("handTracking").width = percentage + "px";
     gui.rootContainer.getChildByName("grid").getChildByName("handTracking").height = percentage / 2 + "px";
 }
@@ -97,44 +95,115 @@ function animSlider(animationGroup, rootContainer, scene) {
     });
 }
 
-function pausePlayButton(animationGroup, rootContainer) {
+function speedControlButton(animationGroup, playSpeedBtn) {
+    const speedLevels = [1, 0.1, 0.25, 0.5];
+    let currentSpeedIndex = 0;
+    const selectedColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
+    const speedColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
+
+    // Create the clickable button and add the speed icon
+    var clickable = new BABYLON.GUI.Button('clickable');
+    clickable.width = "40%";
+    clickable.height = "80%";
+    clickable.background = "transparent";
+    clickable.thickness = 0;
+    clickable.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+
+    var speedImage = new BABYLON.GUI.Image("speedImage", "icons/speed.svg");
+    speedImage.width = "100%";
+    speedImage.height = "100%";
+    speedImage.shadowColor = speedColor;
+    speedImage.shadowBlur = 1;
+    speedImage.shadowOffsetX = 3;
+    speedImage.shadowOffsetY = 2.5;
+    clickable.addControl(speedImage);
+
+    var letter = new BABYLON.GUI.TextBlock();
+    letter.text = "1";
+    letter.color = "white";
+    letter.fontSize = "50%";
+    letter.resizeToFit = true;
+    letter.paddingRight = "10%";
+    letter.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    letter.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    clickable.addControl(letter);
+
+
+    // Function to cycle through the speed levels
+    function cycleSpeed() {
+        currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.length;
+        animationGroup.speedRatio = speedLevels[currentSpeedIndex];
+        letter.text = speedLevels[currentSpeedIndex];
+        updateSpeedDisplay();
+    }
+
+    // Function to update the button appearance based on the current speed
+    function updateSpeedDisplay() {
+        // Change icon color based on speed level
+        speedImage.shadowColor = currentSpeedIndex === 0 ? selectedColor : speedColor;
+
+        // You can also update the image or text if you prefer visual indicators for each speed
+    }
+
+    // When the button is clicked, change the speed
+    clickable.onPointerClickObservable.add(cycleSpeed);
+
+    // Add event listener for keyboard shortcuts if needed
+    window.addEventListener("keydown", function(event) {
+        if (event.code === "KeyS") {
+            cycleSpeed();
+            event.preventDefault();
+        }
+    });
+
+    // Change the color of the button when the mouse hovers over it
+    clickable.pointerEnterAnimation = () => {
+        speedImage.shadowColor = "white";
+    }
+
+    // Change the color of the button when the mouse leaves it
+    clickable.pointerOutAnimation = () => {
+        updateSpeedDisplay();
+    }
+
+    playSpeedBtn.addControl(clickable);
+
+    // Initial update
+    updateSpeedDisplay();
+}
+
+function pausePlaySpeedButtons(animationGroup, rootContainer) {
     var playColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
     var pauseColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
 
     // Create the button container and set the position of the button based on the window size
-    const playBtn = new BABYLON.GUI.Container("playPause");
-    playBtn.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    playBtn.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-    var percentage = window.innerWidth * 0.03;
-    playBtn.width = percentage + "px";
-    playBtn.height = percentage + "px";
-    playBtn.left = "-20%";
+    const playSpeedBtn = new BABYLON.GUI.Container("playPause");
+    playSpeedBtn.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    playSpeedBtn.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    var percentage = window.innerWidth * 0.06;
+    playSpeedBtn.width = percentage + "px";
+    playSpeedBtn.height = percentage / 2 + "px";
+    playSpeedBtn.left = "-15%";
     if (engine.getRenderHeight() >= 580) {
-        playBtn.top = "-3%";
+        playSpeedBtn.top = "-3%";
     } else if (engine.getRenderHeight() < 220) {
-        playBtn.top = "-7%";
+        playSpeedBtn.top = "-7%";
     } else {
-        playBtn.top = "-5%";
+        playSpeedBtn.top = "-5%";
     }
-    playBtn.background = "transparent";
-
-    // Create the ellipse to hold the button and set the color based on the current state of the animation
-    var ellipse = new BABYLON.GUI.Ellipse();
-    ellipse.width = "100%";
-    ellipse.height = "100%";
-    ellipse.background = "transparent";
-    ellipse.thickness = 0;
+    playSpeedBtn.background = "transparent";
 
     // Create the clickable button and add the play/pause image to it
     var clickable = new BABYLON.GUI.Button('clickable');
-    clickable.width = "100%";
-    clickable.height = "100%";
+    clickable.width = "40%";
+    clickable.height = "80%";
     clickable.background = "transparent";
+    clickable.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
     clickable.thickness = 0;
-    ellipse.addControl(clickable); 
+
     var playImage = new BABYLON.GUI.Image("playImage", "icons/pause.svg");
-    playImage.width = "60%";
-    playImage.height = "60%";
+    playImage.width = "70%";
+    playImage.height = "70%";
     playImage.shadowColor = pauseColor;
     playImage.shadowBlur = 1;
     playImage.shadowOffsetX = 3;
@@ -185,8 +254,12 @@ function pausePlayButton(animationGroup, rootContainer) {
         }
     }
 
-    playBtn.addControl(ellipse); 
-    rootContainer.addControl(playBtn);
+    playSpeedBtn.addControl(clickable); 
+
+    // Get the speed control button and add it to the same container
+    speedControlButton(animationGroup, playSpeedBtn);
+
+    rootContainer.addControl(playSpeedBtn);
 }
 
 function handTrackButtons(rootContainer) {
@@ -199,7 +272,7 @@ function handTrackButtons(rootContainer) {
     var percentage = window.innerWidth * 0.06;
     trackHandContainer.width = percentage + "px";
     trackHandContainer.height = percentage / 2 + "px";
-    trackHandContainer.left = "-10%";
+    trackHandContainer.left = "-5%";
 
     if (engine.getRenderHeight() >= 580) {
         trackHandContainer.top = "-3%";

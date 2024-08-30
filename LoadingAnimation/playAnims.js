@@ -191,7 +191,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
 
         if (ParamsManager.showGui) {
             animSlider(animationGroup, rootContainer, scene);
-            pausePlayButton(animationGroup, rootContainer);
+            pausePlaySpeedButtons(animationGroup, rootContainer);
             handTrackButtons(rootContainer);
             hideShowGui(rootContainer, true);
         }
