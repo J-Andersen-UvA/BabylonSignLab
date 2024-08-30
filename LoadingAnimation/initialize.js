@@ -184,6 +184,7 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     var camera = CameraController.getInstance(scene, canvas);
     camera.lowerRadiusLimit = 0.5;
     camera.upperRadiusLimit = 6;
+    camera.inputs.removeByType("ArcRotateCameraKeyboardMoveInput");
     CameraController.setNearPlane(0.1);
     // CameraController.setCameraOnBone(scene, loadedMesh.root, loadedMesh.skeletons[0], boneIndex=boneLock);
     CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=ParamsManager.debug, setLocalAxis=ParamsManager.debug);

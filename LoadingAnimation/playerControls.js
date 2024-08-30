@@ -96,7 +96,7 @@ function animSlider(animationGroup, rootContainer, scene) {
 }
 
 function speedControlButton(animationGroup, playSpeedBtn) {
-    const speedLevels = [1, 0.1, 0.25, 0.5];
+    const speedLevels = [1, 0.1, 0.3, 0.5];
     let currentSpeedIndex = 0;
     const selectedColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
     const speedColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
@@ -130,8 +130,12 @@ function speedControlButton(animationGroup, playSpeedBtn) {
 
 
     // Function to cycle through the speed levels
-    function cycleSpeed() {
-        currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.length;
+    function cycleSpeed(direction) {
+        if (direction === "next") {
+            currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.length;
+        } else if (direction === "prev") {
+            currentSpeedIndex = (currentSpeedIndex - 1 + speedLevels.length) % speedLevels.length;
+        }
         animationGroup.speedRatio = speedLevels[currentSpeedIndex];
         letter.text = speedLevels[currentSpeedIndex];
         updateSpeedDisplay();
@@ -141,17 +145,21 @@ function speedControlButton(animationGroup, playSpeedBtn) {
     function updateSpeedDisplay() {
         // Change icon color based on speed level
         speedImage.shadowColor = currentSpeedIndex === 0 ? selectedColor : speedColor;
-
-        // You can also update the image or text if you prefer visual indicators for each speed
     }
 
     // When the button is clicked, change the speed
-    clickable.onPointerClickObservable.add(cycleSpeed);
+    clickable.onPointerClickObservable.add(() => cycleSpeed("next"));
 
-    // Add event listener for keyboard shortcuts if needed
+    // Add event listener for keyboard shortcuts
     window.addEventListener("keydown", function(event) {
         if (event.code === "KeyS") {
-            cycleSpeed();
+            cycleSpeed("next");
+            event.preventDefault();
+        } else if (event.code === "ArrowRight") {
+            cycleSpeed("next");
+            event.preventDefault();
+        } else if (event.code === "ArrowLeft") {
+            cycleSpeed("prev");
             event.preventDefault();
         }
     });
@@ -165,6 +173,7 @@ function speedControlButton(animationGroup, playSpeedBtn) {
     clickable.pointerOutAnimation = () => {
         updateSpeedDisplay();
     }
+
 
     playSpeedBtn.addControl(clickable);
 
