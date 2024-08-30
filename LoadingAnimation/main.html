@@ -136,7 +136,6 @@
   <button onclick="addAngle(10)">test add 10 degrees</button>
   <button onclick="setRootAngle()">set root angle</button>
   <button onclick="CameraController.getPosition()">get pos cam</button>
-  <button onclick="onboardAnimation()">onboardAnim</button>
   <!-- <button onclick="var gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, scene);createRootContainer(gui);">get gui</button> -->
 
 
@@ -157,6 +156,7 @@
   <script src="messageUEServer.js"></script>
   <script src="playerControls.js"></script>
   <script src="onboard.js"></script>
+  <script src="eyeBlink.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -280,6 +280,7 @@
               if (ParamsManager.play != "no") {
                 // playLoadedAnims(scene, loadedMesh);
                 playAnims(scene, loadedMesh, 0, loop=true, noRotation=true);
+                createBlinkAnimation(loadedMesh);
               }
             })
             .catch(error => {
