@@ -166,6 +166,12 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
         return false;
     }
 
+    // Check if eye blink is enabled, play the eye blink animation.
+    // Make sure to have this before other animations are played in the case we have morphs to overwrite
+    if (ParamsManager.eyeBlink) {
+        createBlinkAnimation(EngineController.loadedMesh);
+    }
+
     // Check the range of the animation index
     if (animationIndex >= 0 && animationIndex <= loadedResults.animationGroups.length) {
         // animationIndex -= 1;
@@ -305,6 +311,8 @@ function stopAnims(scene, loadedResults) {
         console.log(loadedResults.animationGroups.length);
         return true;
     }
+
+    removeEyeBlinkAnimation(EngineController.loadedMesh);
 
     // Stop animations on all meshes
     loadedResults.fetched.meshes.forEach(mesh => {

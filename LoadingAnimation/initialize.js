@@ -13,6 +13,7 @@ const ParamsManager = {
     startingNewAnim: false, // If we are starting a new animation, we can set this to true (to prevent race conditions)
     boneLock: 4,
     onboard: true,
+    eyeBlink: true,
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui, onboard) {
         // No babylon database storage when testing locally
