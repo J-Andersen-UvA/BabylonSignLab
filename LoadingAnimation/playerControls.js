@@ -355,8 +355,11 @@ function handTrackButtons(rootContainer) {
         });
     }
 
-    createClickableButton('clickableL', BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, 12, "L");
-    createClickableButton('clickableR', BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT, 36, "R");
+    // Fetch left and right hand bone indices from EngineController.loadedMesh
+    const leftHand = EngineController.loadedMesh.fetched.skeletons[0].bones.find(bone => (bone.name === "LeftHand" || bone.name === "leftHand" || bone.name === "hand.L" || bone.name === "Hand.L"))._index;
+    const rightHand = EngineController.loadedMesh.fetched.skeletons[0].bones.find(bone => (bone.name === "RightHand" || bone.name === "rightHand" || bone.name === "hand.R" || bone.name === "Hand.R"))._index;
+    createClickableButton('clickableL', BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT, leftHand, "L");
+    createClickableButton('clickableR', BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT, rightHand, "R");
 
     rootContainer.addControl(trackHandContainer);
 }
