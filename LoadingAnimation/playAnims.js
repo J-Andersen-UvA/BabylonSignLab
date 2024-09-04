@@ -229,7 +229,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                 // In animationGroup.targetedAnimations get target Hips
                 let animHipsRotation;
                 animationGroup.targetedAnimations.every(x => {
-                    if (x.target.name === "Hips" && x.animation.targetProperty === "rotationQuaternion") {
+                    if (x.target.name === EngineController.loadedMesh.hips.name && x.animation.targetProperty === "rotationQuaternion") {
                         animHipsRotation = x.animation;
                         return false;
                     }
@@ -241,11 +241,21 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                     // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
                     let initialRotation = animHipsRotation.getKeys().at(0).value;
                     const inverse = initialRotation.negateInPlace();
-                    EngineController.loadedMesh.papa.rotationQuaternion = inverse;
 
-                    // Flip the papa object around the z axis
-                    let tmp = EngineController.loadedMesh.papa.rotationQuaternion;
-                    EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
+                    // Compare currentRotation with inverseRotation
+                    const epsilon = 0.004; // Threshold for considering rotations as "equal"
+                    if (Math.abs(initialRotation.x - inverse.x) > epsilon ||
+                        Math.abs(initialRotation.y - inverse.y) > epsilon ||
+                        Math.abs(initialRotation.z - inverse.z) > epsilon ||
+                        Math.abs(initialRotation.w - inverse.w) > epsilon) {
+
+                        // If the current rotation is not already the inverse, apply the inverse rotation
+                        EngineController.loadedMesh.papa.rotationQuaternion = inverse;
+
+                        // Flip the papa object around the z axis
+                        let tmp = EngineController.loadedMesh.papa.rotationQuaternion;
+                        EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
+                    }
                 }
 
                 // wait 0.1 seconds for the animation to start playing then rotate opa or not TODO: change this to a better solution without a wait
