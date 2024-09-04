@@ -14,6 +14,7 @@ const ParamsManager = {
     boneLock: 4,
     onboard: true,
     eyeBlink: true,
+    meshURL: null,
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui, onboard) {
         // No babylon database storage when testing locally
@@ -31,6 +32,7 @@ const ParamsManager = {
         this.lockRot = lockRot === undefined ? false : ((lockRot === "1" || lockRot === "true") ? true : false);
         this.showGui = noGui === undefined ? true : ((noGui === "1" || noGui === "true") ? false : true);
         this.onboard = onboard === undefined ? true : ((onboard === "0" || onboard === "false") ? false : true);
+        this.meshURL = meshURL === undefined ? null : meshURL;
 
         if (zin) {
             // We want to adjust frame from and to for blending
@@ -154,8 +156,20 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
         document.getElementById("renderCanvas")
     );
 
-    console.log("paramsmanager.debug", ParamsManager.debug);
-    loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb", bugger=ParamsManager.debug);
+    if (ParamsManager.meshURL) {
+        // Split meshURL on last / and get the last element for filename and the rest for basePath
+        const meshURLSplit = ParamsManager.meshURL.split("/");
+        var meshName = meshURLSplit.pop();
+        var meshPath = meshURLSplit.join("/") + "/";
+
+        // If meshPath misses http:// or https://, add it
+        if (!meshPath.includes("http://") && !meshPath.includes("https://")) {
+            meshPath = "http://" + meshPath;
+        }
+        loadedMesh = await loadAssetMesh(scene, meshPath, filename=meshName, bugger=ParamsManager.debug);
+    } else {
+        loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb", bugger=ParamsManager.debug);
+    }
     // loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="Nemu.glb", bugger=ParamsManager.debug);
     // loadedMesh = await loadAssetMesh(scene);
 
@@ -163,15 +177,6 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     loadedMesh.fetched.meshes.forEach(mesh => {
         mesh.alwaysSelectAsActiveMesh = true;
     });
-
-    // console.log(loadedMesh);
-
-    // console.log("BAAAAAAAAAAAAA");
-    // rotateMesh180(loadedMesh.root);
-    // loadedMesh.fetched.meshes.forEach(mesh => {
-    //     mesh.rotate(BABYLON.Axis.X, Math.PI/2, BABYLON.Space.WORLD);
-    //     console.log("rotted");
-    // });
 
     // Make sure we have a boneLock
     if (!boneLock) { 
