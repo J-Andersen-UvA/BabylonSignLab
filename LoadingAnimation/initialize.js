@@ -178,9 +178,15 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
         mesh.alwaysSelectAsActiveMesh = true;
     });
 
-    // Make sure we have a boneLock
-    if (!boneLock) { 
-        boneLock = 4;
+    // Make sure we have a boneLock, fetch it from the name Neck or neck
+    if (!boneLock) {
+        var bone = loadedMesh.fetched.skeletons[0].bones.find(bone => (bone.name === "Neck" || bone.name === "neck"));
+
+        if (bone) {
+            boneLock = bone._index;
+        } else {
+            boneLock = 4;
+        }
     }
 
     ParamsManager.boneLock = boneLock;
