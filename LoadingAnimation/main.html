@@ -421,6 +421,15 @@
       }
     }
 
+    // Hook into the Bootstrap modal events to disable controls when the modal is shown en re-enable them when the modal is hidden
+    document.getElementById('glossModal').addEventListener('shown.bs.modal', function () {
+        disableControls(); // Disable controls when the modal is shown
+    });
+
+    document.getElementById('glossModal').addEventListener('hidden.bs.modal', function () {
+        enableControls(); // Re-enable controls when the modal is hidden
+    });
+
     // Function to show modal and wait for it to be shown
     function showModal() {
       return new Promise((resolve) => {
