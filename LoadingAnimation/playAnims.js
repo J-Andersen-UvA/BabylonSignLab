@@ -370,6 +370,7 @@ async function preloadAndInitializeAnimations(basePath, scene, loaded, animation
 }
 
 function signFetcher() {
+    disableControls();
     $("#glossModal").modal("show")
 }
 

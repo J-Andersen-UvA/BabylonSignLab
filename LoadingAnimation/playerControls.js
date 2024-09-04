@@ -9,6 +9,18 @@
 //     resizeLogic();
 // });
 
+// Flag to check if controls are enabled
+let controlsEnabled = true;
+
+function disableControls() {
+    controlsEnabled = false;
+}
+
+function enableControls() {
+    controlsEnabled = true;
+}
+
+
 function resizeLogic() {
     gui.scaleTo(engine.getRenderWidth(), engine.getRenderHeight());
     if (engine.getRenderHeight() >= 580) {
@@ -152,6 +164,8 @@ function speedControlButton(animationGroup, playSpeedBtn) {
 
     // Add event listener for keyboard shortcuts
     window.addEventListener("keydown", function(event) {
+        if (!controlsEnabled) { return; }
+
         if (event.code === "KeyS") {
             cycleSpeed("next");
             event.preventDefault();
@@ -237,6 +251,8 @@ function pausePlaySpeedButtons(animationGroup, rootContainer) {
 
     // Add event listener for the spacebar to toggle play/pause
     window.addEventListener("keydown", function(event) {
+        if (!controlsEnabled) { return; }
+
         if (event.code === "Space") {
             togglePlayPause();
             if (animationGroup.isPlaying) {
