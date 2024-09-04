@@ -187,9 +187,10 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
         } else {
             boneLock = 4;
         }
+
+        ParamsManager.boneLock = boneLock;
     }
 
-    ParamsManager.boneLock = boneLock;
 
     // Create first camera, then access it through the singleton
     var camera = CameraController.getInstance(scene, canvas);
