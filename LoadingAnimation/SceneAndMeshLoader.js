@@ -116,7 +116,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
 
     // Find the hips transform node
     for (transformNode of asset.fetched.transformNodes) {
-        if (transformNode.name === "Hips") {
+        if (transformNode.name === "Hips" || transformNode.name === "hips" || transformNode.name === "pelvis" || transformNode.name === "Pelvis") {
             asset.hips = transformNode;
         }
     }
