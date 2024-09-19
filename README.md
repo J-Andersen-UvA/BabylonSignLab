@@ -44,4 +44,9 @@ var local = urlParams.get("local"); // local=1, if you want to load animations f
 var blending = urlParams.get("blending"); // blending=1, if you want to blend animations
 var debug = urlParams.get("debug"); // debug=1, if you want to see the debug terminal
 var lockRot = urlParams.get("lockRot"); // lockRot=1, if you want to lock the animation hips to not rotate (useful when you want the animation to always be centered)
+var externalAnim = urlParams.get("externalAnim") // externalAnim="https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/appel.glb", if you want to load animations from external source
+var noGui = urlParams.get("noGui") // noGui=1, if you don't want to see the GUI
+var meshRotation = urlParams.get("meshRotation") // meshRotation=0-360, if you want to rotate the mesh container y-rotation
+var onboard = urlParams.get("onboard") // onboard=0 or false, if you dont want to play the onboard animation
+var meshURL = urlParams.get("mesh") // mesh=meshURL, for if you want a specific mesh to be loaded
 ```
