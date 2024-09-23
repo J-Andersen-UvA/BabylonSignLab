@@ -213,7 +213,10 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
         
         window.addEventListener("resize", () => {
             // console.error("resize");
-            resizeLogic();
+            // Check if resizeLogic() is defined
+            if (typeof resizeLogic === "function") {
+                resizeLogic();
+            }
         });
         
     });
