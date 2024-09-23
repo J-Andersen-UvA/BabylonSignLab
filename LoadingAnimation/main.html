@@ -157,6 +157,7 @@
   <script src="playerControls.js"></script>
   <script src="onboard.js"></script>
   <script src="eyeBlink.js"></script>
+  <script src="babylonLiveFileUpdater.js"></script>
   <script>
     //                                                                                          PINEAPPLE 
     // 🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍🍍
@@ -226,6 +227,7 @@
     var meshRotation = urlParams.get("meshRotation") // meshRotation=0-360, if you want to rotate the mesh container y-rotation
     var onboard = urlParams.get("onboard") // onboard=0 or false, if you dont want to play the onboard animation
     var meshURL = urlParams.get("mesh") // mesh=meshURL, for if you want a specific mesh to be loaded
+    var UELocalMode = urlParams.get("uelocalmode") // uelocalmode=1 or true, for if you want wait for ue server to send new animations
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
@@ -281,7 +283,9 @@
               if (ParamsManager.play != "no") {
                 // playLoadedAnims(scene, loadedMesh);
                 playAnims(scene, loadedMesh, 0, loop=true, noRotation=true);
-                createBlinkAnimation(loadedMesh);
+                if (ParamsManager.glos == 'idle') {
+                  createBlinkAnimation(loadedMesh);
+                }
               }
             })
             .catch(error => {
@@ -311,6 +315,10 @@
       }
     });
 
+    if (UELocalMode) {
+      // Start the waiting for UE server to send new animations
+      setInterval(fetchLatestPath, 3000);  // Poll the server every 3 seconds
+    }
 
     /*
       Functions for buttons start here.

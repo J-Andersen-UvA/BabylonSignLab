@@ -227,7 +227,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                 // EngineController.loadedMesh.hips.position = BABYLON.Vector3.Zero();
 
                 // In animationGroup.targetedAnimations get target Hips
-                let animHipsRotation;
+                let animHipsRotation = null;
                 animationGroup.targetedAnimations.every(x => {
                     if (x.target.name === EngineController.loadedMesh.hips.name && x.animation.targetProperty === "rotationQuaternion") {
                         animHipsRotation = x.animation;
@@ -237,7 +237,8 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                     return true;
                 });
 
-                if (!noRotation) {
+                if (!noRotation && animHipsRotation !== null) {
+                    // Get the initial rotation of the hips if there is an animation for it, otherwise do nothing
                     // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
                     let initialRotation = animHipsRotation.getKeys().at(0).value;
                     const inverse = initialRotation.negateInPlace();
