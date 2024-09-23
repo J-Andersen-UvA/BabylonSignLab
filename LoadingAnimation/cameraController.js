@@ -198,13 +198,18 @@ var CameraController = (function() {
             }
 
             // Attach pointer events to the scene, we dont want to interact with the gui when we are rotating the camera
-            if (scene) {
-                scene.onPointerDown = (e) => {
-                    rootContainer.isEnabled = false;
-                }
-        
-                scene.onPointerUp = (e) => {
-                    rootContainer.isEnabled = true;
+            if (scene && ParamsManager.showGui) {
+                // If rootContainer is defined, we can attach pointer events
+                if (rootContainer) {
+                    scene.onPointerDown = (e) => {
+                        rootContainer.isEnabled = false;
+                    }
+            
+                    scene.onPointerUp = (e) => {
+                        rootContainer.isEnabled = true;
+                    }
+                } else {
+                    console.log("Missing rootContainer. Cannot attach pointer events.");
                 }
             } else {
                 console.error("Scene is not defined. Cannot attach pointer events.");
