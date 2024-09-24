@@ -26,7 +26,7 @@ function fetchLatestPath() {
                     // Load the new animation by stripping the file from the path
                     var file = data.path.split("\\").at(-1);
                     console.log("Loading file: " + file);
-                    stopLoadAndPlayAnimation("http://127.0.0.1:5000/glb/" + file, true);
+                    stopLoadAndPlayAnimation("http://127.0.0.1:5000/glb/" + file, true, true);
                     last_path = data.path;
                 }
             }
