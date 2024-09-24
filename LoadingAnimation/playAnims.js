@@ -159,7 +159,7 @@ async function initializeAnimationGroups(loadedResults) {
     return true;
 }
 
-async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false) {
+async function playAnims(scene, loadedResults, animationIndex, loop = false, noRotation = false, papaRotation = true) {
     // Validate the input parameters
     if (!scene || !loadedResults || !loadedResults.animationGroups || loadedResults.animationGroups.length === 0) {
         console.error("Invalid input. Unable to play animations.");
@@ -238,6 +238,7 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                 });
 
                 if (!noRotation && animHipsRotation !== null) {
+                    console.error("Alter the rotation of the hips to align with the world up vector.");
                     // Get the initial rotation of the hips if there is an animation for it, otherwise do nothing
                     // Get the initial rotation of the hips of the first frame of the animation and orient the mesh upwards
                     let initialRotation = animHipsRotation.getKeys().at(0).value;
@@ -258,6 +259,10 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                         EngineController.loadedMesh.papa.rotationQuaternion = new BABYLON.Quaternion(-tmp.x, -tmp.y, tmp.z, tmp.w);
                     }
                 }
+                else if (papaRotation) {
+                    // Rotate papa 180 degrees around the y axis
+                    EngineController.loadedMesh.papa.rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI);
+                }
 
                 // wait 0.1 seconds for the animation to start playing then rotate opa or not TODO: change this to a better solution without a wait
                 new Promise(resolve => {
@@ -265,22 +270,48 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
                         resolve();
                     }, 100);
                 }).then(() => {
-                    // Refocus the camera
-                    // Check coordinate system by looking if hips are pointing forward
-                    const hips = EngineController.loadedMesh.hips.rotationQuaternion;
-                    // Check y rotation of hips
-                    const hipsEuler = hips.toEulerAngles();
-                    console.log(hips);
-                    console.log("Hips rotation in degrees: ", hipsEuler.scale(180/Math.PI).y);
-                    // Floor the y rotation to the nearest 90 degrees
-                    let zRotation = Math.abs(Math.round(hipsEuler.z * 2 / Math.PI) * Math.PI / 2);
-                    console.log("Floored z rotation in degrees: ", zRotation * 180 / Math.PI);
-                    // Check if the y rotation is close to 180 degrees, if so rotate opa 180 degrees over the y axis
-                    if (Math.abs(zRotation - Math.PI) >= 0.1) {
-                        console.log("Rotating opa 180 degrees.");
-                        EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI);
-                    }
-                    console.error("zRotation: ", zRotation);
+                    // // Refocus the camera
+                    // // Check coordinate system by looking if hips are pointing forward
+                    // const hips = EngineController.loadedMesh.hips.rotationQuaternion;
+                    // // Check y rotation of hips
+                    // const hipsEuler = hips.toEulerAngles();
+                    // console.log(hips);
+                    // console.log("Hips rotation in degrees: ", hipsEuler.scale(180/Math.PI).y);
+                    // console.error("Hips direction: ", EngineController.loadedMesh.hips.getDirection(BABYLON.Axis.Z));
+                    // // Floor the y rotation to the nearest 90 degrees
+                    // let zRotation = Math.abs(Math.round(hipsEuler.z * 2 / Math.PI) * Math.PI / 2);
+                    // console.log("Floored z rotation in degrees: ", zRotation * 180 / Math.PI);
+                    // // Check if the y rotation is close to 180 degrees, if so rotate opa 180 degrees over the y axis
+                    // if (Math.abs(zRotation - Math.PI) >= 0.1) {
+                    //     console.log("Rotating opa 180 degrees.");
+                    //     EngineController.loadedMesh.opa.rotationQuaternion = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI);
+                    // }
+                    // console.error("zRotation: ", zRotation);
+
+                    // 1. Get the current hips forward direction (assuming hips' forward direction is along the Z-axis in its local space)
+                    let hipsDirection = EngineController.loadedMesh.hips.getDirection(BABYLON.Axis.Z);
+
+                    // 2. Define the target direction
+                    let targetDirection = new BABYLON.Vector3(0, 1, 0);
+
+                    // 3. Normalize both directions to ensure they are unit vectors
+                    hipsDirection.normalize();
+                    targetDirection.normalize();
+
+                    // 4. Create an empty quaternion to store the result
+                    let rotationQuaternion = new BABYLON.Quaternion();
+
+                    // 5. Calculate the quaternion that rotates from hipsDirection to targetDirection
+                    BABYLON.Quaternion.FromUnitVectorsToRef(hipsDirection, targetDirection, rotationQuaternion);
+
+                    // 6. Apply the rotation to the parent object (convert quaternion to Euler angles if needed)
+                    EngineController.loadedMesh.opa.rotationQuaternion = rotationQuaternion;
+
+                    // If you prefer Euler angles, you can also apply rotation as Euler angles
+                    // EngineController.loadedMesh.parent.rotation = rotationQuaternion.toEulerAngles();
+
+                    console.log("Quaternion to align with Z axis:", rotationQuaternion);
+
                 });
             });
 
