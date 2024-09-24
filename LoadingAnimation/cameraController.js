@@ -7,7 +7,14 @@ var CameraController = (function() {
     var distance;
     var position = {x: null, y: null, z: null};
     var trackingHand = null;
+    var initialCameraAlpha = null;
+    var initialCameraBeta = null;
     
+    function setInitialCameraAlphaBeta(alpha, beta) {
+        initialCameraAlpha = alpha;
+        initialCameraBeta = beta;
+    }
+
     function setNearPlane(value) {
         camera.minZ = value;
     }
@@ -18,6 +25,18 @@ var CameraController = (function() {
 
     function setAngleBeta(angle) {
         camera.beta = BABYLON.Tools.ToRadians(angle);
+    }
+
+    function setAlpha(value) {
+        camera.alpha = value;
+    }
+
+    function setBeta(value) {
+        camera.beta = value;
+    }
+
+    function setRadius(value) {
+        camera.radius = value;
     }
 
     function getAngleAlpha() {
@@ -41,6 +60,12 @@ var CameraController = (function() {
     function getPosition() {
         console.log("Camera position: ", position);
         return position;
+    }
+
+    function resetCameraAlphaBeta() {
+        console.log("Resetting camera alpha and beta: ", initialCameraAlpha, initialCameraBeta);
+        camera.alpha = initialCameraAlpha;
+        camera.beta = initialCameraBeta;
     }
 
     function setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera) {
@@ -111,6 +136,8 @@ var CameraController = (function() {
         camera.target = sphere;
         focusSphere = sphere;
         targetHips = skeleton.bones[0];
+
+        resetZoom();
     };
 
     function createCameraRotationAnimation(scene, startDegree, endDegree, duration) {
@@ -152,9 +179,9 @@ var CameraController = (function() {
     };
 
     function resetZoom() {
-        camera.radius = CameraController.distance-1;
-        camera.beta = Math.PI/2.5;
-        camera.alpha = Math.PI / -2;
+        camera.radius = 2;
+        camera.beta = initialCameraBeta;
+        camera.alpha = initialCameraAlpha;
     };
 
     // Public interface
@@ -169,15 +196,20 @@ var CameraController = (function() {
         getFocusSphere: getFocusSphere,
         setPositionValues: setPositionValues,
         getPosition: getPosition,
+        setBeta: setBeta,
+        setInitialCameraAlphaBeta: setInitialCameraAlphaBeta,
+        setRadius: setRadius,
+        setAlpha: setAlpha,
         zoom: zoom,
         resetZoom: resetZoom,
-        getInstance: function(scene, canvas, distance=5) {
+        resetCameraAlphaBeta: resetCameraAlphaBeta,
+        getInstance: function(scene, canvas, distance=2) {
             CameraController.distance = distance;
 
             if (!camera) {
                 console.log("Initializing camera instance...");
                 // Parameters: name, alpha, beta, radius, target position, scene
-                camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / -2, 1, distance, new BABYLON.Vector3(0, 0, 0), scene);
+                camera = new BABYLON.ArcRotateCamera("camera1", -1.5, 1.4, distance, new BABYLON.Vector3(0, 0, 0), scene);
                 camera.attachControl(canvas, true);
                 camera.wheelPrecision = 50; //Mouse wheel speed
 
@@ -195,6 +227,9 @@ var CameraController = (function() {
                 const cameraPosition = new BABYLON.Vector3(x, y, z);
 
                 setPositionValues(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+                setBeta(1.2);
+                setAlpha(-1.5);
+                setInitialCameraAlphaBeta(camera.alpha, camera.beta);
             }
 
             // Attach pointer events to the scene, we dont want to interact with the gui when we are rotating the camera
