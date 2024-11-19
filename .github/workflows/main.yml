@@ -13,4 +13,11 @@ jobs:
       run: echo something
 
     - name: Send URL call to Leffe
-      run: curl -X GET --insecure https://leffe.science.uva.nl:8043/githubCli/update
+      run: |
+        HTTP_CODE=$(curl -X GET --insecure -w "%{http_code}" -o response.txt -s https://leffe.science.uva.nl:8043/githubCli/update)
+        if [ "$HTTP_CODE" -ne 200 ]; then
+          echo "Request failed with HTTP status code $HTTP_CODE."
+          echo "Response body:"
+          cat response.txt
+          exit 1
+        fi
