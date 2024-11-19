@@ -129,17 +129,15 @@
   <canvas id="renderCanvas"></canvas>
 
   <!-- Define clickable buttons for user to interact with the website -->
-  <button onclick="animationSequencing(true); recordingMethod=''">Load Animation sequence and Record them</button>
-  <button onclick="animationSequencing()">Load Animation Sequence and play them</button>
-  <button onclick="signBuilder()">Sign Builder</button>
-  <button onclick="signFetcher()">New Gloss</button>
-  <button onclick="addAngle(10)">test add 10 degrees</button>
-  <button onclick="setRootAngle()">set root angle</button>
-  <button onclick="CameraController.getPosition()">get pos cam</button>
+  <button class="extra-button" onclick="animationSequencing(true); recordingMethod=''">Load Animation sequence and Record them</button>
+  <button class="extra-button" onclick="animationSequencing()">Load Animation Sequence and play them</button>
+  <button class="extra-button" onclick="signBuilder()">Sign Builder</button>
+  <button class="extra-button" onclick="signFetcher()">New Gloss</button>
+  <button class="extra-button" onclick="addAngle(10)">test add 10 degrees</button>
+  <button class="extra-button" onclick="setRootAngle()">set root angle</button>
+  <button class="extra-button" onclick="CameraController.getPosition()">get pos cam</button>
   <!-- <button onclick="var gui = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, scene);createRootContainer(gui);">get gui</button> -->
-
-
-  <button type="button" class="btn btn-primary" onclick="retargetUE('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/AAP.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/APPEL.fbx', 'http://localhost:5000/upload')">test retargetUE</button>
+  <button class="extra-button" type="button" class="btn btn-primary" onclick="retargetUE('https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/AAP.fbx', 'https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/APPEL.fbx', 'http://localhost:5000/upload')">test retargetUE</button>
 
 
   <!-- Fetch all scripts that we use -->
@@ -228,6 +226,13 @@
     var onboard = urlParams.get("onboard") // onboard=0 or false, if you dont want to play the onboard animation
     var meshURL = urlParams.get("mesh") // mesh=meshURL, for if you want a specific mesh to be loaded
     var UELocalMode = urlParams.get("uelocalmode") // uelocalmode=1 or true, for if you want wait for ue server to send new animations
+    var noExtraButtons = urlParams.get("noExtraButtons") // noExtraButtons=1 or true, for if you want no extra buttons
+
+    if (noExtraButtons === "true" || noExtraButtons === "1") {
+      document.querySelectorAll(".extra-button").forEach(button => {
+        button.style.display = "none";
+      });
+    }
 
     /*
       Initialize the engine, scene, canvas, and mesh after the DOM has loaded
