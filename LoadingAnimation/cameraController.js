@@ -227,7 +227,7 @@ var CameraController = (function() {
                 const cameraPosition = new BABYLON.Vector3(x, y, z);
 
                 setPositionValues(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-                setBeta(1.2);
+                setBeta(1.5);
                 setAlpha(-1.5);
                 setInitialCameraAlphaBeta(camera.alpha, camera.beta);
             }
