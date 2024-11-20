@@ -201,6 +201,8 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
     // CameraController.setCameraOnBone(scene, loadedMesh.root, loadedMesh.skeletons[0], boneIndex=boneLock);
     CameraController.setCameraOnBone(scene, loadedMesh.fetched.meshes[1], loadedMesh.skeletons[0], boneIndex=boneLock, visualizeSphere=ParamsManager.debug, setLocalAxis=ParamsManager.debug);
     CameraController.setCameraParams(scene, cameraAngle, cameraAngleBeta, movingCamera);
+    CameraController.camera.radius = 1.5;
+
     createPineapple(scene, basePathMesh, loadedMesh.root);
 
     // Run the render loop
