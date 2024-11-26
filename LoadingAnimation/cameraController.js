@@ -57,6 +57,12 @@ var CameraController = (function() {
         position.z = z;
     }
 
+    function setCameraPosition(vector) {
+        console.log("Setting camera position: ", vector);
+        camera.position = vector;
+        console.log("Camera position set: ", camera.position);
+    }
+
     function getPosition() {
         console.log("Camera position: ", position);
         return position;
@@ -111,9 +117,14 @@ var CameraController = (function() {
         sphere.position = new BABYLON.Vector3(0, 0, 0); // Adjust according to your needs
         sphere.rotation = new BABYLON.Vector3(0, 0, 0); // Adjust according to your needs
 
-        
+        // Create position sphere and position it further from the bone
+        var spherePapa = BABYLON.MeshBuilder.CreateSphere("spherePapa", { diameter: 1 }, scene);
+        spherePapa.attachToBone(skeleton.bones[boneIndex], targetMesh);
+        spherePapa.position = new BABYLON.Vector3(0, -1.5, 0.5);
+
         // Debugging funcs
         sphere.setEnabled(visualizeSphere);
+        spherePapa.setEnabled(visualizeSphere);
         if (setLocalAxis) {
             var sphere2 = BABYLON.Mesh.CreateSphere("sphere2", 16, 2, scene);
             sphere2.scaling = new BABYLON.Vector3(0.4, 0.4, 0.4);
@@ -203,6 +214,7 @@ var CameraController = (function() {
         zoom: zoom,
         resetZoom: resetZoom,
         resetCameraAlphaBeta: resetCameraAlphaBeta,
+        setCameraPosition: setCameraPosition,
         getInstance: function(scene, canvas, distance=2) {
             CameraController.distance = distance;
 

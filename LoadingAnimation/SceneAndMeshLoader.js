@@ -102,12 +102,12 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
     var rootTransformNode = new BABYLON.TransformNode("papa");
     asset.root.parent = rootTransformNode;
     asset.papa = rootTransformNode;
-    var papaTransformNode = new BABYLON.TransformNode("opa");
-    asset.papa.parent = papaTransformNode;
-    asset.opa = papaTransformNode;
-    var opaTransformNode = new BABYLON.TransformNode("god");
-    asset.opa.parent = opaTransformNode;
-    asset.god = opaTransformNode;
+    // var papaTransformNode = new BABYLON.TransformNode("opa");
+    // asset.papa.parent = papaTransformNode;
+    // asset.opa = papaTransformNode;
+    // var opaTransformNode = new BABYLON.TransformNode("god");
+    // asset.opa.parent = opaTransformNode;
+    // asset.god = opaTransformNode;
 
     // Find all skeletons
     for (skeleton of asset.fetched.skeletons) {
