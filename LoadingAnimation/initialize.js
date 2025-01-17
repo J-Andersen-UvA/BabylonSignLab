@@ -168,7 +168,9 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
         }
         loadedMesh = await loadAssetMesh(scene, meshPath, filename=meshName, bugger=ParamsManager.debug);
     } else {
-        loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb", bugger=ParamsManager.debug);
+        // loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="JakeUEBlender.glb", bugger=ParamsManager.debug);
+        loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuySignLab.glb", bugger=ParamsManager.debug);
+        // loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuyNew.glb", bugger=ParamsManager.debug);
     }
     // loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="Nemu.glb", bugger=ParamsManager.debug);
     // loadedMesh = await loadAssetMesh(scene);
