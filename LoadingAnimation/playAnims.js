@@ -426,6 +426,12 @@ function stopLoadAndPlayAnimation(path, loop = false, noRotation = false) {
     getAnims(path, EngineController.scene, EngineController.loadedMesh, ParamsManager.glos, ParamsManager.gltf, fullPath = true)
         .then(anim => {
             console.log("getAnims returned: ", anim);
+            if (!anim) {
+                $('#errorModal2 .modal-body').html(`<p>Failed to load animations.</p>`);
+                $('#errorModal2').modal('show').css('z-index', 1065);
+                $('.modal-backdrop').css('z-index', 1064);
+                return;
+            }
             anim.animationGroups.push(retargetAnimWithBlendshapes(EngineController.loadedMesh, anim.animationGroups[0], "freshAnim"));
             // console.log(anim.animationGroups);
             keepOnlyAnimationGroup(EngineController.scene, anim, EngineController.loadedMesh, "freshAnim");

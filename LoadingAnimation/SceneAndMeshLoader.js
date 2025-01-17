@@ -54,6 +54,7 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
         papa: null,
         opa: null,
         god: null,
+        vicon: false,
         resetMorphs: function resetMorphTargets() {
             // Loop through all the meshes in the scene
             this.fetched.meshes.forEach(mesh => {
@@ -72,7 +73,64 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
                 }
             });
         },
+        animGroupToVicon: function (animGroup) {
+            const originalNodes = animGroup[0].targetedAnimations.map((targetedAnimation) => targetedAnimation.target);
+            const newAnimationGroup = new BABYLON.AnimationGroup("anim", scene);
+            originalNodes.forEach((transformNode) => {
+                const parts = transformNode.name.split(":");
+                if (parts.length !== 2) {
+                    console.warn(`TransformNode name '${transformNode.name}' does not follow the expected convention`);
+                    return;
+                }
+
+                const transformNodeName = parts[1];
+
+                targetTransformNode = this.getAllTransformNodes().find((node) => node.name === transformNodeName);
+                if (!targetTransformNode) {
+                    console.warn(`targetTransformNode not found: <${transformNodeName}>`);
+                    return;
+                }
+
+                console.log(`Linking animation for TransformNode: ${transformNodeName}`);
+
+                transformNode.animations.forEach((animation) => {
+                    const clonedAnimation = animation.clone();
+                    clonedAnimation.name = `anim_${transformNodeName}`;
+                    console.log(`Renamed animation: ${clonedAnimation.name}`);
+
+                    newAnimationGroup.addTargetedAnimation(clonedAnimation, targetTransformNode);
+
+                    // Validation: Check if the animation links correctly
+                    const lastAddedAnimation = newAnimationGroup.targetedAnimations[newAnimationGroup.targetedAnimations.length - 1];
+                    console.log(`Animation correctly linked: 
+                        Animation Name: ${lastAddedAnimation.animation.name}, 
+                        Target: ${lastAddedAnimation.target.name}`);
+                });
+            });
+
+            this.animationGroups.push(newAnimationGroup);
+            console.log(`Animation Group pushed with ${newAnimationGroup.targetedAnimations.length} animations.`);
+        },
+        getAllTransformNodes: function () {
+            return this.fetched.transformNodes;
+        },
+        setAvatarSpecificFunctionalities: function () {
+            // If any of the transformNodes contain the name Vicon
+            const viconTransformNodes = this.getAllTransformNodes().filter((node) => node.name.includes("Vicon"));
+            if (viconTransformNodes.length > 0) {
+                console.log("Vicon Avatar detected.");
+                this.vicon = true;
+                this.fetched.meshes.forEach((mesh) => {
+                    if (mesh.material) {
+                        console.log(mesh.material);
+                        mesh.material.useAlphaFromAlbedoTexture = false;
+                    }
+                });
+            }
+        }
     };
+
+    asset.setAvatarSpecificFunctionalities();
 
     // Find all animation groups
     for (animGroup of scene.animationGroups) {

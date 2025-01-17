@@ -81,7 +81,12 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
         // result.animationGroups[lastIndex].glos = glos;
 
         // Add animations to the loadedResults's animation group
-        loadedResults.animationGroups = result.animationGroups;
+        if (loadedResults.vicon) {
+            loadedResults.animGroupToVicon(result.animation);
+        }
+        else {
+            loadedResults.animationGroups = result.animationGroups;
+        }
         console.log("Animations loaded for " + (fullPath ? basePath : glos));
 
         if (ParamsManager.lockRot === true) {
