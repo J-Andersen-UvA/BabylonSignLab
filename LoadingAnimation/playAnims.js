@@ -137,6 +137,92 @@ const AnimationSequencer = (function () {
     };
 })();
 
+const AnimController = (function () {
+    let continueLoop = false;
+    let notSequencing = false;
+    let animationGroupFrom = 80;
+    let animationGroupTo = 100;
+    let blending = true;
+    let maxFrame = 0;
+    let updatingFramesFromOutside = false;
+
+    function jumpToFrame(animationGroup, frame) {
+        if (!animationGroup || frame === undefined) {
+            console.error("Invalid parameters for jumping to frame.");
+            return;
+        }
+
+        animationGroup.goToFrame(frame);
+    }
+
+    function fetchCurrentFrame() {
+        fetch("http://127.0.0.1:5000/get-latest-frame")
+            .then((response) => response.json())
+            .then((data) => {
+                // Are we using percentage or frame number?
+                if (data.usingPercentage && (data.percentage !== undefined)) {
+                    const currentPercentage = parseInt(data.percentage, 10);
+                    const currentFrame = Math.floor(maxFrame * currentPercentage / 100);
+                    // Update the animation to the current frame
+                    if (EngineController.loadedMesh.fetched.animationGroups[0]) {
+                        jumpToFrame(EngineController.loadedMesh.animationGroups[0], currentFrame);
+                        return;
+                    }
+                }
+
+                if (data.frame) {
+                    const frameMatch = data.frame.match(/frame:(\d+)/);
+
+                    if (frameMatch) {
+                        const currentFrame = parseInt(frameMatch[1], 10);
+                        // Update the animation to the current frame
+                        if (EngineController.loadedMesh.fetched.animationGroups[0]) {
+                            jumpToFrame(EngineController.loadedMesh.animationGroups[0], currentFrame);
+                            return;
+                        }
+                    }
+                }
+            })
+            .catch((error) => console.error("Error fetching frame data:", error));
+    }
+
+    function setMaxFrame(lastFrame) {
+        maxFrame = lastFrame;
+    }
+
+    function updateFrameFromServer() {
+        if (ParamsManager.receiveFramesOutside && !updatingFramesFromOutside) {
+            updatingFramesFromOutside = true;
+            console.error("Receiving frames from outside the application.");
+            EngineController.loadedMesh.fetched.animationGroups[0].pause();
+            setInterval(fetchCurrentFrame, 500);
+        }
+    }
+
+    // function observeVariableChange(variable, callback) {
+    //     let currentValue = variable;
+    //     Object.defineProperty(window, 'observedVariable', {
+    //         get() {
+    //             return currentValue;
+    //         },
+    //         set(value) {
+    //             if (value !== currentValue) {
+    //                 currentValue = value;
+    //                 callback(value);
+    //             }
+    //         }
+    //     });
+    // }
+
+    return {
+        jumpToFrame: jumpToFrame,
+        fetchCurrentFrame: fetchCurrentFrame,
+        updateFrameFromServer: updateFrameFromServer,
+        setMaxFrame: setMaxFrame
+    };
+})();
+
+
 async function initializeAnimationGroups(loadedResults) {
     console.log("Initializing animation groups...");
     loadedResults.animationGroups.forEach(animationGroup => {
@@ -316,16 +402,23 @@ async function playAnims(scene, loadedResults, animationIndex, loop = false, noR
             });
 
             // Play the animation
-            if (animationGroup === null) { 
-                console.error("Animation group is null.");
-            } else if (animationGroup.from === null || animationGroup.to === null) {
-                // animationGroup.start(false, 1.0, loop=loop);
-                animationGroup.play(loop);
+            if (!ParamsManager.receiveFramesOutside) {
+                if (animationGroup === null) { 
+                    console.error("Animation group is null.");
+                } else if (animationGroup.from === null || animationGroup.to === null) {
+                    // animationGroup.start(false, 1.0, loop=loop);
+                    animationGroup.play(loop);
+                } else {
+                    // animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to, loop=loop);
+                    animationGroup.play(loop);
+                }
+                // animationGroup.start();
             } else {
-                // animationGroup.start(false, 1.0, animationGroup.from, animationGroup.to, loop=loop);
+                AnimController.setMaxFrame(animationGroup.to);
                 animationGroup.play(loop);
+                console.error("Playing animation with frame updates from server.");
+                togglePlayPause();
             }
-            // animationGroup.start();
         });
     } else {
         console.error("Invalid animation index:", animationIndex, "for loadedResults.animationGroups.length:", loadedResults.animationGroups.length, "animations.");

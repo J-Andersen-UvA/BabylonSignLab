@@ -227,6 +227,7 @@
     var meshURL = urlParams.get("mesh") // mesh=meshURL, for if you want a specific mesh to be loaded
     var UELocalMode = urlParams.get("uelocalmode") // uelocalmode=1 or true, for if you want wait for ue server to send new animations
     var noExtraButtons = urlParams.get("noExtraButtons") // noExtraButtons=1 or true, for if you want no extra buttons
+    ParamsManager.receiveFramesOutside = urlParams.get("receiveFramesOutside") === undefined ? false : ((urlParams.get("receiveFramesOutside") === "1" || urlParams.get("receiveFramesOutside") === "true") ? true : false); // receiveFramesOutside=1 or true, for if you want to receive frames from outside
 
     if (noExtraButtons === "true" || noExtraButtons === "1") {
       document.querySelectorAll(".extra-button").forEach(button => {
@@ -276,13 +277,21 @@
       function initAnims() {
         if (externalAnim) {
           stopLoadAndPlayAnimation(externalAnim, loop=true);
+          if (ParamsManager.receiveFramesOutside) {
+            AnimController.updateFrameFromServer();
+          }
         }
         else {
           // Load the animation
           getAnims(basePath, scene, loadedMesh, ParamsManager.glos, ParamsManager.gltf)
             .then(anim => {
               animAsset = anim;
-              animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+              if (loadedMesh.vicon) {
+                animAsset.animationGroups.push(loadedMesh.animGroupsToVicon(animAsset.animationGroups));
+              }
+              else {
+                animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+              }
 
               keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
               if (ParamsManager.play != "no") {
@@ -292,6 +301,7 @@
                   createBlinkAnimation(loadedMesh);
                 }
               }
+              AnimController.updateFrameFromServer();
             })
             .catch(error => {
               console.error('Failed to load animations:', error);
@@ -299,7 +309,12 @@
               getAnims(basePath, scene, loadedMesh, "ERROR-SC", ParamsManager.gltf)
                 .then(anim => {
                   animAsset = anim;
-                  animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+                  if (loadedMesh.vicon) {
+                    animAsset.animationGroups.push(loadedMesh.animGroupsToVicon(animAsset.animationGroups));
+                  }
+                  else {
+                    animAsset.animationGroups.push(retargetAnimWithBlendshapes(loadedMesh, animAsset.animationGroups[0], "anim"));
+                  }
 
                   keepOnlyAnimationGroup(scene, animAsset, loadedMesh, "anim");
                   if (ParamsManager.play != "no") {

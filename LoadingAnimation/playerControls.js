@@ -195,6 +195,8 @@ function speedControlButton(animationGroup, playSpeedBtn) {
     updateSpeedDisplay();
 }
 
+let togglePlayPause;  // Declare it outside of the function
+
 function pausePlaySpeedButtons(animationGroup, rootContainer) {
     var playColor = new BABYLON.Color3(1/255, 255/255, 150/255).toHexString();
     var pauseColor = new BABYLON.Color3(1/255, 150/255, 255/255).toHexString();
@@ -234,7 +236,7 @@ function pausePlaySpeedButtons(animationGroup, rootContainer) {
     clickable.addControl(playImage);
 
     // Function to handle play/pause logic
-    function togglePlayPause() {
+    togglePlayPause = function() {
         if (animationGroup.isPlaying) {
             animationGroup.pause();
             rootContainer.playing = false;
@@ -254,6 +256,18 @@ function pausePlaySpeedButtons(animationGroup, rootContainer) {
         if (!controlsEnabled) { return; }
 
         if (event.code === "Space") {
+            console.log("Spacebar pressed");
+            togglePlayPause();
+            if (animationGroup.isPlaying) {
+                playImage.shadowColor = pauseColor;
+            } else {
+                playImage.shadowColor = playColor;
+            }
+            // Prevent default spacebar behavior (e.g., scrolling down)
+            event.preventDefault();
+        }
+        else if (event.key === ' ') {  // Use ' ' (space character)
+            console.log("Spacebar pressed");
             togglePlayPause();
             if (animationGroup.isPlaying) {
                 playImage.shadowColor = pauseColor;

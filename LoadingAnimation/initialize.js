@@ -15,6 +15,7 @@ const ParamsManager = {
     onboard: true,
     eyeBlink: true,
     meshURL: null,
+    receiveFramesOutside: false,
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui, onboard) {
         // No babylon database storage when testing locally

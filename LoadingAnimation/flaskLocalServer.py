@@ -21,6 +21,10 @@ latest_path = None
 new_path = False
 EXTERNAL_DIRECTORY = 'D:/RecordingsUE/glb/'
 BASE_DIRECTORY = '.'  # The base directory for internal files
+latest_frame = 0
+max_frame = 0
+globPercentage = 0
+usingPercentage = False
 
 @app.route('/')
 def serve_html():
@@ -164,6 +168,45 @@ def get_latest_path():
         new_path = False
         return jsonify({'path': latest_path}), 200
     return jsonify({'path': None}), 200
+
+@app.route('/get-latest-frame', methods=['GET'])
+def get_latest_frame():
+    global latest_frame
+    global globPercentage
+    global usingPercentage
+
+    if usingPercentage:
+        return jsonify({'frame': None, 'percentage': globPercentage, 'usingPercentage': usingPercentage}), 200
+
+    return jsonify({'frame': latest_frame, 'percentage': globPercentage, 'usingPercentage': usingPercentage}), 200
+
+@app.route('/send-frame', methods=['POST'])
+def send_frame():
+    """
+    Endpoint to receive the current frame from an external source.
+    Can also receive a percentage to use instead of a frame number.
+    """
+    global latest_frame
+    global usingPercentage
+    global globPercentage
+
+    data = request.json
+
+    # Extract the frame from the request
+    frame = data.get('frame')
+    if frame is None:
+        percentage = data.get('percentage')
+        if percentage is None:
+            return jsonify({"status": "error", "message": "No frame or percentage provided"}), 400
+
+    if percentage is not None:
+        usingPercentage = True
+        globPercentage = percentage
+        return jsonify({"status": "success", "message": f"Percentage {percentage} received"}), 200
+    else:
+        usingPercentage = False
+        latest_frame = f"frame:{frame}"
+        return jsonify({"status": "success", "message": f"Frame {frame} received"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
