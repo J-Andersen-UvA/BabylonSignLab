@@ -49,4 +49,78 @@ var noGui = urlParams.get("noGui") // noGui=1, if you don't want to see the GUI
 var meshRotation = urlParams.get("meshRotation") // meshRotation=0-360, if you want to rotate the mesh container y-rotation
 var onboard = urlParams.get("onboard") // onboard=0 or false, if you dont want to play the onboard animation
 var meshURL = urlParams.get("mesh") // mesh=meshURL, for if you want a specific mesh to be loaded
+var noExtraButtons = urlParams.get("noExtraButtons") // noExtraButtons=1 or true, for if you want no extra buttons
+var receiveFramesOutside = urlParams.get("receiveFramesOutside") // receiveFramesOutside=1 or true, for if you want to receive frames from outside
 ```
+
+## Flask Local Server for Babylon.js Loading Animations
+
+The `flaskLocalServer.py` script provides a backend service for hosting and managing assets for a Babylon.js-based loading animations project. It serves static files, manages animation updates, and acts as a proxy for communication with a WebSocket server. Below is a detailed description of its features:
+
+### Features
+
+1. **Static File Hosting**:
+   - Serves the main HTML file (`main.html`) and other assets such as `.glb` files, icons, and animations.
+   - Supports directory-specific routes for better organization:
+     - `/glb/<filename>`: Serves `.glb` files from the `D:/RecordingsUE/glb/` directory.
+     - `/icons/<filename>`: Serves icons from the `icons/` subdirectory.
+     - `/MeshesAndAnims/<filename>`: Serves meshes and animations from the `MeshesAndAnims/` subdirectory.
+
+3. **Animation Path Updates**:
+   - The `/send-path` endpoint allows the server to receive a new animation path.
+   - The `/get-latest-path` endpoint fetches the latest animation path for the client to update animations dynamically.
+
+4. **Frame and Percentage Updates**:
+   - The `/send-frame` endpoint supports sending either a frame number or a percentage value for animation progress updates.
+   - The `/get-latest-frame` endpoint retrieves the most recent frame or percentage value, helping the client synchronize animation playback.
+
+### How to Run
+
+1. **Prerequisites**:
+   - Python 3 or above.
+   - Install the required Python packages:
+     ```bash
+     pip install flask flask-cors websocket-client
+     ```
+
+2. **Start the Server**:
+   - Run the `flaskLocalServer.py` script:
+     ```bash
+     python flaskLocalServer.py
+     ```
+   - By default, the server runs on `http://0.0.0.0:5000`.
+
+## Updating frames outside of the webapp
+The `flaskLocalServer.py` script provides functionality for controlling animation frames from external applications via API endpoints. By combining the script with the URL parameter `receiveFramesOutside`, you can dynamically update the animation frame from outside the web app.
+
+### How It Works
+1. Receiving Frames from External Applications:
+
+External applications can send the desired animation frame to the server using the `/send-frame` endpoint.
+The endpoint accepts either a specific frame number or a percentage value representing the animation's progress.
+
+2. Web App Integration:
+
+Within the web app, the `receiveFramesOutside` parameter determines whether the animation should use externally provided frame updates.
+If receiveFramesOutside is set to true, the web app periodically checks the `/get-latest-frame` endpoint to fetch the latest frame or percentage value provided by the external application.
+
+### Example Workflow
+An external application sends a POST request to the `/send-frame` endpoint with a JSON payload:
+
+```json
+{
+  "frame": 42
+}
+```
+or:
+
+```json
+{
+  "percentage": 75
+}
+```
+The server updates its internal state with the latest frame or percentage.
+The web app polls the `/get-latest-frame` endpoint to retrieve the most recent value and updates the animation accordingly.
+
+
+
