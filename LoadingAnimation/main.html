@@ -307,6 +307,7 @@
               console.error('Failed to load animations:', error);
               console.error("retrying for https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx");
               if (ParamsManager.mode == "vicon") {
+                ParamsManager.returnToIdle = false;
                 return;
               }
               getAnims(basePath, scene, loadedMesh, "ERROR-SC", ParamsManager.gltf)
