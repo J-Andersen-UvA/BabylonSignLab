@@ -73,17 +73,50 @@ var loadAssetMesh = async function (scene, path = basePathMesh + "Nemu/", fileNa
                 }
             });
         },
+        animGroupsToVicon: function (animGroups) {
+            animGroups.forEach((animGroup) => {
+                if (animGroup) {
+                    this.animGroupToVicon(animGroup);
+                }
+            });
+        },
         animGroupToVicon: function (animGroup) {
-            const originalNodes = animGroup[0].targetedAnimations.map((targetedAnimation) => targetedAnimation.target);
+            const originalNodes = animGroup.targetedAnimations.map((targetedAnimation) => targetedAnimation.target);
             const newAnimationGroup = new BABYLON.AnimationGroup("anim", scene);
+
+            // Check if the originalNodes array is empty, or if all are null
+            if (originalNodes.length === 0 || originalNodes.every((node) => node === null)) {
+                // Use bone names instead of transform node names
+                console.warn("No transform nodes found, using bone names instead.");
+                console.log(animGroup.targetedAnimations);
+                originalNodes = animGroup.targetedAnimations.map((targetedAnimation) => targetedAnimation.target.bone);
+            }
+
             originalNodes.forEach((transformNode) => {
-                const parts = transformNode.name.split(":");
-                if (parts.length !== 2) {
-                    console.warn(`TransformNode name '${transformNode.name}' does not follow the expected convention`);
+                if (!transformNode) {
+                    console.warn("TransformNode not found");
                     return;
                 }
 
-                const transformNodeName = parts[1];
+                console.log(`TransformNode name: ${transformNode.name}`);
+                const parts = transformNode.name.split(":");
+
+                let transformNodeName;
+
+                if (parts.length !== 2) {
+                    // Check whether the part is in the transformNodes
+                    const targetTransformNode = this.getAllTransformNodes().find((node) => node.name === transformNode.name);
+                    if (!targetTransformNode) {
+                        console.warn(`TransformNode name '${transformNode.name}' does not follow the expected convention`);
+                        return;
+                    }
+
+                    console.warn(`TransformNode name '${transformNode.name}' does not follow the expected convention, trying anyways`);          
+                    transformNodeName = transformNode.name;
+                } else {
+                    transformNodeName = parts[1];
+                }
+
 
                 targetTransformNode = this.getAllTransformNodes().find((node) => node.name === transformNodeName);
                 if (!targetTransformNode) {

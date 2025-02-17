@@ -16,6 +16,7 @@ const ParamsManager = {
     eyeBlink: true,
     meshURL: null,
     receiveFramesOutside: false,
+    mode: "rpm", // Default mode is rpm
 
     setParams(local, play, limit, glos, zin, gltf, debug, lockRot, noGui, onboard) {
         // No babylon database storage when testing locally
@@ -168,6 +169,12 @@ async function initialize(scene, engine, canvas, basePath, basePathMesh, loadedM
             meshPath = "http://" + meshPath;
         }
         loadedMesh = await loadAssetMesh(scene, meshPath, filename=meshName, bugger=ParamsManager.debug);
+        if (meshName.includes("Vicon") || meshName.includes("vicon")) {
+            if (ParamsManager.glos == "idle") {
+                ParamsManager.glos = null;
+                ParamsManager.mode = "vicon";
+            }
+        }
     } else {
         // loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="JakeUEBlender.glb", bugger=ParamsManager.debug);
         loadedMesh = await loadAssetMesh(scene, basePathMesh, filename="glassesGuySignLab.glb", bugger=ParamsManager.debug);

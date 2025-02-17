@@ -108,7 +108,7 @@
         </div>
         <div class="modal-body">
           <input type="text" id="glossInput" class="form-control" placeholder="Enter gloss"
-            value="http://127.0.0.1:5000/MeshesAndAnims/HeadTwist3NPM.glb">
+            value="http://127.0.0.1:5000/MeshesAndAnims/test.glb">
           <div class="form-check mt-3">
             <input class="form-check-input" type="checkbox" id="loopCheckbox">
             <label class="form-check-label" for="loopCheckbox">
@@ -306,6 +306,10 @@
             .catch(error => {
               console.error('Failed to load animations:', error);
               console.error("retrying for https://leffe.science.uva.nl:8043/gebarenoverleg_media/fbx/ERROR-SC.fbx");
+              if (ParamsManager.mode == "vicon") {
+                ParamsManager.returnToIdle = false;
+                return;
+              }
               getAnims(basePath, scene, loadedMesh, "ERROR-SC", ParamsManager.gltf)
                 .then(anim => {
                   animAsset = anim;

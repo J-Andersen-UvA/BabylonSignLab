@@ -82,7 +82,7 @@ async function getAnims(basePath, scene, loadedResults, glos, gltf, fullPath = f
 
         // Add animations to the loadedResults's animation group
         if (loadedResults.vicon) {
-            loadedResults.animGroupToVicon(result.animation);
+            loadedResults.animGroupsToVicon(result.animationGroups);
         }
         else {
             loadedResults.animationGroups = result.animationGroups;
