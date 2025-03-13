@@ -130,3 +130,10 @@ Importing a new RPM avatar that uses our animations:
 3. Either make sure to pack the materials when going through the previous steps, or use the babylon sandbox to fix the materials by hand and save to glb afterwards
 
 
+## BabylonJS forum Posts
+### ArcRotate camera + using forward vector to set camera
+[How to set the rotation of ArcRotateCamera based on mesh direction](https://forum.babylonjs.com/t/how-to-set-the-rotation-of-arcrotatecamera-based-on-mesh-direction-when-animation-starts/50539)
+### Accessing null imported animation names? 
+[How to Access original target Name after it’s imported with null as target?](https://forum.babylonjs.com/t/issue-with-importanimationsasync-how-to-access-original-target-name-after-its-imported-with-null-as-target/55153) Not complete.
+
+
