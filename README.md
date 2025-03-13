@@ -122,5 +122,11 @@ or:
 The server updates its internal state with the latest frame or percentage.
 The web app polls the `/get-latest-frame` endpoint to retrieve the most recent value and updates the animation accordingly.
 
+## Using new avatars
+### Ready Player Me
+Importing a new RPM avatar that uses our animations:
+1. FBX avatar exported through Unreal Engine
+2. Convert with [fbx2gltf](https://www.npmjs.com/package/fbx2gltf)
+3. Either make sure to pack the materials when going through the previous steps, or use the babylon sandbox to fix the materials by hand and save to glb afterwards
 
 
